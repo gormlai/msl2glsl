@@ -1,7 +1,7 @@
 # msl2glsl
 Parses MSL and spits out GLSL
 
-Contributors:
+*Contributors*
 Gorm Lai <lai.gorm@gmail.com>
 
 *Building*
