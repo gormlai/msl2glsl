@@ -22,26 +22,26 @@ using token = Metal::Parser::token;
 %%
 
 %{
-//  yylval = lval;
+  _yyval = lval;
 %}
 
 [0-9]+ {
-//  yylval->build(atoi(yytext));
+  _yyval->build(atoi(yytext));
   return token::INT;
 }
 
 [0-9]+"."[0-9]* {
- // yylval->build(atof(yytext));
+  _yyval->build(atof(yytext));
   return token::DOUBLE;
 }
 
 [0-9]+"."[0-9]*"f" {
-  //yylval->build(atof(yytext));
+  _yyval->build(atof(yytext));
   return token::FLOAT;
 }
 
 [0-9]+"."[0-9]*"h" {
-  //yylval->build(atof(yytext));
+  _yyval->build(atof(yytext));
   return token::HALF;
 }
 

@@ -16,7 +16,7 @@ namespace Metal
     {
     }
 
-    virtual ~Scanner ();
+    virtual ~Scanner () {}
 
     using FlexLexer::yylex;
     virtual int yylex(Metal::Parser::semantic_type * const lval, Metal::Parser::location_type * location);
