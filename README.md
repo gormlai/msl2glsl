@@ -18,4 +18,4 @@ To build the following programs are needed in your path:
 http://www.jonathanbeard.io/tutorials/FlexBisonC++.html was essential in refreshing my uni knowledge on writing compilers and parsers.
 http://www.quut.com/c/ was essential in for inspiration in building a syntax as most ECMA inspired languages look similar.
 
-htt://www.fuglgame.com - the game that started it all
+http://www.fuglgame.com - the game that started it all
