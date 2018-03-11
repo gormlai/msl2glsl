@@ -27,8 +27,9 @@ arguments : ['@INPUT@', '--defines=@OUTPUT1@', '--output=@OUTPUT0@'])
 
 pfiles = pgen.process('metal.yy')
 
-sources = ['main.cpp', lfiles, pfiles]
+sources = ['main.cpp', 'Scanner.cpp', 'Driver.cpp', lfiles, pfiles]
 
-e = executable('metalparser', sources)
+add_global_arguments('-std=c++14', language : 'cpp')
+e = executable('metalparser', sources, )
 
 test('parsertest', e)

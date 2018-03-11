@@ -8,8 +8,8 @@ int yyerror(char const * err)
   return 0;
 }
 
-int k()
+int main(int argc, char ** argv)
 {
-  printf("Hello World build with meson\n");
   return 0;
+  
 }
