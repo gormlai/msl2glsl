@@ -8,8 +8,26 @@ int yyerror(char const * err)
   return 0;
 }
 
+enum class ProgramError
+{
+  NoError = 0,
+    TooFewArguments,
+    TooManyArguments,
+};
+
 int main(int argc, char ** argv)
 {
-  return 0;
+  if(argc <2 ) {
+    std::cerr << "Too few arguments to program: " << argv[0] << std::endl;
+    return (int)ProgramError::TooFewArguments;
+  }
+  else if(argc>2) {
+    std::cerr << "Too many arguments to program: " << argv[0] << std::endl;
+    return (int)ProgramError::TooManyArguments;
+  }
+
+  
+  
+  return (int)ProgramError::NoError;
   
 }
