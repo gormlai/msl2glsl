@@ -21,5 +21,7 @@ void Metal::Driver::convert(const std::string & filename)
 
   // remove the scanner so it is not pointing to the stream anymore, if it is
   _scanner = std::shared_ptr<Scanner>();
+
+  std::cout << "ParseResult = " + parseResult;
   
 }

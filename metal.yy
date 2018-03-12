@@ -41,7 +41,8 @@ class Scanner;
 %token	<float>	      HALF 	
 %token	<double>      DOUBLE	
 %token	<int>	      INT	
-%token	<std::string> STRING	
+%token	<std::string> STRING
+%token 		      SKIP
 
 %locations
 

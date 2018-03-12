@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <iostream>
+#include "Driver.h"
 
 int yyerror(char const * err)
 {
@@ -26,7 +27,11 @@ int main(int argc, char ** argv)
     return (int)ProgramError::TooManyArguments;
   }
 
-  
+  std::string filename(argv[1]);
+  Metal::Driver driver;
+ 
+  std::cout << "Filename = " + filename << std::endl;
+  driver.convert(argv[1]);
   
   return (int)ProgramError::NoError;
   
