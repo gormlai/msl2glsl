@@ -2,6 +2,7 @@
 #include <string.h>
 #include <Scanner.h>
 
+#undef YY_DECL
 #define YY_DECL int Metal::Scanner::yylex(Metal::Parser::semantic_type * const lval, Metal::Parser::location_type *loc)
 
 using token = Metal::Parser::token;
