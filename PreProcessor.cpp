@@ -25,6 +25,25 @@ std::string Metal::PreProcessor::convertFile(const std::string & inFileName) {
 std::string Metal::PreProcessor::convertContents(const std::string & inData) {
   std::string outData;
   if(!inData.empty()) {
+    std::string line;
+    std::istringstream inStream(inData.c_str());
+    int i=0;
+    while(std::getline(inStream, line)) {
+      i++;
+      const std::string workCopy = line;
+      //      std::cout << "Preprocessor examining line: " << line << std::endl;
+      // TODO: remove all whitespaces first
+      // TODO: possibly make lower case first
+      const std::string searchFor("#include");
+      std::size_t index = workCopy.find(searchFor);
+      if(index != std::string::npos) {
+	// possibly call recursively - for now just erase
+	std::cout << "removing line: " << index << ", " << line  << std::endl;
+      }
+      else { // add line to outData
+	outData += line + "\n";
+      }
+    }
   }
 
   return outData;
