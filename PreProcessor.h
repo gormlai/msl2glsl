@@ -11,7 +11,8 @@ class PreProcessor
  public:
   PreProcessor();
 
-  std::string convert(const std::string & inFileName);
+  std::string convertFile(const std::string & inFileName);
+  std::string convertContents(const std::string & inData);
   
 };
 
