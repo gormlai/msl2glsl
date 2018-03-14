@@ -21,34 +21,6 @@ using token = Metal::Parser::token;
 
 %%
 
-%{
-  _yyval = lval;
-%}
-
-[0-9]+ {
-  _yyval->build(atoi(yytext));
-  return token::INT;
-}
-
-[0-9]+"."[0-9]* {
-  _yyval->build(atof(yytext));
-  return token::DOUBLE;
-}
-
-[0-9]+"."[0-9]*"f" {
-  _yyval->build(atof(yytext));
-  return token::FLOAT;
-}
-
-[0-9]+"."[0-9]*"h" {
-  _yyval->build(atof(yytext));
-  return token::HALF;
-}
-
-\n {
-  loc->lines();
-  return token::EOL;  
-}
 
 . {
   std::cerr << "Error = " << yytext << std::endl;

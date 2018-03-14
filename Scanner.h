@@ -20,7 +20,7 @@ namespace Metal
 
     using FlexLexer::yylex;
     virtual int yylex(Metal::Parser::semantic_type * const lval, Metal::Parser::location_type * location);
-
+    
 
   private:
     Metal::Parser::semantic_type * _yyval= nullptr;
