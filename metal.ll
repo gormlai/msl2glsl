@@ -1,3 +1,6 @@
+WHITESPACE [ \t\v\n\f]
+STRING [_a-zA-Z0-9]
+
 %{
 #include <string.h>
 #include <Scanner.h>
@@ -13,18 +16,22 @@ using token = Metal::Parser::token;
 %}
 
 %option debug
-%option nodefault
 %option yyclass = "Metal::Parser"
 %option noyywrap
 %option c++
 
-
 %%
 
+%{
+  _yyval = lval;
+%}
 
-. {
-  std::cerr << "Error = " << yytext << std::endl;
-}
+
+"struct"                                   { return token::STRUCT;}
+
+"using namespace"{WHITESPACE}+{STRING}+  { /* skip using namespace */}
+";"                                        { return token::SEMICOLON; }
+
+. { std::cerr << yytext; }
 
 %%
-

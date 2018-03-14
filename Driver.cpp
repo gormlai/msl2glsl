@@ -17,7 +17,7 @@ void Metal::Driver::convert(const std::string & filename)
   
   printf("PREPROCESSING FILE: %s\n", filename.c_str());
   std::string processedFileContents = preProcessor.convertFile(filename);
-  printf("\n---------PREPROCESSEDFILE----------\n%s\n",processedFileContents.c_str());
+  printf("\n---------BEGIN PREPROCESSEDFILE----------\n%s\n",processedFileContents.c_str());
 
   processedFileContents = processedFileContents + std::to_string('\0');
   // save out preprocessed contents
@@ -25,9 +25,10 @@ void Metal::Driver::convert(const std::string & filename)
   std::ofstream outStream(outFileName.c_str(), std::ofstream::out);
   outStream << processedFileContents;
   outStream.close();
+  printf("\n---------END PREPROCESSEDFILE----------\n%s\n",processedFileContents.c_str());
   
-  //  std::istringstream stream(processedFileContents);
-  std::ifstream stream(outFileName.c_str());
+  std::istringstream stream(processedFileContents);
+//  std::ifstream stream(outFileName.c_str());
   
   _scanner = std::shared_ptr<Scanner>(new Scanner(&stream));
   _parser = std::shared_ptr<Parser>(new Parser(*_scanner.get(), *this));

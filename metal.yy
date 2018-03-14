@@ -43,6 +43,8 @@ class Scanner;
 %token	<int>	      INT	
 %token	<std::string> STRING
 %token 		      SKIP
+%token 		      STRUCT
+%token		      SEMICOLON
 
 %locations
 
