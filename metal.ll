@@ -1,5 +1,7 @@
 WHITESPACE [ \t\v\n\f]
-STRING [_a-zA-Z0-9]
+LETTER [_a-zA-Z]
+DIGIT [0-9]
+LETTER_OR_DIGIT ({LETTER}|{DIGIT})
 
 %{
 #include <string.h>
@@ -19,6 +21,8 @@ using token = Metal::Parser::token;
 %option yyclass = "Metal::Parser"
 %option noyywrap
 %option c++
+%option verbose
+%option yylineno
 
 %%
 
@@ -28,10 +32,14 @@ using token = Metal::Parser::token;
 
 
 "struct"                                   { return token::STRUCT;}
+"{"                                        { return token::BEGIN_CURLY_BRACKET; }
+"}"                                        { return token::END_CURLY_BRACKET; }
 
-"using namespace"{WHITESPACE}+{STRING}+  { /* skip using namespace */}
+{LETTER}{LETTER_OR_DIGIT}*                 { return token::IDENTIFIER; }
+"using namespace"     { return token::USING_NAMESPACE; }
 ";"                                        { return token::SEMICOLON; }
+{WHITESPACE}                              { /* skip */ }
 
-. { std::cerr << yytext; }
+. { std::cerr << "Error line:" << yylineno << "\t" << yytext << std::endl; }
 
 %%

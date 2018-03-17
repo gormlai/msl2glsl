@@ -4,9 +4,9 @@
 
 int yyerror(char const * err)
 {
-  
   std::cerr << "Cannot parse input: " <<  err;
   return 0;
+  
 }
 
 enum class ProgramError

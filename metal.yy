@@ -15,6 +15,8 @@ class Scanner;
 #define YY_NULLPTR nullptr
 #endif
 			
+#define YYERROR_VERBOSE
+			
 }
 
 %parse-param { Scanner &scanner }
@@ -26,7 +28,7 @@ class Scanner;
 #include <fstream>
     
 #include "Driver.h"
-
+    
 #undef yylex
 #define yylex scanner.yylex
 }
@@ -45,11 +47,27 @@ class Scanner;
 %token 		      SKIP
 %token 		      STRUCT
 %token		      SEMICOLON
+%token                IDENTIFIER
+%token                USING_NAMESPACE
+%token                BEGIN_CURLY_BRACKET
+%token                END_CURLY_BRACKET
 
 %locations
 
 %%
-start: /* empty */
+translation_unit: declaration_list
+
+declaration_list: declaration declaration_list
+	| SEMICOLON
+		
+declaration: USING_NAMESPACE IDENTIFIER
+	| EOL
+	| END
+	| SEMICOLON
+
+
+
+		
 %%
 		
 void Metal::Parser::error(const location_type &line, const std::string &err)

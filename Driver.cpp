@@ -19,7 +19,6 @@ void Metal::Driver::convert(const std::string & filename)
   std::string processedFileContents = preProcessor.convertFile(filename);
   printf("\n---------BEGIN PREPROCESSEDFILE----------\n%s\n",processedFileContents.c_str());
 
-  processedFileContents = processedFileContents + std::to_string('\0');
   // save out preprocessed contents
   std::string outFileName("preprocessed.metal");
   std::ofstream outStream(outFileName.c_str(), std::ofstream::out);
