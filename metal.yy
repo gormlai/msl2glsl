@@ -57,14 +57,14 @@ class Scanner;
 %%
 translation_unit: declaration_list
 
-declaration_list: declaration declaration_list
-	| SEMICOLON
+struct: STRUCT IDENTIFIER BEGIN_CURLY_BRACKET END_CURLY_BRACKET SEMICOLON
 		
-declaration: USING_NAMESPACE IDENTIFIER
-	| EOL
-	| END
-	| SEMICOLON
-
+declaration_list: declaration declaration_list
+	| struct declaration_list
+	| EOL declaration_list
+	| END	
+		
+declaration: USING_NAMESPACE IDENTIFIER SEMICOLON
 
 
 		
