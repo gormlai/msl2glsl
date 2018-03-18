@@ -39,15 +39,15 @@ using token = Metal::Parser::token;
 
 "using namespace"     { return token::USING_NAMESPACE; }
 ";"                                        { return token::SEMICOLON; }
-"float" { return token::FLOAT; }
-"float2" { return token::FLOAT2; }
-"float3" { return token::FLOAT3; }
-"float4" { return token::FLOAT4; }
+"float" { return token::TYPE_FLOAT; }
+"float2" { return token::TYPE_FLOAT2; }
+"float3" { return token::TYPE_FLOAT3; }
+"float4" { return token::TYPE_FLOAT4; }
 
-"uchar" { return token::UCHAR; }
-"uchar2" { return token::UCHAR2; }
-"uchar3" { return token::UCHAR3; }
-"uchar4" { return token::UCHAR4; }
+"uchar" { return token::TYPE_UCHAR; }
+"uchar2" { return token::TYPE_UCHAR2; }
+"uchar3" { return token::TYPE_UCHAR3; }
+"uchar4" { return token::TYPE_UCHAR4; }
 
 "(" { return token::BEGIN_BRACKET; }
 ")" { return token::END_BRACKET; }

@@ -42,19 +42,19 @@ class Scanner;
 			  
 %token		      END               0 "end of file"
 %token		      EOL                 "end of line"
-%token		      BOOL		      
-%token		      FLOAT
-%token		      FLOAT2
-%token		      FLOAT3
-%token		      FLOAT4
-%token		      UCHAR
-%token		      UCHAR2
-%token		      UCHAR3
-%token		      UCHAR4
-%token		      HALF 	
-%token		      DOUBLE	
-%token		      INT	
-%token		      STRING
+%token		      TYPE_BOOL		      
+%token		      TYPE_FLOAT
+%token		      TYPE_FLOAT2
+%token		      TYPE_FLOAT3
+%token		      TYPE_FLOAT4
+%token		      TYPE_UCHAR
+%token		      TYPE_UCHAR2
+%token		      TYPE_UCHAR3
+%token		      TYPE_UCHAR4
+%token		      TYPE_HALF 	
+%token		      TYPE_DOUBLE	
+%token		      TYPE_INT	
+%token		      TYPE_STRING
 %token 		      SKIP
 %token 		      STRUCT
 %token		      SEMICOLON
@@ -76,7 +76,7 @@ struct: STRUCT IDENTIFIER BEGIN_CURLY_BRACKET struct_content END_CURLY_BRACKET S
 
 struct_content: /* empty */
 	| EOL struct_content
-	| type struct_content	
+	| declaration_variable struct_content	
 				
 declaration_list: declaration declaration_list
 	| struct declaration_list
@@ -84,14 +84,16 @@ declaration_list: declaration declaration_list
 	| EOL declaration_list
 	| END	
 
-type: FLOAT
-	| FLOAT2	
-	| FLOAT3	
-	| FLOAT4
-	| UCHAR
-	| UCHAR2
-	| UCHAR3
-	| UCHAR4
+declaration_variable: type IDENTIFIER SEMICOLON
+		
+type: TYPE_FLOAT
+	| TYPE_FLOAT2	
+	| TYPE_FLOAT3	
+	| TYPE_FLOAT4
+	| TYPE_UCHAR
+	| TYPE_UCHAR2
+	| TYPE_UCHAR3
+	| TYPE_UCHAR4
 		
 declaration: USING_NAMESPACE IDENTIFIER SEMICOLON
 		
