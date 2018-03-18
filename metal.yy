@@ -6,6 +6,9 @@
 %define parser_class_name {Parser}
 
 %code requires {
+
+#include "Types.h"
+    
 namespace Metal {
 class Driver;
 class Scanner;
@@ -31,6 +34,7 @@ class Scanner;
     
 #undef yylex
 #define yylex scanner.yylex
+
 }
 
 %define api.value.type variant
@@ -39,34 +43,57 @@ class Scanner;
 %token		      END               0 "end of file"
 %token		      EOL                 "end of line"
 %token		      BOOL		      
-%token	<float>	      FLOAT
-%token	<float>	      HALF 	
-%token	<double>      DOUBLE	
-%token	<int>	      INT	
-%token	<std::string> STRING
+%token		      FLOAT
+%token		      FLOAT2
+%token		      FLOAT3
+%token		      FLOAT4
+%token		      UCHAR
+%token		      UCHAR2
+%token		      UCHAR3
+%token		      UCHAR4
+%token		      HALF 	
+%token		      DOUBLE	
+%token		      INT	
+%token		      STRING
 %token 		      SKIP
 %token 		      STRUCT
 %token		      SEMICOLON
-%token                IDENTIFIER
+%token <std::string>  IDENTIFIER
 %token                USING_NAMESPACE
 %token                BEGIN_CURLY_BRACKET
 %token                END_CURLY_BRACKET
+%token                BEGIN_BRACKET
+%token                END_BRACKET
+%token                BEGIN_DOUBLE_SQUARE_BRACKET
+%token                END_DOUBLE_SQUARE_BRACKET
 
 %locations
 
 %%
 translation_unit: declaration_list
 
-struct: STRUCT IDENTIFIER BEGIN_CURLY_BRACKET END_CURLY_BRACKET SEMICOLON
-		
+struct: STRUCT IDENTIFIER BEGIN_CURLY_BRACKET struct_content END_CURLY_BRACKET SEMICOLON
+
+struct_content: /* empty */
+	| EOL struct_content
+	| type struct_content	
+				
 declaration_list: declaration declaration_list
 	| struct declaration_list
+	| type declaration_list
 	| EOL declaration_list
 	| END	
+
+type: FLOAT
+	| FLOAT2	
+	| FLOAT3	
+	| FLOAT4
+	| UCHAR
+	| UCHAR2
+	| UCHAR3
+	| UCHAR4
 		
 declaration: USING_NAMESPACE IDENTIFIER SEMICOLON
-
-
 		
 %%
 		

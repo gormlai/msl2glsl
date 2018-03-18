@@ -31,7 +31,19 @@ void Metal::Driver::convert(const std::string & filename)
   
   _scanner = std::shared_ptr<Scanner>(new Scanner(&stream));
   _parser = std::shared_ptr<Parser>(new Parser(*_scanner.get(), *this));
-  const int parseResult = _parser->parse();
+
+  int parseResult = -1;
+  try {
+    std::cout << "t0" << std::endl;
+    parseResult = _parser->parse();
+    std::cout << "t1" << std::endl;
+  }
+  catch(const std::exception & e) {
+    std::cerr << "Exception: " << e.what() << std::endl;
+  }
+  catch(...) {
+    std::cerr << "Unknown exception thrown while parsing file" << std::endl;
+  }
   
   // make sure the parser is not holding any references to the scanner anymore
   _parser = std::shared_ptr<Parser>();
@@ -39,6 +51,6 @@ void Metal::Driver::convert(const std::string & filename)
   // remove the scanner so it is not pointing to the stream anymore, if it is
   _scanner = std::shared_ptr<Scanner>();
 
-  std::cout <<  std::endl << " ParseResult = " + parseResult << std::endl;
+  std::cout << "ParseResult = " << parseResult << std::endl;
   
 }
