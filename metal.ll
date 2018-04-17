@@ -54,7 +54,7 @@ using token = Metal::Parser::token;
 
 "[[" { return token::BEGIN_DOUBLE_SQUARE_BRACKET; }
 "]]" { return token::END_DOUBLE_SQUARE_BRACKET; }
-{LETTER}{LETTER_OR_DIGIT}*                 { /*_yyval->string =  new std::string(yytext,yyleng)  ;*/ return token::IDENTIFIER; }
+{LETTER}{LETTER_OR_DIGIT}*                 { _yyval->string =  new std::string(yytext,yyleng)  ; return token::IDENTIFIER; }
 {WHITESPACE}                              { /* skip */ }
 
 . { std::cerr << "Error line:" << yylineno << "\t" << yytext << std::endl; }

@@ -50,6 +50,7 @@ Program * _root = nullptr;
     Program *program;
     DeclarationList *declarationList;
     Declaration *declaration;
+    std::string * string;
 }
 			  
 %token		      END               0 "end of file"
