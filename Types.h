@@ -1,6 +1,8 @@
 #ifndef _TYPES_H_
 #define _TYPES_H_
 
+#include <vector>
+
 template<typename T, int SIZE> struct Array
 {
 public:
@@ -14,5 +16,34 @@ typedef Array<unsigned char,2> uchar2;
 typedef Array<unsigned char,3> uchar3;
 typedef Array<unsigned char,4> uchar4;
 
+struct Node
+{
+};
+
+struct Declaration : public Node
+{
+};
+
+struct DeclarationList : public Node
+{
+  std::vector<Node *> _nodes;
+};
+
+struct Struct : Node
+{
+};
+
+struct Program
+{
+  Program(DeclarationList * list)
+    :_decls(list)
+  {
+    
+  }
+
+  DeclarationList * _decls;
+};
 
 #endif
+
+

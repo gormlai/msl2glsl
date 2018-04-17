@@ -22,6 +22,7 @@ class Scanner;
 			
 }
 
+
 %parse-param { Scanner &scanner }
 %parse-param { Driver &driver}
 
@@ -35,10 +36,21 @@ class Scanner;
 #undef yylex
 #define yylex scanner.yylex
 
+Program * _root = nullptr;
+
 }
 
-%define api.value.type variant
+//			%define api.value.type variant
 %define parse.assert
+
+%start translation_unit
+			
+%union
+{
+    Program *program;
+    DeclarationList *declarationList;
+    Declaration *declaration;
+}
 			  
 %token		      END               0 "end of file"
 %token		      EOL                 "end of line"
@@ -67,10 +79,14 @@ class Scanner;
 %token                BEGIN_DOUBLE_SQUARE_BRACKET
 %token                END_DOUBLE_SQUARE_BRACKET
 
+%type	<program>	translation_unit
+%type	<declarationList> declaration_list
+%type	<declaration>	 declaration
 %locations
 
 %%
-translation_unit: declaration_list
+translation_unit: declaration_list { _root = new Program($1);  }
+		;
 
 struct: STRUCT IDENTIFIER BEGIN_CURLY_BRACKET struct_content END_CURLY_BRACKET SEMICOLON
 
@@ -78,11 +94,12 @@ struct_content: /* empty */
 	| EOL struct_content
 	| declaration_variable struct_content	
 				
-declaration_list: declaration declaration_list
+declaration_list: declaration declaration_list { $$ = new DeclarationList(); $$->_nodes.push_back($1);}
 	| struct declaration_list
 	| type declaration_list
 	| EOL declaration_list
-	| END	
+	| END
+		;
 
 declaration_variable: type IDENTIFIER SEMICOLON
 		

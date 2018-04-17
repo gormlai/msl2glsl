@@ -34,9 +34,8 @@ void Metal::Driver::convert(const std::string & filename)
 
   int parseResult = -1;
   try {
-    std::cout << "t0" << std::endl;
+    
     parseResult = _parser->parse();
-    std::cout << "t1" << std::endl;
   }
   catch(const std::exception & e) {
     std::cerr << "Exception: " << e.what() << std::endl;
