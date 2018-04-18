@@ -2,6 +2,7 @@
 #define _TYPES_H_
 
 #include <vector>
+#include <string>
 
 template<typename T, int SIZE> struct Array
 {
@@ -27,6 +28,16 @@ struct Declaration : public Node
 struct DeclarationList : public Node
 {
   std::vector<Node *> _nodes;
+};
+
+struct UsingDeclaration : public Declaration
+{
+  UsingDeclaration(const std::string & nmspace)
+    :_nmspace(nmspace)
+  {
+  }
+
+  std::string _nmspace;
 };
 
 struct Struct : Node

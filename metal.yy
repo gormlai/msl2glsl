@@ -71,7 +71,7 @@ Program * _root = nullptr;
 %token 		      SKIP
 %token 		      STRUCT
 %token		      SEMICOLON
-%token <std::string>  IDENTIFIER
+%token	<string>      IDENTIFIER
 %token                USING_NAMESPACE
 %token                BEGIN_CURLY_BRACKET
 %token                END_CURLY_BRACKET
@@ -113,7 +113,9 @@ type: TYPE_FLOAT
 	| TYPE_UCHAR3
 	| TYPE_UCHAR4
 		
-declaration: USING_NAMESPACE IDENTIFIER SEMICOLON
+declaration: USING_NAMESPACE IDENTIFIER SEMICOLON { $$ = new UsingDeclaration(*$2); }
+		;
+
 		
 %%
 		
