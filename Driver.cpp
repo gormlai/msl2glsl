@@ -43,6 +43,7 @@ void Metal::Driver::convert(const std::string & filename)
       printf("\n---------BEGIN PRETTY PRINTING FILE----------\n");
       PrettyPrinter printer;      
       const std::string result = printer.print(_root);
+      printf("%s\n",result.c_str());
       printf("\n---------END PRETTY PRINTING FILE----------\n");
       
     }

@@ -33,4 +33,6 @@ void Struct::visit(Visitor * v)
 void Program::visit(Visitor * v)
 {
   v->operateOn(this);
+  if(_decls!=nullptr)
+    _decls->visit(v);
 }
