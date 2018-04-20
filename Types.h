@@ -55,6 +55,8 @@ struct Program
   DeclarationList * _decls;
 };
 
+extern Program * _root;
+
 #endif
 
 

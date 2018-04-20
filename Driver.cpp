@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include "PreProcessor.h"
+#include "ast2gl.h"
 
 
 Metal::Driver::Driver()
@@ -36,6 +37,12 @@ void Metal::Driver::convert(const std::string & filename)
   try {
     
     parseResult = _parser->parse();
+    if(parseResult == 0 )
+    {
+      Ast2Gl converter;
+      const std::string result = converter.convert(_root);
+    }
+    
   }
   catch(const std::exception & e) {
     std::cerr << "Exception: " << e.what() << std::endl;

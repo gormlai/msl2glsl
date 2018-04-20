@@ -36,7 +36,7 @@ class Scanner;
 #undef yylex
 #define yylex scanner.yylex
 
-Program * _root = nullptr;
+    //Program * _root = nullptr;
 
 }
 
