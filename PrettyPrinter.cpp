@@ -11,6 +11,7 @@ const std::string PrettyPrinter::print(struct Program * program)
 {
   
   _result = std::string("");
+  _indent = 0;
   
   if(program == nullptr) {
     printf("PrettyPrinter - program is nullptr\n");
