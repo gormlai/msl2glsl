@@ -3,6 +3,7 @@
 #include <sstream>
 #include "PreProcessor.h"
 #include "ast2gl.h"
+#include "PrettyPrinter.h"
 
 
 Metal::Driver::Driver()
@@ -39,9 +40,10 @@ void Metal::Driver::convert(const std::string & filename)
     parseResult = _parser->parse();
     if(parseResult == 0 )
     {
-      Ast2Gl converter;
-      printf("\n---------END PREPROCESSEDFILE----------\n%s\n",processedFileContents.c_str());
-      const std::string result = converter.convert(_root);
+      printf("\n---------BEGIN PRETTY PRINTING FILE----------\n");
+      PrettyPrinter printer;      
+      const std::string result = printer.print(_root);
+      printf("\n---------END PRETTY PRINTING FILE----------\n");
       
     }
     

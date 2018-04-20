@@ -1,6 +1,20 @@
 #include "PrettyPrinter.h"
 #include "Types.h"
 
+const std::string PrettyPrinter::print(struct Program * program)
+{
+  _result = std::string("");
+  
+  if(program == nullptr) {
+    printf("PrettyPrinter - program is nullptr\n");
+    return _result;
+  }
+
+  program->visit(this);
+  
+  return _result;
+}
+
 void PrettyPrinter::operateOn(struct Program * program)
 {
 }

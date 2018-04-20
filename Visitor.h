@@ -4,6 +4,8 @@
 class Visitor
 {
  public:
+  virtual ~Visitor() {}
+  
   virtual void operateOn(struct Program * program) {}
   virtual void operateOn(struct Struct * strct) {}
   virtual void operateOn(struct UsingDeclaration * usingDecl) {}
