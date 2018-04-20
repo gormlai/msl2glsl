@@ -40,7 +40,9 @@ void Metal::Driver::convert(const std::string & filename)
     if(parseResult == 0 )
     {
       Ast2Gl converter;
+      printf("\n---------END PREPROCESSEDFILE----------\n%s\n",processedFileContents.c_str());
       const std::string result = converter.convert(_root);
+      
     }
     
   }
