@@ -58,8 +58,15 @@ struct UsingDeclaration : public Declaration
 struct Struct : Node
 {
  public:
+  Struct(const std::string & name)
+    :_name(name)
+  {
+  }
+  
   virtual ~Struct() {}
   void visit(Visitor * v) override;
+
+  std::string _name;
 };
 
 struct Program

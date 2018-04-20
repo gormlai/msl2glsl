@@ -51,6 +51,7 @@ class Scanner;
     DeclarationList *declarationList;
     Declaration *declaration;
     std::string * string;
+    Struct * strct;
 }
 			  
 %token		      END               0 "end of file"
@@ -81,15 +82,16 @@ class Scanner;
 %token                END_DOUBLE_SQUARE_BRACKET
 
 %type	<program>	translation_unit
-%type	<declarationList> declaration_list
+%type	<declarationList>declaration_list
 %type	<declaration>	 declaration
+%type	<strct>		struct
 %locations
 
 %%
 translation_unit: declaration_list { _root = new Program($1);  }
 		;
 
-struct: STRUCT IDENTIFIER BEGIN_CURLY_BRACKET struct_content END_CURLY_BRACKET SEMICOLON
+struct: STRUCT IDENTIFIER BEGIN_CURLY_BRACKET struct_content END_CURLY_BRACKET SEMICOLON { $$ = new Struct(*$2); }
 
 struct_content: /* empty */
 	| EOL struct_content
@@ -97,7 +99,7 @@ struct_content: /* empty */
 		;
 				
 declaration_list: declaration declaration_list { $$ = new DeclarationList(); $$->_nodes.push_back($1);}
-	| struct declaration_list
+	| struct declaration_list { $$ = new DeclarationList(); $$->_nodes.push_back($1); }
 	| type declaration_list
 	| EOL declaration_list
 	| END

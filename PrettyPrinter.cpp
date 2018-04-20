@@ -1,6 +1,12 @@
 #include "PrettyPrinter.h"
 #include "Types.h"
 
+void PrettyPrinter::indent()
+{
+  for(int i =0 ; i < _indent ; i++)
+    printf("\t");
+}
+
 const std::string PrettyPrinter::print(struct Program * program)
 {
   
@@ -16,31 +22,66 @@ const std::string PrettyPrinter::print(struct Program * program)
   return _result;
 }
 
-void PrettyPrinter::operateOn(struct Program * program)
+void PrettyPrinter::preOperateOn(struct Program * program)
 {
+  indent();
 }
 
-void PrettyPrinter::operateOn(struct Struct * strct)
+void PrettyPrinter::preOperateOn(struct Struct * strct)
 {
+  indent();
   printf("PrettyPrinter::operateOnStruct\n");
 }
 
-void PrettyPrinter::operateOn(struct UsingDeclaration * usingDecl)
+void PrettyPrinter::preOperateOn(struct UsingDeclaration * usingDecl)
 {
+  indent();
   _result = _result + "using namespace " + usingDecl->_nmspace + ";\n";
 }
 
-void PrettyPrinter::operateOn(struct DeclarationList * declList)
+void PrettyPrinter::preOperateOn(struct DeclarationList * declList)
 {
+  indent();
 }
 
-void PrettyPrinter::operateOn(struct Declaration * decl)
+void PrettyPrinter::preOperateOn(struct Declaration * decl)
 {
+  indent();
   printf("PrettyPrinter::operateOnDeclaration\n");
 }
 
-void PrettyPrinter::operateOn(struct Node * node)
+void PrettyPrinter::preOperateOn(struct Node * node)
 {
+  indent();
   printf("PrettyPrinter::operateOnNode\n");
 }
 
+void PrettyPrinter::postOperateOn(struct Program * program)
+{
+  indent();
+}
+
+void PrettyPrinter::postOperateOn(struct Struct * strct)
+{
+  indent();
+}
+
+void PrettyPrinter::postOperateOn(struct UsingDeclaration * usingDecl)
+{
+  indent();
+}
+
+void PrettyPrinter::postOperateOn(struct DeclarationList * declList)
+{
+  indent();
+}
+
+void PrettyPrinter::postOperateOn(struct Declaration * decl)
+{
+  indent();
+}
+
+void PrettyPrinter::postOperateOn(struct Node * node)
+{
+  indent();
+}
