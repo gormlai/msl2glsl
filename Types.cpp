@@ -33,6 +33,7 @@ void UsingDeclaration::visit(Visitor * v)
 
 void Struct::visit(Visitor * v)
 {
+  printf("Struct::visit\n");
   v->preOperateOn(this);
   v->postOperateOn(this);
 }

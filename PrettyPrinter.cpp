@@ -31,7 +31,13 @@ void PrettyPrinter::preOperateOn(struct Program * program)
 void PrettyPrinter::preOperateOn(struct Struct * strct)
 {
   indent();
-  printf("PrettyPrinter::operateOnStruct\n");
+  _result = _result + "struct" + strct->_name + "\n";
+  
+  indent();
+  _result = _result + "{\n";
+
+  _indent++;
+  
 }
 
 void PrettyPrinter::preOperateOn(struct UsingDeclaration * usingDecl)
@@ -65,6 +71,9 @@ void PrettyPrinter::postOperateOn(struct Program * program)
 void PrettyPrinter::postOperateOn(struct Struct * strct)
 {
   indent();
+  _result = _result + "};\n";
+  
+  _indent--;
 }
 
 void PrettyPrinter::postOperateOn(struct UsingDeclaration * usingDecl)

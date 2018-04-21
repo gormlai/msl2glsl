@@ -92,21 +92,23 @@ translation_unit: declaration_list { _root = new Program($1);  }
 		;
 
 struct: STRUCT IDENTIFIER BEGIN_CURLY_BRACKET struct_content END_CURLY_BRACKET SEMICOLON { $$ = new Struct(*$2); }
+		;
 
 struct_content: /* empty */
 	| EOL struct_content
 	| declaration_variable struct_content
 		;
 				
-declaration_list: declaration declaration_list { $$ = new DeclarationList(); $$->_nodes.push_back($1);}
-	| struct declaration_list { $$ = new DeclarationList(); $$->_nodes.push_back($1); }
+declaration_list: struct declaration_list { $$ = new DeclarationList(); $$->_nodes.push_back($1); }
+	| declaration declaration_list { $$ = new DeclarationList(); $$->_nodes.push_back($1);}
 	| type declaration_list
 	| EOL declaration_list
 	| END
 		;
 
 declaration_variable: type IDENTIFIER SEMICOLON
-		
+		;
+
 type: TYPE_FLOAT
 	| TYPE_FLOAT2	
 	| TYPE_FLOAT3	
