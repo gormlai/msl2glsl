@@ -6,7 +6,7 @@
 class Ast2Gl
 {
  public:
-  const std::string convert(Program * program);
+  const std::string convert(Block * block);
 
  private:
 };

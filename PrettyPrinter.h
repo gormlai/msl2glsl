@@ -9,19 +9,17 @@ class PrettyPrinter : public Visitor
  public:
   virtual ~PrettyPrinter() {}
   
-  const std::string  print(struct Program * program);
+  const std::string  print(struct Block * block);
 
-  void preOperateOn(struct Program * program) override;
   void preOperateOn(struct Struct * strct) override;
   void preOperateOn(struct UsingDeclaration * usingDecl) override;
-  void preOperateOn(struct DeclarationList * declList) override;
+  void preOperateOn(struct Block * block) override;
   void preOperateOn(struct Declaration * decl) override;
   void preOperateOn(struct Node * node) override;  
   
-  void postOperateOn(struct Program * program) override;
   void postOperateOn(struct Struct * strct) override;
   void postOperateOn(struct UsingDeclaration * usingDecl) override;
-  void postOperateOn(struct DeclarationList * declList) override;
+  void postOperateOn(struct Block * block) override;
   void postOperateOn(struct Declaration * decl) override;
   void postOperateOn(struct Node * node) override;
 

@@ -7,33 +7,29 @@ void PrettyPrinter::indent()
     printf("\t");
 }
 
-const std::string PrettyPrinter::print(struct Program * program)
+const std::string PrettyPrinter::print(struct Block * block)
 {
   
   _result = std::string("");
   _indent = 0;
   
-  if(program == nullptr) {
+  if(block == nullptr) {
     printf("PrettyPrinter - program is nullptr\n");
     return _result;
   }
 
-  program->visit(this);
+  block->visit(this);
   
   return _result;
 }
 
-void PrettyPrinter::preOperateOn(struct Program * program)
-{
-  indent();
-}
 
 void PrettyPrinter::preOperateOn(struct Struct * strct)
 {
-  indent();
-  _result = _result + "struct" + strct->_name + "\n";
+  //indent();
+  _result = _result + "struct " + strct->_name + "\n";
   
-  indent();
+  //indent();
   _result = _result + "{\n";
 
   _indent++;
@@ -46,31 +42,21 @@ void PrettyPrinter::preOperateOn(struct UsingDeclaration * usingDecl)
   _result = _result + "using namespace " + usingDecl->_nmspace + ";\n";
 }
 
-void PrettyPrinter::preOperateOn(struct DeclarationList * declList)
+void PrettyPrinter::preOperateOn(struct Block * block)
 {
-  indent();
 }
 
 void PrettyPrinter::preOperateOn(struct Declaration * decl)
 {
-  indent();
-  printf("PrettyPrinter::operateOnDeclaration\n");
 }
 
 void PrettyPrinter::preOperateOn(struct Node * node)
 {
-  indent();
-  printf("PrettyPrinter::operateOnNode\n");
-}
-
-void PrettyPrinter::postOperateOn(struct Program * program)
-{
-  indent();
 }
 
 void PrettyPrinter::postOperateOn(struct Struct * strct)
 {
-  indent();
+  //indent();
   _result = _result + "};\n";
   
   _indent--;
@@ -78,20 +64,16 @@ void PrettyPrinter::postOperateOn(struct Struct * strct)
 
 void PrettyPrinter::postOperateOn(struct UsingDeclaration * usingDecl)
 {
-  indent();
 }
 
-void PrettyPrinter::postOperateOn(struct DeclarationList * declList)
+void PrettyPrinter::postOperateOn(struct Block * block)
 {
-  indent();
 }
 
 void PrettyPrinter::postOperateOn(struct Declaration * decl)
 {
-  indent();
 }
 
 void PrettyPrinter::postOperateOn(struct Node * node)
 {
-  indent();
 }

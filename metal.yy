@@ -47,15 +47,12 @@ class Scanner;
 			
 %union
 {
-    Program *program;
-    DeclarationList *declarationList;
+    Block * block;
     Declaration *declaration;
     std::string * string;
     Struct * strct;
 }
 			  
-%token		      END               0 "end of file"
-%token		      EOL                 "end of line"
 %token		      TYPE_BOOL		      
 %token		      TYPE_FLOAT
 %token		      TYPE_FLOAT2
@@ -81,29 +78,25 @@ class Scanner;
 %token                BEGIN_DOUBLE_SQUARE_BRACKET
 %token                END_DOUBLE_SQUARE_BRACKET
 
-%type	<program>	translation_unit
-%type	<declarationList>declaration_list
+%type	<block> declaration_list translation_unit
 %type	<declaration>	 declaration
 %type	<strct>		struct
+%type	<string>	identifier
 %locations
 
 %%
-translation_unit: declaration_list { _root = new Program($1);  }
+translation_unit: declaration_list { printf("0\n"); _root = $1;  }
 		;
 
-struct: STRUCT IDENTIFIER BEGIN_CURLY_BRACKET struct_content END_CURLY_BRACKET SEMICOLON { $$ = new Struct(*$2); }
+struct: STRUCT identifier BEGIN_CURLY_BRACKET struct_content END_CURLY_BRACKET SEMICOLON { $$ = new Struct(*$2); }
 		;
 
-struct_content: /* empty */
-	| EOL struct_content
+struct_content: declaration_variable
 	| declaration_variable struct_content
 		;
 				
-declaration_list: struct declaration_list { $$ = new DeclarationList(); $$->_nodes.push_back($1); }
-	| declaration declaration_list { $$ = new DeclarationList(); $$->_nodes.push_back($1);}
-	| type declaration_list
-	| EOL declaration_list
-	| END
+declaration_list:  declaration_list declaration { $$->_nodes.push_back($2);}
+		       |	declaration { $$ = new Block() ;  $$->_nodes.push_back($1); }
 		;
 
 declaration_variable: type IDENTIFIER SEMICOLON
@@ -119,9 +112,11 @@ type: TYPE_FLOAT
 	| TYPE_UCHAR4
 		;
 
-declaration: USING_NAMESPACE IDENTIFIER SEMICOLON { $$ = new UsingDeclaration(*$2); }
+declaration: USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$2); }
+		 |	 struct { $$ = $1; }
 		;
 
+identifier: IDENTIFIER { $$ = new std::string(*$1); delete $1; }
 		
 %%
 		

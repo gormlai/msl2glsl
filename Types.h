@@ -22,6 +22,11 @@ class Visitor;
 struct Node
 {
 public:
+  Node()
+  {
+    printf("Node::Node()\n");
+  }
+  
   virtual ~Node() {}
   virtual void visit(Visitor * v);
 };
@@ -33,10 +38,10 @@ struct Declaration : public Node
   void visit(Visitor * v) override;
 };
 
-struct DeclarationList : public Node
+struct Block : public Node
 {
  public:
-  virtual ~DeclarationList() {}
+  virtual ~Block() {}
   void visit(Visitor * v) override;
   std::vector<Node *> _nodes;
 };
@@ -47,6 +52,7 @@ struct UsingDeclaration : public Declaration
   UsingDeclaration(const std::string & nmspace)
     :_nmspace(nmspace)
   {
+    printf("UsingDeclaration::UsingDeclaration()\n");
   }
   
   virtual ~UsingDeclaration() {}
@@ -55,12 +61,13 @@ struct UsingDeclaration : public Declaration
   std::string _nmspace;
 };
 
-struct Struct : Node
+struct Struct : Declaration
 {
  public:
   Struct(const std::string & name)
     :_name(name)
   {
+    printf("Struct::Struct()\n");
   }
   
   virtual ~Struct() {}
@@ -69,22 +76,8 @@ struct Struct : Node
   std::string _name;
 };
 
-struct Program
-{
-public:
-  Program(DeclarationList * list)
-    :_decls(list)
-  {
-    
-  }
 
-  virtual ~Program() {}
-  void visit(Visitor * v);
-  
-  DeclarationList * _decls;
-};
-
-extern Program * _root;
+extern Block * _root;
 
 #endif
 

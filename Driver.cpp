@@ -36,10 +36,12 @@ void Metal::Driver::convert(const std::string & filename)
 
   int parseResult = -1;
   try {
-    
+
+
     parseResult = _parser->parse();
     if(parseResult == 0 )
     {
+      
       printf("\n---------BEGIN PRETTY PRINTING FILE----------\n");
       PrettyPrinter printer;      
       const std::string result = printer.print(_root);
@@ -48,6 +50,9 @@ void Metal::Driver::convert(const std::string & filename)
       
     }
     
+  }
+  catch(const std::bad_alloc & e) {
+    std::cerr << "Bad Alloc: " << e.what() << std::endl;
   }
   catch(const std::exception & e) {
     std::cerr << "Exception: " << e.what() << std::endl;

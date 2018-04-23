@@ -1,10 +1,10 @@
 #include "ast2gl.h"
 
-const std::string Ast2Gl::convert(Program * program)
+const std::string Ast2Gl::convert(Block * block)
 {
   std::string cValue;
   
-  if(program == nullptr) {
+  if(block == nullptr) {
     printf("Ast2Gl::convert -> program pointer is null");
     return cValue;
   }
