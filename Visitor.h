@@ -6,18 +6,22 @@ class Visitor
  public:
   virtual ~Visitor() {}
   
-  virtual void preOperateOn(struct Struct * strct) {}
-  virtual void preOperateOn(struct UsingDeclaration * usingDecl) {}
-  virtual void preOperateOn(struct Block * block) {}
-  virtual void preOperateOn(struct Declaration * decl) {}
-  virtual void preOperateOn(struct Node * node) {}
-  
-  virtual void postOperateOn(struct Struct * strct) {}
-  virtual void postOperateOn(struct UsingDeclaration * usingDecl) {}
-  virtual void postOperateOn(struct Block * block) {}
-  virtual void postOperateOn(struct Declaration * decl) {}
-  virtual void postOperateOn(struct Node * node) {}
-  
+  virtual void operateOn(struct Struct * strct) {}
+  virtual void operateOn(struct UsingDeclaration * usingDecl) {}
+  virtual void operateOn(struct Block * block) {}
+  virtual void operateOn(struct Program * program) {}
+  virtual void operateOn(struct Declaration * decl) {}
+  virtual void operateOn(struct Node * node) {}
+  virtual void operateOn(struct UChar * node) {}  
+  virtual void operateOn(struct UChar2 * node) {}  
+  virtual void operateOn(struct UChar3 * node) {}  
+  virtual void operateOn(struct UChar4 * node) {}  
+  virtual void operateOn(struct Float * node) {}  
+  virtual void operateOn(struct Float2 * node) {}
+  virtual void operateOn(struct Float3 * node) {}  
+  virtual void operateOn(struct Float4 * node) {}
+  virtual void operateOn(struct VariableDeclaration * node) {}
+    
 };
 
 

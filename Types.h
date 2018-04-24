@@ -4,19 +4,6 @@
 #include <vector>
 #include <string>
 
-template<typename T, int SIZE> struct Array
-{
-public:
-  T data[SIZE];
-};
-
-typedef Array<float,2> float2;
-typedef Array<float,3> float3;
-typedef Array<float,4> float4;
-typedef Array<unsigned char,2> uchar2;
-typedef Array<unsigned char,3> uchar3;
-typedef Array<unsigned char,4> uchar4;
-
 class Visitor;
 
 struct Node
@@ -24,7 +11,7 @@ struct Node
 public:
   Node()
   {
-    printf("Node::Node()\n");
+    //    printf("Node::Node()\n");
   }
   
   virtual ~Node() {}
@@ -46,13 +33,23 @@ struct Block : public Node
   std::vector<Node *> _nodes;
 };
 
+struct Program : public Block
+{
+ public:
+  Program(Block * src = nullptr) {
+    if(src!=nullptr)
+      _nodes = src->_nodes;
+  }
+  
+  void visit(Visitor * v) override;
+};
+
 struct UsingDeclaration : public Declaration
 {
  public:
   UsingDeclaration(const std::string & nmspace)
     :_nmspace(nmspace)
   {
-    printf("UsingDeclaration::UsingDeclaration()\n");
   }
   
   virtual ~UsingDeclaration() {}
@@ -61,23 +58,81 @@ struct UsingDeclaration : public Declaration
   std::string _nmspace;
 };
 
-struct Struct : Declaration
+struct Struct : public Declaration
 {
  public:
   Struct(const std::string & name)
     :_name(name)
   {
-    printf("Struct::Struct()\n");
   }
   
   virtual ~Struct() {}
   void visit(Visitor * v) override;
 
   std::string _name;
+  Block _block;
 };
 
+struct Type : public Node
+{
+};
 
-extern Block * _root;
+struct UChar : public Type
+{
+  void visit(Visitor * v) override;
+};
+
+struct UChar2 : public Type
+{
+  void visit(Visitor * v) override;
+};
+
+struct UChar3 : public Type
+{
+  void visit(Visitor * v) override;
+};
+
+struct UChar4 : public Type
+{
+  void visit(Visitor * v) override;
+};
+
+struct Float : public Type
+{
+  void visit(Visitor * v) override;
+};
+
+struct Float2 : public Type
+{
+  void visit(Visitor * v) override;
+};
+
+struct Float3 : public Type
+{
+  void visit(Visitor * v) override;
+};
+
+struct Float4 : public Type
+{
+  void visit(Visitor * v) override;
+};
+
+struct VariableDeclaration : public Declaration
+{
+ public:
+ VariableDeclaration(Type * type = nullptr, const std::string & variableName = std::string(""))
+    :_type(type)
+      ,_variableName(variableName)
+  {
+  }
+  
+  void visit(Visitor * v) override;
+
+  Type * _type;
+  std::string _variableName;
+};
+
+extern Program * _root;
 
 #endif
 

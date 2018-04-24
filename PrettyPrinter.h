@@ -11,18 +11,22 @@ class PrettyPrinter : public Visitor
   
   const std::string  print(struct Block * block);
 
-  void preOperateOn(struct Struct * strct) override;
-  void preOperateOn(struct UsingDeclaration * usingDecl) override;
-  void preOperateOn(struct Block * block) override;
-  void preOperateOn(struct Declaration * decl) override;
-  void preOperateOn(struct Node * node) override;  
+  void operateOn(struct Struct * strct) override;
+  void operateOn(struct UsingDeclaration * usingDecl) override;
+  void operateOn(struct Block * block) override;
+  void operateOn(struct Program * program) override;
+  void operateOn(struct Declaration * decl) override;
+  void operateOn(struct Node * node) override;  
+  void operateOn(struct UChar * node) override;
+  void operateOn(struct UChar2 * node) override;
+  void operateOn(struct UChar3 * node) override;
+  void operateOn(struct UChar4 * node) override;
+  void operateOn(struct Float * node) override;
+  void operateOn(struct Float2 * node) override;
+  void operateOn(struct Float3 * node) override;
+  void operateOn(struct Float4 * node) override;
+  void operateOn(struct VariableDeclaration * node) override;
   
-  void postOperateOn(struct Struct * strct) override;
-  void postOperateOn(struct UsingDeclaration * usingDecl) override;
-  void postOperateOn(struct Block * block) override;
-  void postOperateOn(struct Declaration * decl) override;
-  void postOperateOn(struct Node * node) override;
-
  private:
   void indent();
   
