@@ -33,14 +33,14 @@ using token = Metal::Parser::token;
 %}
 
 
-"struct"                                   { printf("0\n"); return token::STRUCT;}
-"{"                                        { printf("1\n");return token::BEGIN_CURLY_BRACKET; }
-"}"                                        { printf("2\n");return token::END_CURLY_BRACKET; }
+"struct"                                   { return token::STRUCT;}
+"{"                                        { return token::BEGIN_CURLY_BRACKET; }
+"}"                                        { return token::END_CURLY_BRACKET; }
 
-"using namespace"     { printf("3\n");return token::USING_NAMESPACE; }
-";"                                        { printf("4\n");return token::SEMICOLON; }
-"float" { printf("0\n");return token::TYPE_FLOAT; }
-"float2" { printf("0\n");return token::TYPE_FLOAT2; }
+"using namespace"     { return token::USING_NAMESPACE; }
+";"                                        { return token::SEMICOLON; }
+"float" { return token::TYPE_FLOAT; }
+"float2" { return token::TYPE_FLOAT2; }
 "float3" { return token::TYPE_FLOAT3; }
 "float4" { return token::TYPE_FLOAT4; }
 
@@ -54,8 +54,8 @@ using token = Metal::Parser::token;
 
 "[[" { return token::BEGIN_DOUBLE_SQUARE_BRACKET; }
 "]]" { return token::END_DOUBLE_SQUARE_BRACKET; }
-{LETTER}{LETTER_OR_DIGIT}*                 {printf("5\n"); _yyval->string = new std::string(yytext,yyleng) ; return token::IDENTIFIER; }
-{WHITESPACE}                              {printf("6\n"); /* skip */ }
+{LETTER}{LETTER_OR_DIGIT}*                 { _yyval->string = new std::string(yytext,yyleng) ; return token::IDENTIFIER; }
+{WHITESPACE}                              { /* skip */ }
 
 <<EOF>> {printf("7\n"); yyterminate(); return 0; }
 

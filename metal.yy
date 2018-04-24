@@ -92,15 +92,14 @@ struct: STRUCT identifier BEGIN_CURLY_BRACKET struct_content END_CURLY_BRACKET S
 		;
 
 struct_content: declaration_variable
-	| declaration_variable struct_content
+	| struct_content declaration_variable 
 		;
 				
 declaration_list:  declaration_list declaration { $$->_nodes.push_back($2);}
 		       |	declaration { $$ = new Block() ;  $$->_nodes.push_back($1); }
 		;
 
-declaration_variable: type IDENTIFIER SEMICOLON
-		;
+declaration_variable: type identifier SEMICOLON { }
 
 type: TYPE_FLOAT
 	| TYPE_FLOAT2	
