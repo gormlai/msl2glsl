@@ -73,6 +73,11 @@ void Float4::visit(Visitor * v)
   v->operateOn(this);
 }
 
+void VariableAttribute::visit(Visitor * v)
+{
+  v->operateOn(this);
+}
+
 void VariableDeclaration::visit(Visitor * v)
 {
   v->operateOn(this);

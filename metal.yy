@@ -55,6 +55,8 @@ class Scanner;
     Program * program;
     VariableDeclaration * variableDeclaration;
     Type * type;
+    VariableAttribute * variableAttribute;
+    int intValue;
 }
 			  
 %token	<type>	      TYPE_BOOL		      
@@ -74,6 +76,8 @@ class Scanner;
 %token 		      STRUCT
 %token		      SEMICOLON
 %token	<string>      IDENTIFIER
+%token	<intValue>    INT_VALUE
+%token	<string>      VARIABLE_ATTRIBUTE_INDEX
 %token                USING_NAMESPACE
 %token                BEGIN_CURLY_BRACKET
 %token                END_CURLY_BRACKET
@@ -89,6 +93,7 @@ class Scanner;
 %type	<strct>		struct
 %type	<string>	identifier
 %type	<type>		type
+%type	<variableAttribute> variable_attribute
 %locations
 
 %%
@@ -102,7 +107,13 @@ declaration_list:  declaration_list declaration { $$->_nodes.push_back($2);}
 		       |	declaration { $$ = new Block() ;  $$->_nodes.push_back($1); }
 		;
 
+variable_attribute: BEGIN_DOUBLE_SQUARE_BRACKET identifier BEGIN_BRACKET INT_VALUE END_BRACKET END_DOUBLE_SQUARE_BRACKET { $$ = new VariableAttribute(*$2,$4); }
+	|	BEGIN_DOUBLE_SQUARE_BRACKET identifier END_DOUBLE_SQUARE_BRACKET { $$ = new VariableAttribute(*$2); }	
+	;
+
 variable_declaration: type identifier SEMICOLON { $$ = new VariableDeclaration($1, *$2); }
+	| 	type identifier variable_attribute SEMICOLON { $$ = new VariableDeclaration($1, *$2, $3); }
+		;
 
 type: TYPE_FLOAT { $$ = new Float(); }
 	| TYPE_FLOAT2 { $$ = new Float2(); }

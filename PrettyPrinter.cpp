@@ -113,10 +113,30 @@ void PrettyPrinter::operateOn(struct Float4 * node)
   _result = _result + "float4";
 }
 
+void PrettyPrinter::operateOn(struct VariableAttribute * attribute)
+{
+  _result = _result + " [[";
+  
+  if(attribute->_sAttribute == std::string("attribute"))
+    _result = _result + "attribute(" + std::to_string(attribute->_iAttribute) + ")";
+  else if(attribute->_sAttribute == std::string("position"))
+    _result = _result + "position";
+
+
+  _result = _result + "]]";
+  
+}
+
+
 void PrettyPrinter::operateOn(struct VariableDeclaration * node)
 {
   indent();
   node->_type->visit(this);
-  _result = _result + " " + node->_variableName + ";\n";
+  _result = _result + " " + node->_variableName;
+
+  if(node->_attribute != nullptr)
+    node->_attribute->visit(this);
+
+  _result = _result + ";\n";
   
 }

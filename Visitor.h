@@ -12,6 +12,7 @@ class Visitor
   virtual void operateOn(struct Program * program) {}
   virtual void operateOn(struct Declaration * decl) {}
   virtual void operateOn(struct Node * node) {}
+  virtual void operateOn(struct VariableAttribute * node) {}
   virtual void operateOn(struct UChar * node) {}  
   virtual void operateOn(struct UChar2 * node) {}  
   virtual void operateOn(struct UChar3 * node) {}  

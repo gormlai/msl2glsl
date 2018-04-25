@@ -54,7 +54,8 @@ int lines = 0;
 
 "[[" { return token::BEGIN_DOUBLE_SQUARE_BRACKET; }
 "]]" { return token::END_DOUBLE_SQUARE_BRACKET; }
-{LETTER}{LETTER_OR_DIGIT}*                 { _yyval->string = new std::string(yytext,yyleng) ; return token::IDENTIFIER; }
+{DIGIT}+                                  { std::string t(yytext,yyleng); _yyval->intValue = atoi(t.c_str()); return token::INT_VALUE; }
+{LETTER}{LETTER_OR_DIGIT}*                { _yyval->string = new std::string(yytext,yyleng) ; return token::IDENTIFIER; }
 {WHITESPACE}                              { /* skip */ }
 {NEWLINE}                                 { lines++; }
 

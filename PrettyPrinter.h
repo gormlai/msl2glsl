@@ -25,7 +25,8 @@ class PrettyPrinter : public Visitor
   void operateOn(struct Float2 * node) override;
   void operateOn(struct Float3 * node) override;
   void operateOn(struct Float4 * node) override;
-  void operateOn(struct VariableDeclaration * node) override;
+  void operateOn(struct VariableAttribute * node) override;
+  void operateOn(struct VariableDeclaration * node) override;  
   
  private:
   void indent();

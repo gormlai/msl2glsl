@@ -18,6 +18,22 @@ public:
   virtual void visit(Visitor * v);
 };
 
+struct VariableAttribute : public Node
+{
+ public:
+  VariableAttribute(const std::string & sAttribute, int iAttribute = -1 )
+    :_sAttribute(sAttribute)
+    ,_iAttribute(iAttribute)
+    {
+    }
+
+  virtual ~VariableAttribute() {}
+  void visit(Visitor *v);
+
+  std::string _sAttribute;
+  int _iAttribute;
+};
+
 struct Declaration : public Node
 {
  public:
@@ -120,9 +136,10 @@ struct Float4 : public Type
 struct VariableDeclaration : public Declaration
 {
  public:
- VariableDeclaration(Type * type = nullptr, const std::string & variableName = std::string(""))
+ VariableDeclaration(Type * type = nullptr, const std::string & variableName = std::string(""), VariableAttribute * attribute = nullptr)
     :_type(type)
       ,_variableName(variableName)
+    ,_attribute(attribute)
   {
   }
   
@@ -130,6 +147,7 @@ struct VariableDeclaration : public Declaration
 
   Type * _type;
   std::string _variableName;
+  VariableAttribute * _attribute;
 };
 
 extern Program * _root;
