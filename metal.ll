@@ -1,4 +1,5 @@
-WHITESPACE [ \t\v\n\f]
+WHITESPACE [ \t\v\f]
+NEWLINE [\n]
 LETTER [_a-zA-Z]
 DIGIT [0-9]
 LETTER_OR_DIGIT ({LETTER}|{DIGIT})
@@ -13,19 +14,18 @@ LETTER_OR_DIGIT ({LETTER}|{DIGIT})
 #define YY_DECL int Metal::Scanner::yylex(Metal::Parser::semantic_type * const lval, Metal::Parser::location_type *loc)
 
 using token = Metal::Parser::token;
+int lines = 0;
 
 //#define yyterminate() printf("end!\n"); fflush(NULL); return(EOF )
 #define YY_NO_UNISTD_H
-//#define YY_USER_ACTION loc->step(); loc->columns(yyleng);
+#define YY_USER_ACTION loc->step(); loc->columns(yyleng);
 %}
 
 %option debug
 %option yyclass = "Metal::Parser"
 %option c++
 %option verbose
-%option yylineno
-%option nodefault
-			
+%option noyywrap			
 %%
 
 %{
@@ -56,11 +56,12 @@ using token = Metal::Parser::token;
 "]]" { return token::END_DOUBLE_SQUARE_BRACKET; }
 {LETTER}{LETTER_OR_DIGIT}*                 { _yyval->string = new std::string(yytext,yyleng) ; return token::IDENTIFIER; }
 {WHITESPACE}                              { /* skip */ }
+{NEWLINE}                                 { lines++; }
 
-<<EOF>> {printf("7\n"); yyterminate(); return 0; }
-
-. { std::cerr << "Error line:" << yylineno << "\t" << yytext << std::endl; }
 
 %%
 
-int yyFlexLexer::yywrap() { return 1; }
+void Metal::Parser::error(const location_type &line, const std::string &err)
+{
+    std::cerr << "Error at line: " << lines << ": " << err << std::endl; 
+}

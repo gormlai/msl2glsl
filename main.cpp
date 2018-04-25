@@ -2,14 +2,17 @@
 #include <iostream>
 #include "Driver.h"
 
+
 int yyerror(char const * err)
 {
+  printf("hest\n");
   return 0;
 }
 
 int yyerror(char const * err, ...)
 {
-  //  std::cerr << "Cannot parse input: " <<  err;
+
+  std::cerr << "Cannot parse input: " <<  err;
   return 0;
   
 }

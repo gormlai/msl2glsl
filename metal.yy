@@ -4,7 +4,8 @@
 %defines
 %define api.namespace {Metal}
 %define parser_class_name {Parser}
-
+%language "C++"
+			
 %code requires {
 
 #include "Types.h"
@@ -122,7 +123,3 @@ identifier: IDENTIFIER { $$ = new std::string(*$1); delete $1; }
 		
 %%
 		
-void Metal::Parser::error(const location_type &line, const std::string &err)
-{
-    std::cerr << line << ": " << err << std::endl; 
-}
