@@ -30,8 +30,10 @@ void PrettyPrinter::operateOn(struct Block * block)
 
   _indent++;
 
-  for(auto node : block->_nodes)
-    node->visit(this);
+  for(auto node : block->_nodes) {
+      node->visit(this);
+      _result = _result + ";\n";
+  }
 
   _indent--;
   
@@ -46,6 +48,23 @@ void PrettyPrinter::operateOn(struct Declaration * decl)
 
 void PrettyPrinter::operateOn(struct FunctionDeclaration * node)
 {
+  indent();
+
+  if(!node->_functionType.empty())
+    _result = _result + node->_functionType + " ";
+
+  if(!node->_returnType.empty())
+    _result = _result + node->_returnType + " ";
+  
+  _result = _result + node->_name + "(";
+
+  if(node->_variables!=nullptr)
+    node->_variables->visit(this);
+  
+  _result = _result + ")\n";
+
+  if(node->_block!=nullptr)
+    node->_block->visit(this);  
 }
 
 void PrettyPrinter::operateOn(struct Node * node)
@@ -73,7 +92,7 @@ void PrettyPrinter::operateOn(struct Struct * strct)
 void PrettyPrinter::operateOn(struct UsingDeclaration * usingDecl)
 {
   indent();
-  _result = _result + "using namespace " + usingDecl->_nmspace + ";\n";
+  _result = _result + "using namespace " + usingDecl->_nmspace;
 }
 
 void PrettyPrinter::operateOn(struct VariableAttribute * attribute)
@@ -84,6 +103,8 @@ void PrettyPrinter::operateOn(struct VariableAttribute * attribute)
     _result = _result + "attribute(" + std::to_string(attribute->_iAttribute) + ")";
   else if(attribute->_sAttribute == std::string("position"))
     _result = _result + "position";
+  else if(attribute->_sAttribute == std::string("stage_in"))
+    _result = _result + "stage_in";
 
   _result = _result + "]]";  
 }
@@ -96,12 +117,17 @@ void PrettyPrinter::operateOn(struct VariableDeclaration * node)
   if(node->_attribute != nullptr)
     node->_attribute->visit(this);
 
-  _result = _result + ";\n";
   
 }
 
 void PrettyPrinter::operateOn(struct VariableList * node)
 {
-  
+  const int count =  (int)node->_variableDeclarations.size(); 
+  for(int i=0 ; i < count ; i++) {
+    if(i!=count-1)
+      _result = _result + ", ";
+
+    node->_variableDeclarations[i]->visit(this);
+  }
 }
 

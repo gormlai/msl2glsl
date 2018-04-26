@@ -119,11 +119,12 @@ variable_declaration: identifier identifier { $$ = new VariableDeclaration(*$1, 
 	| 	identifier identifier variable_attribute { $$ = new VariableDeclaration(*$1, *$2, $3); }
 		;
 
-variable_list:  variable_list variable_declaration { $$->_variableDeclarations.push_back($2);}
-		       |	variable_declaration { $$ = new VariableList() ;  $$->_variableDeclarations.push_back($1); }
+variable_list: /* empty */ { $$ = new VariableList(); }
+	|	variable_list variable_declaration { $$->_variableDeclarations.push_back($2);}
+	|	variable_declaration { $$ = new VariableList() ;  $$->_variableDeclarations.push_back($1); }
 		;
 
-function_declaration : identifier identifier identifier BEGIN_BRACKET variable_list END_BRACKET declaration_list { $$ = new FunctionDeclaration(*$1, *$2, *$3, $5, $7) ; }
+function_declaration : identifier identifier identifier BEGIN_BRACKET variable_list END_BRACKET BEGIN_CURLY_BRACKET declaration_list END_CURLY_BRACKET { $$ = new FunctionDeclaration(*$1, *$2, *$3, $5, $8) ; }
 
 declaration: USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$2); }
 	| 	struct SEMICOLON { $$ = $1; }
