@@ -124,10 +124,10 @@ void PrettyPrinter::operateOn(struct VariableList * node)
 {
   const int count =  (int)node->_variableDeclarations.size(); 
   for(int i=0 ; i < count ; i++) {
+    node->_variableDeclarations[i]->visit(this);
+    
     if(i!=count-1)
       _result = _result + ", ";
-
-    node->_variableDeclarations[i]->visit(this);
   }
 }
 
