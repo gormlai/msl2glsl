@@ -94,12 +94,30 @@ struct Struct : public Declaration
 struct VariableDeclaration : public Declaration
 {
  public:
+  enum class Qualifier
+  {
+    None,
+      Constant,
+      };
+  
  VariableDeclaration(const std::string & type = std::string("") ,
 		     const std::string & variableName = std::string(""),
 		     VariableAttribute * attribute = nullptr)
     :_type(type)
     ,_variableName(variableName)
     ,_attribute(attribute)
+    ,_qualifier(Qualifier::None)
+  {
+  }
+  
+ VariableDeclaration(Qualifier qualifier,
+		     const std::string & type = std::string("") ,
+		     const std::string & variableName = std::string(""),
+		     VariableAttribute * attribute = nullptr)
+    :_type(type)
+    ,_variableName(variableName)
+    ,_attribute(attribute)
+    ,_qualifier(qualifier)
   {
   }
   
@@ -108,6 +126,7 @@ struct VariableDeclaration : public Declaration
   std::string _type;
   std::string _variableName;
   VariableAttribute * _attribute;
+  Qualifier _qualifier;
 };
 
 struct VariableList : public Node

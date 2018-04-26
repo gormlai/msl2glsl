@@ -34,6 +34,7 @@ int lines = 0;
 
 
 "struct"                                   { return token::STRUCT;}
+"constant"                                 { return token::CONSTANT;}
 "{"                                        { return token::BEGIN_CURLY_BRACKET; }
 "}"                                        { return token::END_CURLY_BRACKET; }
 

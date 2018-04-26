@@ -112,6 +112,16 @@ void PrettyPrinter::operateOn(struct VariableAttribute * attribute)
 void PrettyPrinter::operateOn(struct VariableDeclaration * node)
 {
   indent();
+
+  switch(node->_qualifier)
+    {
+    case VariableDeclaration::Qualifier::Constant:
+      _result = _result + "constant ";
+      break;
+    default:
+      break;
+    }
+  
   _result =  _result + node->_type + " " + node->_variableName;
 
   if(node->_attribute != nullptr)

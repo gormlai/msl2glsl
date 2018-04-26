@@ -58,6 +58,7 @@ class Scanner;
     VariableAttribute * variableAttribute;
     VariableDeclaration * variableDeclaration;
     VariableList * variableList;
+    VariableDeclaration::Qualifier qualifier;
     
 }
 			  
@@ -77,6 +78,7 @@ class Scanner;
 %token 		      SKIP
 %token 		      STRUCT
 %token		      SEMICOLON
+%token	<VariableDeclaration::Qualifier>      CONSTANT
 %token	<string>      IDENTIFIER
 %token	<intValue>    INT_VALUE
 %token	<string>      VARIABLE_ATTRIBUTE_INDEX
@@ -93,6 +95,7 @@ class Scanner;
 %type	<functionDeclaration> function_declaration
 %type	<program> translation_unit
 %type	<string>	identifier
+%type	<qualifier>	qualifier
 %type	<strct>		struct
 %type	<variableAttribute> variable_attribute
 %type	<variableDeclaration> variable_declaration
@@ -115,8 +118,14 @@ variable_attribute: BEGIN_DOUBLE_SQUARE_BRACKET identifier BEGIN_BRACKET INT_VAL
 	|	BEGIN_DOUBLE_SQUARE_BRACKET identifier END_DOUBLE_SQUARE_BRACKET { $$ = new VariableAttribute(*$2); }	
 	;
 
-variable_declaration: identifier identifier { $$ = new VariableDeclaration(*$1, *$2); }
+qualifier:	CONSTANT { $$ = VariableDeclaration::Qualifier::Constant; }
+	;
+
+variable_declaration:
+		identifier identifier { $$ = new VariableDeclaration(*$1, *$2); }
 	| 	identifier identifier variable_attribute { $$ = new VariableDeclaration(*$1, *$2, $3); }
+	|	qualifier identifier identifier { $$ = new VariableDeclaration($1, *$2, *$3); }
+	| 	qualifier identifier identifier variable_attribute { $$ = new VariableDeclaration($1, *$2,*$3, $4); }
 		;
 
 variable_list: /* empty */ { $$ = new VariableList(); }
