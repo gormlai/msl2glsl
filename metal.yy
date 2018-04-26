@@ -50,13 +50,16 @@ class Scanner;
 {
     Block * block;
     Declaration *declaration;
+    FunctionDeclaration * functionDeclaration;
+    int intValue;
+    Program * program;
     std::string * string;
     Struct * strct;
-    Program * program;
-    VariableDeclaration * variableDeclaration;
     Type * type;
     VariableAttribute * variableAttribute;
-    int intValue;
+    VariableDeclaration * variableDeclaration;
+    VariableList * variableList;
+    
 }
 			  
 %token	<type>	      TYPE_BOOL		      
@@ -87,20 +90,22 @@ class Scanner;
 %token                END_DOUBLE_SQUARE_BRACKET
 
 %type	<block> declaration_list
-%type	<program> translation_unit
 %type	<declaration>	 declaration
-%type	<variableDeclaration> variable_declaration
-%type	<strct>		struct
+%type	<functionDeclaration> function_declaration
+%type	<program> translation_unit
 %type	<string>	identifier
+%type	<strct>		struct
 %type	<type>		type
 %type	<variableAttribute> variable_attribute
+%type	<variableDeclaration> variable_declaration
+%type	<variableList> variable_list
 %locations
 
 %%
 translation_unit: declaration_list { _root = new Program($1); $$ = _root; delete $1; }
 		;
 
-struct: STRUCT identifier BEGIN_CURLY_BRACKET declaration_list END_CURLY_BRACKET SEMICOLON { $$ = new Struct(*$2); $$->_block = *$4; delete $4; }
+struct: STRUCT identifier BEGIN_CURLY_BRACKET declaration_list END_CURLY_BRACKET { $$ = new Struct(*$2); $$->_block = *$4; delete $4; }
 		;
 
 declaration_list:  declaration_list declaration { $$->_nodes.push_back($2);}
@@ -111,9 +116,15 @@ variable_attribute: BEGIN_DOUBLE_SQUARE_BRACKET identifier BEGIN_BRACKET INT_VAL
 	|	BEGIN_DOUBLE_SQUARE_BRACKET identifier END_DOUBLE_SQUARE_BRACKET { $$ = new VariableAttribute(*$2); }	
 	;
 
-variable_declaration: type identifier SEMICOLON { $$ = new VariableDeclaration($1, *$2); }
-	| 	type identifier variable_attribute SEMICOLON { $$ = new VariableDeclaration($1, *$2, $3); }
+variable_declaration: type identifier { $$ = new VariableDeclaration($1, *$2); }
+	| 	type identifier variable_attribute { $$ = new VariableDeclaration($1, *$2, $3); }
 		;
+
+variable_list:  variable_list variable_declaration { $$->_variableDeclarations.push_back($2);}
+		       |	variable_declaration { $$ = new VariableList() ;  $$->_variableDeclarations.push_back($1); }
+		;
+
+function_declaration : identifier identifier identifier BEGIN_BRACKET variable_list END_BRACKET declaration_list { $$ = new FunctionDeclaration(*$1, *$2, *$3, $5, $7) ; }
 
 type: TYPE_FLOAT { $$ = new Float(); }
 	| TYPE_FLOAT2 { $$ = new Float2(); }
@@ -126,9 +137,11 @@ type: TYPE_FLOAT { $$ = new Float(); }
 		;
 
 declaration: USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$2); }
-	| struct { $$ = $1; }
-	| variable_declaration { $$ = $1; }
+	| 	struct SEMICOLON { $$ = $1; }
+	| 	variable_declaration SEMICOLON { $$ = $1; }
+	|	function_declaration { $$ = $1; }
 		;
+
 
 identifier: IDENTIFIER { $$ = new std::string(*$1); delete $1; }
 		

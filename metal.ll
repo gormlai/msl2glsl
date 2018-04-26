@@ -38,7 +38,7 @@ int lines = 0;
 "}"                                        { return token::END_CURLY_BRACKET; }
 
 "using namespace"     { return token::USING_NAMESPACE; }
-";"                                        { return token::SEMICOLON; }
+[";"","]                                        { return token::SEMICOLON; }
 "float" { return token::TYPE_FLOAT; }
 "float2" { return token::TYPE_FLOAT2; }
 "float3" { return token::TYPE_FLOAT3; }

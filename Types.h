@@ -60,6 +60,7 @@ struct Program : public Block
   void visit(Visitor * v) override;
 };
 
+
 struct UsingDeclaration : public Declaration
 {
  public:
@@ -148,6 +149,43 @@ struct VariableDeclaration : public Declaration
   Type * _type;
   std::string _variableName;
   VariableAttribute * _attribute;
+};
+
+struct VariableList : public Node
+{
+ public:
+  virtual ~VariableList() {}
+  void visit(Visitor * v) override;
+  
+  std::vector<VariableDeclaration *> _variableDeclarations;
+  
+};
+
+struct FunctionDeclaration : public Declaration
+{
+ public:
+  FunctionDeclaration(const std::string & functionType,
+		      const std::string & returnType,
+		      const std::string & name,
+		      VariableList * variables,
+		      Block * block)
+    :_functionType(functionType)
+    ,_returnType(returnType)
+    ,_name(name)
+    ,_variables(variables)
+    ,_block(block)
+  {
+  }
+		      
+  virtual ~FunctionDeclaration() {}
+  void visit(Visitor * v) override;
+
+  std::string _functionType;
+  std::string _returnType;
+  std::string _name;
+  VariableList * _variables;
+  Block * _block;
+
 };
 
 extern Program * _root;

@@ -17,29 +17,10 @@ const std::string PrettyPrinter::print(struct Block * block)
     printf("PrettyPrinter - program is nullptr\n");
     return _result;
   }
-
   
   block->visit(this);
   
   return _result;
-}
-
-void PrettyPrinter::operateOn(struct Struct * strct)
-{
-  indent();
-  _result = _result + "struct " + strct->_name + "\n";
-
-  strct->_block.visit(this);
-  
-  indent();
-  _result = _result + ";\n";
-  
-}
-
-void PrettyPrinter::operateOn(struct UsingDeclaration * usingDecl)
-{
-  indent();
-  _result = _result + "using namespace " + usingDecl->_nmspace + ";\n";
 }
 
 void PrettyPrinter::operateOn(struct Block * block)
@@ -58,39 +39,9 @@ void PrettyPrinter::operateOn(struct Block * block)
   _result = _result + "}";
 }
 
-void PrettyPrinter::operateOn(struct Program * program)
-{
-  for(auto node : program->_nodes)
-    node->visit(this);
-}
-
 
 void PrettyPrinter::operateOn(struct Declaration * decl)
 {
-}
-
-void PrettyPrinter::operateOn(struct Node * node)
-{
-}
-
-void PrettyPrinter::operateOn(struct UChar * node)
-{
-  _result = _result + "uchar";
-}
-
-void PrettyPrinter::operateOn(struct UChar2 * node)
-{
-  _result = _result + "uchar2";
-}
-
-void PrettyPrinter::operateOn(struct UChar3 * node)
-{
-  _result = _result + "uchar3";
-}
-
-void PrettyPrinter::operateOn(struct UChar4 * node)
-{
-  _result = _result + "uchar4";
 }
 
 void PrettyPrinter::operateOn(struct Float * node)
@@ -113,6 +64,58 @@ void PrettyPrinter::operateOn(struct Float4 * node)
   _result = _result + "float4";
 }
 
+void PrettyPrinter::operateOn(struct FunctionDeclaration * node)
+{
+}
+
+void PrettyPrinter::operateOn(struct Node * node)
+{
+}
+
+void PrettyPrinter::operateOn(struct Program * program)
+{
+  for(auto node : program->_nodes)
+    node->visit(this);
+}
+
+void PrettyPrinter::operateOn(struct Struct * strct)
+{
+  indent();
+  _result = _result + "struct " + strct->_name + "\n";
+
+  strct->_block.visit(this);
+  
+  indent();
+  _result = _result + ";\n";
+  
+}
+
+void PrettyPrinter::operateOn(struct UChar * node)
+{
+  _result = _result + "uchar";
+}
+
+void PrettyPrinter::operateOn(struct UChar2 * node)
+{
+  _result = _result + "uchar2";
+}
+
+void PrettyPrinter::operateOn(struct UChar3 * node)
+{
+  _result = _result + "uchar3";
+}
+
+void PrettyPrinter::operateOn(struct UChar4 * node)
+{
+  _result = _result + "uchar4";
+}
+
+void PrettyPrinter::operateOn(struct UsingDeclaration * usingDecl)
+{
+  indent();
+  _result = _result + "using namespace " + usingDecl->_nmspace + ";\n";
+}
+
 void PrettyPrinter::operateOn(struct VariableAttribute * attribute)
 {
   _result = _result + " [[";
@@ -122,11 +125,8 @@ void PrettyPrinter::operateOn(struct VariableAttribute * attribute)
   else if(attribute->_sAttribute == std::string("position"))
     _result = _result + "position";
 
-
-  _result = _result + "]]";
-  
+  _result = _result + "]]";  
 }
-
 
 void PrettyPrinter::operateOn(struct VariableDeclaration * node)
 {
@@ -140,3 +140,9 @@ void PrettyPrinter::operateOn(struct VariableDeclaration * node)
   _result = _result + ";\n";
   
 }
+
+void PrettyPrinter::operateOn(struct VariableList * node)
+{
+  
+}
+
