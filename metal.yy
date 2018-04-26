@@ -55,26 +55,25 @@ class Scanner;
     Program * program;
     std::string * string;
     Struct * strct;
-    Type * type;
     VariableAttribute * variableAttribute;
     VariableDeclaration * variableDeclaration;
     VariableList * variableList;
     
 }
 			  
-%token	<type>	      TYPE_BOOL		      
-%token	<type>	      TYPE_FLOAT
-%token	<type>	      TYPE_FLOAT2
-%token	<type>	      TYPE_FLOAT3
-%token	<type>	      TYPE_FLOAT4
-%token	<type>	      TYPE_UCHAR
-%token	<type>	      TYPE_UCHAR2
-%token	<type>	      TYPE_UCHAR3
-%token	<type>	      TYPE_UCHAR4
-%token	<type>	      TYPE_HALF 	
-%token	<type>	      TYPE_DOUBLE	
-%token	<type>	      TYPE_INT	
-%token	<type>	      TYPE_STRING
+%token		      TYPE_BOOL		      
+%token		      TYPE_FLOAT
+%token		      TYPE_FLOAT2
+%token		      TYPE_FLOAT3
+%token		      TYPE_FLOAT4
+%token		      TYPE_UCHAR
+%token		      TYPE_UCHAR2
+%token		      TYPE_UCHAR3
+%token		      TYPE_UCHAR4
+%token		      TYPE_HALF 	
+%token		      TYPE_DOUBLE	
+%token		      TYPE_INT	
+%token		      TYPE_STRING
 %token 		      SKIP
 %token 		      STRUCT
 %token		      SEMICOLON
@@ -95,7 +94,6 @@ class Scanner;
 %type	<program> translation_unit
 %type	<string>	identifier
 %type	<strct>		struct
-%type	<type>		type
 %type	<variableAttribute> variable_attribute
 %type	<variableDeclaration> variable_declaration
 %type	<variableList> variable_list
@@ -105,7 +103,7 @@ class Scanner;
 translation_unit: declaration_list { _root = new Program($1); $$ = _root; delete $1; }
 		;
 
-struct: STRUCT identifier BEGIN_CURLY_BRACKET declaration_list END_CURLY_BRACKET { $$ = new Struct(*$2); $$->_block = *$4; delete $4; }
+struct: STRUCT identifier BEGIN_CURLY_BRACKET declaration_list END_CURLY_BRACKET SEMICOLON { $$ = new Struct(*$2); $$->_block = *$4; delete $4; }
 		;
 
 declaration_list:  declaration_list declaration { $$->_nodes.push_back($2);}
@@ -116,8 +114,8 @@ variable_attribute: BEGIN_DOUBLE_SQUARE_BRACKET identifier BEGIN_BRACKET INT_VAL
 	|	BEGIN_DOUBLE_SQUARE_BRACKET identifier END_DOUBLE_SQUARE_BRACKET { $$ = new VariableAttribute(*$2); }	
 	;
 
-variable_declaration: type identifier { $$ = new VariableDeclaration($1, *$2); }
-	| 	type identifier variable_attribute { $$ = new VariableDeclaration($1, *$2, $3); }
+variable_declaration: identifier identifier { $$ = new VariableDeclaration(*$1, *$2); }
+	| 	identifier identifier variable_attribute { $$ = new VariableDeclaration(*$1, *$2, $3); }
 		;
 
 variable_list:  variable_list variable_declaration { $$->_variableDeclarations.push_back($2);}
@@ -126,18 +124,8 @@ variable_list:  variable_list variable_declaration { $$->_variableDeclarations.p
 
 function_declaration : identifier identifier identifier BEGIN_BRACKET variable_list END_BRACKET declaration_list { $$ = new FunctionDeclaration(*$1, *$2, *$3, $5, $7) ; }
 
-type: TYPE_FLOAT { $$ = new Float(); }
-	| TYPE_FLOAT2 { $$ = new Float2(); }
-	| TYPE_FLOAT3 { $$ = new Float3(); }
-	| TYPE_FLOAT4 { $$ = new Float4(); }
-	| TYPE_UCHAR { $$ = new UChar(); }
-	| TYPE_UCHAR2 { $$ = new UChar2(); }
-	| TYPE_UCHAR3 { $$ = new UChar3(); }
-	| TYPE_UCHAR4 { $$ = new UChar4(); }
-		;
-
 declaration: USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$2); }
-	| 	struct SEMICOLON { $$ = $1; }
+	| 	struct  { $$ = $1; }
 	| 	variable_declaration SEMICOLON { $$ = $1; }
 	|	function_declaration { $$ = $1; }
 		;

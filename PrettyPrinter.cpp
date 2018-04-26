@@ -44,26 +44,6 @@ void PrettyPrinter::operateOn(struct Declaration * decl)
 {
 }
 
-void PrettyPrinter::operateOn(struct Float * node)
-{
-  _result = _result + "float";
-}
-
-void PrettyPrinter::operateOn(struct Float2 * node)
-{
-  _result = _result + "float2";
-}
-
-void PrettyPrinter::operateOn(struct Float3 * node)
-{
-  _result = _result + "float3";
-}
-
-void PrettyPrinter::operateOn(struct Float4 * node)
-{
-  _result = _result + "float4";
-}
-
 void PrettyPrinter::operateOn(struct FunctionDeclaration * node)
 {
 }
@@ -90,26 +70,6 @@ void PrettyPrinter::operateOn(struct Struct * strct)
   
 }
 
-void PrettyPrinter::operateOn(struct UChar * node)
-{
-  _result = _result + "uchar";
-}
-
-void PrettyPrinter::operateOn(struct UChar2 * node)
-{
-  _result = _result + "uchar2";
-}
-
-void PrettyPrinter::operateOn(struct UChar3 * node)
-{
-  _result = _result + "uchar3";
-}
-
-void PrettyPrinter::operateOn(struct UChar4 * node)
-{
-  _result = _result + "uchar4";
-}
-
 void PrettyPrinter::operateOn(struct UsingDeclaration * usingDecl)
 {
   indent();
@@ -131,8 +91,7 @@ void PrettyPrinter::operateOn(struct VariableAttribute * attribute)
 void PrettyPrinter::operateOn(struct VariableDeclaration * node)
 {
   indent();
-  node->_type->visit(this);
-  _result = _result + " " + node->_variableName;
+  _result = node->_type + _result + " " + node->_variableName;
 
   if(node->_attribute != nullptr)
     node->_attribute->visit(this);

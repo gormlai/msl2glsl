@@ -90,54 +90,11 @@ struct Struct : public Declaration
   Block _block;
 };
 
-struct Type : public Node
-{
-};
-
-struct UChar : public Type
-{
-  void visit(Visitor * v) override;
-};
-
-struct UChar2 : public Type
-{
-  void visit(Visitor * v) override;
-};
-
-struct UChar3 : public Type
-{
-  void visit(Visitor * v) override;
-};
-
-struct UChar4 : public Type
-{
-  void visit(Visitor * v) override;
-};
-
-struct Float : public Type
-{
-  void visit(Visitor * v) override;
-};
-
-struct Float2 : public Type
-{
-  void visit(Visitor * v) override;
-};
-
-struct Float3 : public Type
-{
-  void visit(Visitor * v) override;
-};
-
-struct Float4 : public Type
-{
-  void visit(Visitor * v) override;
-};
 
 struct VariableDeclaration : public Declaration
 {
  public:
- VariableDeclaration(Type * type = nullptr, const std::string & variableName = std::string(""), VariableAttribute * attribute = nullptr)
+ VariableDeclaration(const std::string & type = std::string("") , const std::string & variableName = std::string(""), VariableAttribute * attribute = nullptr)
     :_type(type)
       ,_variableName(variableName)
     ,_attribute(attribute)
@@ -146,7 +103,7 @@ struct VariableDeclaration : public Declaration
   
   void visit(Visitor * v) override;
 
-  Type * _type;
+  std::string _type;
   std::string _variableName;
   VariableAttribute * _attribute;
 };
