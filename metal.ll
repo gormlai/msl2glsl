@@ -38,16 +38,7 @@ int lines = 0;
 "}"                                        { return token::END_CURLY_BRACKET; }
 
 "using namespace"     { return token::USING_NAMESPACE; }
-[";"","]                                        { return token::SEMICOLON; }
-"float" { return token::TYPE_FLOAT; }
-"float2" { return token::TYPE_FLOAT2; }
-"float3" { return token::TYPE_FLOAT3; }
-"float4" { return token::TYPE_FLOAT4; }
-
-"uchar" { return token::TYPE_UCHAR; }
-"uchar2" { return token::TYPE_UCHAR2; }
-"uchar3" { return token::TYPE_UCHAR3; }
-"uchar4" { return token::TYPE_UCHAR4; }
+[";"]                                        { return token::SEMICOLON; }
 
 "(" { return token::BEGIN_BRACKET; }
 ")" { return token::END_BRACKET; }

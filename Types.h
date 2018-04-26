@@ -94,9 +94,11 @@ struct Struct : public Declaration
 struct VariableDeclaration : public Declaration
 {
  public:
- VariableDeclaration(const std::string & type = std::string("") , const std::string & variableName = std::string(""), VariableAttribute * attribute = nullptr)
+ VariableDeclaration(const std::string & type = std::string("") ,
+		     const std::string & variableName = std::string(""),
+		     VariableAttribute * attribute = nullptr)
     :_type(type)
-      ,_variableName(variableName)
+    ,_variableName(variableName)
     ,_attribute(attribute)
   {
   }

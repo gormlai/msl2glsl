@@ -91,7 +91,7 @@ void PrettyPrinter::operateOn(struct VariableAttribute * attribute)
 void PrettyPrinter::operateOn(struct VariableDeclaration * node)
 {
   indent();
-  _result = node->_type + _result + " " + node->_variableName;
+  _result =  _result + node->_type + " " + node->_variableName;
 
   if(node->_attribute != nullptr)
     node->_attribute->visit(this);

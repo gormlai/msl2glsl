@@ -103,11 +103,12 @@ class Scanner;
 translation_unit: declaration_list { _root = new Program($1); $$ = _root; delete $1; }
 		;
 
-struct: STRUCT identifier BEGIN_CURLY_BRACKET declaration_list END_CURLY_BRACKET SEMICOLON { $$ = new Struct(*$2); $$->_block = *$4; delete $4; }
+struct: STRUCT identifier BEGIN_CURLY_BRACKET declaration_list END_CURLY_BRACKET { $$ = new Struct(*$2); $$->_block = *$4; delete $4; }
 		;
 
-declaration_list:  declaration_list declaration { $$->_nodes.push_back($2);}
-		       |	declaration { $$ = new Block() ;  $$->_nodes.push_back($1); }
+declaration_list: /* empty */ { $$ = new Block() ; }
+	|	declaration_list declaration { $$->_nodes.push_back($2);}
+	|	declaration { $$ = new Block() ;  $$->_nodes.push_back($1); }
 		;
 
 variable_attribute: BEGIN_DOUBLE_SQUARE_BRACKET identifier BEGIN_BRACKET INT_VALUE END_BRACKET END_DOUBLE_SQUARE_BRACKET { $$ = new VariableAttribute(*$2,$4); }
@@ -125,7 +126,7 @@ variable_list:  variable_list variable_declaration { $$->_variableDeclarations.p
 function_declaration : identifier identifier identifier BEGIN_BRACKET variable_list END_BRACKET declaration_list { $$ = new FunctionDeclaration(*$1, *$2, *$3, $5, $7) ; }
 
 declaration: USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$2); }
-	| 	struct  { $$ = $1; }
+	| 	struct SEMICOLON { $$ = $1; }
 	| 	variable_declaration SEMICOLON { $$ = $1; }
 	|	function_declaration { $$ = $1; }
 		;
