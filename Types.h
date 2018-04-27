@@ -97,8 +97,8 @@ struct VariableDeclaration : public Declaration
   enum class Qualifier
   {
     None,
-      Constant,
-      };
+    Constant,
+  };
   
  VariableDeclaration(const std::string & type = std::string("") ,
 		     const std::string & variableName = std::string(""),
