@@ -175,10 +175,10 @@ statement:  USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$
 	| 	struct SEMICOLON { $$ = $1; }
 	|	function_declaration { $$ = $1; }
 	| 	variable_declaration SEMICOLON { $$ = $1; }
-	|	variable_declaration ASSIGN expression SEMICOLON {}
-	|	expression ASSIGN expression SEMICOLON {}
-	|	RETURN expression SEMICOLON {}
-	|	expression SEMICOLON {}
+	|	variable_declaration ASSIGN expression SEMICOLON { $$ = nullptr; }
+	|	expression ASSIGN expression SEMICOLON { $$ = nullptr; }
+	|	RETURN expression SEMICOLON { $$ = nullptr; }
+	|	expression SEMICOLON { $$ = nullptr; }
 		;
 
 identifier: IDENTIFIER { $$ = new std::string(*$1); delete $1; }

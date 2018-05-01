@@ -24,13 +24,17 @@ const std::string PrettyPrinter::print(struct Block * block)
 }
 
 void PrettyPrinter::operateOn(struct Block * block)
-{
+{  
   indent();
   _result = _result + "{\n";
 
   _indent++;
 
-  for(auto node : block->_nodes) {
+  for(auto node : block->_nodes)
+    {
+      if(node == nullptr)
+	continue;
+      
       node->visit(this);
       _result = _result + ";\n";
   }
