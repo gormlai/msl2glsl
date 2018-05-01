@@ -98,7 +98,7 @@ class Scanner;
 %token                LESS_THAN
 %token                GREATER_THAN
 
-%type	<block> declaration_list
+%type	<block> statements
 %type	<declaration>	 declaration
 %type	<functionDeclaration> function_declaration
 %type	<program> translation_unit
@@ -113,13 +113,13 @@ class Scanner;
 %locations
 
 %%
-translation_unit: declaration_list { _root = new Program($1); $$ = _root; delete $1; }
+translation_unit: statements { _root = new Program($1); $$ = _root; delete $1; }
 		;
 
-struct: STRUCT identifier BEGIN_CURLY_BRACKET declaration_list END_CURLY_BRACKET { $$ = new Struct(*$2); $$->_block = *$4; delete $4; }
+struct: STRUCT identifier BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new Struct(*$2); $$->_block = *$4; delete $4; }
 		;
 
-declaration_list: declaration_list declaration { $$->_nodes.push_back($2);}
+statements: statements declaration { $$->_nodes.push_back($2);}
 	|	declaration { $$ = new Block() ;  $$->_nodes.push_back($1); }
 		;
 
@@ -156,7 +156,7 @@ variable_list:  variable_list COMMA variable_declaration { $$->_variableDeclarat
 	|	variable_declaration { $$ = new VariableList() ;  $$->_variableDeclarations.push_back($1); }
 		;
 
-function_declaration : identifier identifier identifier BEGIN_BRACKET variable_list END_BRACKET BEGIN_CURLY_BRACKET declaration_list END_CURLY_BRACKET { $$ = new FunctionDeclaration(*$1, *$2, *$3, $5, $8); }
+function_declaration : identifier identifier identifier BEGIN_BRACKET variable_list END_BRACKET BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new FunctionDeclaration(*$1, *$2, *$3, $5, $8); }
 		;
 
 declaration:  USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$2); }
