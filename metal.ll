@@ -41,6 +41,7 @@ int lines = 0;
 "&"                                        { return token::AMPERSAND; }
 "using namespace"     { return token::USING_NAMESPACE; }
 [";"]                                        { return token::SEMICOLON; }
+[","]                                        { return token::COMMA; }
 
 "(" { return token::BEGIN_BRACKET; }
 ")" { return token::END_BRACKET; }

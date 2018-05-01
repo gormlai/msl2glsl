@@ -78,6 +78,7 @@ class Scanner;
 %token 		      SKIP
 %token 		      STRUCT
 %token		      SEMICOLON
+%token		      COMMA
 %token	<ReservedToken> STAR
 %token	<ReservedToken> AMPERSAND
 %token	<qualifier>   CONSTANT
@@ -131,23 +132,23 @@ reserved_token:
 	;
 
 variable_declaration:
-		qualifier identifier reserved_token identifier variable_attribute SEMICOLON { $$ = new VariableDeclaration($1, *$2, $3, *$4, $5); }
-	|	identifier identifier variable_attribute SEMICOLON { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, ReservedToken::None, *$2, $3); }
-	|	qualifier identifier identifier variable_attribute SEMICOLON { $$ = new VariableDeclaration($1, *$2, ReservedToken::None, *$3, $4); }
-	|	identifier reserved_token identifier variable_attribute SEMICOLON { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, $2, *$3, $4); }
+		qualifier identifier reserved_token identifier variable_attribute { $$ = new VariableDeclaration($1, *$2, $3, *$4, $5); }
+	|	identifier identifier variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, ReservedToken::None, *$2, $3); }
+	|	qualifier identifier identifier variable_attribute { $$ = new VariableDeclaration($1, *$2, ReservedToken::None, *$3, $4); }
+	|	identifier reserved_token identifier variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, $2, *$3, $4); }
 		;
 
-variable_list: variable_list variable_declaration { $$->_variableDeclarations.push_back($2);}
-	|	variable_declaration { $$ = new VariableList() ;  $$->_variableDeclarations.push_back($1); }
+variable_list:  variable_list variable_declaration { $$->_variableDeclarations.push_back($2);}
+	|	variable_declaration COMMA { $$ = new VariableList() ;  $$->_variableDeclarations.push_back($1); }
 		;
 
-function_declaration : identifier identifier identifier BEGIN_BRACKET variable_list END_BRACKET  { }
+function_declaration : identifier identifier identifier BEGIN_BRACKET variable_list END_BRACKET BEGIN_CURLY_BRACKET declaration_list END_CURLY_BRACKET { $$ = new FunctionDeclaration(*$1, *$2, *$3, $5, $8); }
 		;
 
 declaration:  USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$2); }
 	| 	struct SEMICOLON { $$ = $1; }
 	|	function_declaration { $$ = $1; }
-	| 	variable_declaration { $$ = $1; }
+	| 	variable_declaration SEMICOLON { $$ = $1; }
 		;
 
 

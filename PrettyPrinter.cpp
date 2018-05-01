@@ -143,8 +143,6 @@ void PrettyPrinter::operateOn(struct VariableDeclaration * node)
   if(node->_attribute != nullptr)
     node->_attribute->visit(this);
 
-  _result = _result + ";\n";
-
   
 }
 
