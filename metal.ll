@@ -14,7 +14,7 @@ LETTER_OR_DIGIT ({LETTER}|{DIGIT})
 #define YY_DECL int Metal::Scanner::yylex(Metal::Parser::semantic_type * const lval, Metal::Parser::location_type *loc)
 
 using token = Metal::Parser::token;
-int lines = 0;
+int lines = 1;
 
 //#define yyterminate() printf("end!\n"); fflush(NULL); return(EOF )
 #define YY_NO_UNISTD_H
@@ -54,7 +54,7 @@ int lines = 0;
 {LETTER}{LETTER_OR_DIGIT}*                 { _yyval->string = new std::string(yytext,yyleng) ; return token::IDENTIFIER; }
 {WHITESPACE}                               { /* skip */ }
 {NEWLINE}                                  { lines++; }
-	
+"#include"{WHITESPACE}"<"{LETTER}*">"      { /* skip */ }
 
 %%
 

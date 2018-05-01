@@ -28,8 +28,8 @@ void Metal::Driver::convert(const std::string & filename)
   outStream.close();
   printf("\n---------END PREPROCESSEDFILE----------\n%s\n",processedFileContents.c_str());
   
-  std::istringstream stream(processedFileContents);
-//  std::ifstream stream(outFileName.c_str());
+  //  std::istringstream stream(processedFileContents);
+  std::ifstream stream(filename.c_str());
   
   _scanner = std::shared_ptr<Scanner>(new Scanner(&stream));
   _parser = std::shared_ptr<Parser>(new Parser(*_scanner.get(), *this));
