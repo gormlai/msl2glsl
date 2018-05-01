@@ -51,6 +51,9 @@ class Scanner;
     Block * block;
     BufferDescriptor * bufferDescriptor;
     FunctionDeclaration * functionDeclaration;
+    float halfValue;
+    float floatValue;
+    double doubleValue;
     int intValue;
     Program * program;
     ReservedToken reservedToken;
@@ -80,11 +83,19 @@ class Scanner;
 %token 		      STRUCT
 %token		      SEMICOLON
 %token		      COMMA
-%token	<ReservedToken> STAR
-%token	<ReservedToken> AMPERSAND
+%token                DOT
+%token                ASSIGN
+%token                PLUS
+%token                MINUS
+%token                STAR
+%token                AMPERSAND
+%token		      FORWARD_SLASH
 %token	<qualifier>   CONSTANT
 %token	<string>      IDENTIFIER
 %token	<intValue>    INT_VALUE
+%token	<halfValue>   HALF_VALUE
+%token	<floatValue>  FLOAT_VALUE
+%token	<doubleValue> DOUBLE_VALUE
 %token	<string>      VARIABLE_ATTRIBUTE_INDEX
 %token                USING_NAMESPACE
 %token                BEGIN_CURLY_BRACKET
@@ -137,8 +148,8 @@ qualifier: 	CONSTANT { $$ = VariableDeclaration::Qualifier::Constant; }
 	;
 
 reserved_token:
-	       STAR { $$ = ReservedToken::Star; }
-	|	AMPERSAND { $$ = ReservedToken::Ampersand; }
+	       AMPERSAND { $$ = ReservedToken::Star; }
+//			|      '*' { $$ = ReservedToken::Ampersand; }
 	;
 
 variable_declaration:
@@ -160,13 +171,53 @@ function_declaration : identifier identifier identifier BEGIN_BRACKET variable_l
 		;
 
 statement:  USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$2); }
-	| 	struct SEMICOLON { $$ = $1; }
-	|	function_declaration { $$ = $1; }
-	| 	variable_declaration SEMICOLON { $$ = $1; }
+			| 	struct SEMICOLON { $$ = $1; }
+			|	function_declaration { $$ = $1; }
+			| 	variable_declaration SEMICOLON { $$ = $1; }
+			|	variable_declaration ASSIGN expression SEMICOLON {}
+			|	identifier ASSIGN expression SEMICOLON {}
+			|	identifier DOT identifier ASSIGN expression SEMICOLON {}
+	|	expression SEMICOLON {}
 		;
 
-
 identifier: IDENTIFIER { $$ = new std::string(*$1); delete $1; }
-		
+		;
+
+function_argument_list:
+		function_argument_list COMMA expression {}
+	|	expression {}
+	;
+
+function_call: 	identifier BEGIN_BRACKET function_argument_list END_BRACKET {}
+	|  	identifier BEGIN_BRACKET END_BRACKET {}	
+	;
+
+constant:	INT_VALUE
+	|	HALF_VALUE
+	|	FLOAT_VALUE
+	|	DOUBLE_VALUE
+		;
+
+expression1: constant
+	| 	identifier	
+	|	identifier DOT identifier
+	| 	BEGIN_BRACKET expression END_BRACKET
+	| 	function_call
+	| 	MINUS expression1
+;
+
+
+expression0:
+		expression0 STAR expression1
+	|	expression0 FORWARD_SLASH expression1
+	| 	expression1
+		;
+
+expression:
+	expression PLUS expression0
+	| expression MINUS expression0
+	| expression0	
+	;
+
 %%
 		

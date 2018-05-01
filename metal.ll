@@ -37,20 +37,28 @@ int lines = 1;
 "constant"                                 { return token::CONSTANT;}
 "{"                                        { return token::BEGIN_CURLY_BRACKET; }
 "}"                                        { return token::END_CURLY_BRACKET; }
-"*"                                        { return token::STAR; }
-"&"                                        { return token::AMPERSAND; }
+"/"                                        { return token::FORWARD_SLASH; }
 "<"                                        { return token::LESS_THAN; }
 ">"                                        { return token::GREATER_THAN; }
+"="                                        { return token::ASSIGN; }
 "using namespace"                          { return token::USING_NAMESPACE; }
 ";"                                        { return token::SEMICOLON; }
 ","                                        { return token::COMMA; }
+"+"                                        { return token::PLUS; }
+"-"                                        { return token::MINUS; }
+"*"                                        { return token::STAR; }
+"&"                                        { return token::AMPERSAND; }
+"."                                        { return token::DOT; }
 "::"                                       { return token::DOUBLE_COLON; }
 "access"                                   { return token::ACCESS; }
 "("                                        { return token::BEGIN_BRACKET; }
 ")"                                        { return token::END_BRACKET; }
 "[["                                       { return token::BEGIN_DOUBLE_SQUARE_BRACKET; }
 "]]"                                       { return token::END_DOUBLE_SQUARE_BRACKET; }
-{DIGIT}+                                   { std::string t(yytext,yyleng); _yyval->intValue = atoi(t.c_str()); return token::INT_VALUE; }
+{DIGIT}*"."{DIGIT}+"f"                     { std::string t(yytext,yyleng); _yyval->floatValue = atof(t.c_str()); return token::FLOAT_VALUE; }
+{DIGIT}*"."{DIGIT}+"h"                     { std::string t(yytext,yyleng); _yyval->halfValue = atof(t.c_str()); return token::HALF_VALUE; }
+{DIGIT}*"."{DIGIT}+                        { std::string t(yytext,yyleng); _yyval->doubleValue = atof(t.c_str()); return token::DOUBLE_VALUE; }
+{DIGIT}*                                   { std::string t(yytext,yyleng); _yyval->intValue = atoi(t.c_str()); return token::INT_VALUE; }
 {LETTER}{LETTER_OR_DIGIT}*                 { _yyval->string = new std::string(yytext,yyleng) ; return token::IDENTIFIER; }
 {WHITESPACE}                               { /* skip */ }
 {NEWLINE}                                  { lines++; }
