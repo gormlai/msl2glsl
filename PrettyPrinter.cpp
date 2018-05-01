@@ -41,6 +41,10 @@ void PrettyPrinter::operateOn(struct Block * block)
   _result = _result + "}";
 }
 
+void PrettyPrinter::operateOn(struct BufferDescriptor * desc)
+{
+  _result = _result + "<" + desc->_type + ",access::" + desc->_accessor + ">";
+}
 
 void PrettyPrinter::operateOn(struct Declaration * decl)
 {
@@ -109,6 +113,8 @@ void PrettyPrinter::operateOn(struct VariableAttribute * attribute)
     _result = _result + "stage_in";
   else if(attribute->_sAttribute == std::string("buffer"))
     _result = _result + "buffer(" + std::to_string(attribute->_iAttribute) + ")";
+  else if(attribute->_sAttribute == std::string("texture"))
+    _result = _result + "texture(" + std::to_string(attribute->_iAttribute) + ")";
 
   _result = _result + "]]";  
 }
@@ -127,6 +133,9 @@ void PrettyPrinter::operateOn(struct VariableDeclaration * node)
     }
   
   _result =  _result + node->_type;
+
+  if(node->_bufferDescriptor!=nullptr)
+    node->_bufferDescriptor->visit(this);
 
   std::string sToken = "";
   switch(node->_reservedToken)

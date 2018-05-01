@@ -90,12 +90,30 @@ struct Struct : public Declaration
   Block _block;
 };
 
+struct BufferDescriptor : public Node
+{
+public:
+  BufferDescriptor(const std::string & type, const std::string & accessor)
+    :_type(type)
+    ,_accessor(accessor)
+  {
+  }
+
+  virtual ~BufferDescriptor() {}
+  void visit(Visitor * v) override;
+  
+  std::string _type;
+  std::string _accessor;
+};
+
+
 enum class ReservedToken
 {
   None,
   Star,
   Ampersand,
 };
+
 
 struct VariableDeclaration : public Declaration
 {
@@ -108,6 +126,7 @@ struct VariableDeclaration : public Declaration
     
  VariableDeclaration(Qualifier qualifier,
 		     const std::string & type = std::string("") ,
+		     BufferDescriptor * bufferDescriptor = nullptr,
 		     const ReservedToken reservedToken = ReservedToken::None,
 		     const std::string & variableName = std::string(""),
 		     VariableAttribute * attribute = nullptr)
@@ -116,6 +135,7 @@ struct VariableDeclaration : public Declaration
     ,_attribute(attribute)
     ,_qualifier(qualifier)
     ,_reservedToken(reservedToken)
+    ,_bufferDescriptor(bufferDescriptor)
   {
   }
   
@@ -126,6 +146,7 @@ struct VariableDeclaration : public Declaration
   VariableAttribute * _attribute;
   Qualifier _qualifier;
   ReservedToken _reservedToken;
+  BufferDescriptor * _bufferDescriptor;
 };
 
 struct VariableList : public Node

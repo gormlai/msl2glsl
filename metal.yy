@@ -60,6 +60,7 @@ class Scanner;
     VariableList * variableList;
     VariableDeclaration::Qualifier qualifier;
     ReservedToken reservedToken;
+    BufferDescriptor * bufferDescriptor;
 }
 			  
 %token		      TYPE_BOOL		      
@@ -92,6 +93,10 @@ class Scanner;
 %token                END_BRACKET
 %token                BEGIN_DOUBLE_SQUARE_BRACKET
 %token                END_DOUBLE_SQUARE_BRACKET
+%token                DOUBLE_COLON
+%token                ACCESS
+%token                LESS_THAN
+%token                GREATER_THAN
 
 %type	<block> declaration_list
 %type	<declaration>	 declaration
@@ -104,6 +109,7 @@ class Scanner;
 %type	<variableDeclaration> variable_declaration
 %type	<variableList> variable_list
 %type	<reservedToken>	 reserved_token
+%type	<bufferDescriptor> buffer_descriptor
 %locations
 
 %%
@@ -123,6 +129,10 @@ variable_attribute: /* empty */ { $$ = nullptr; }
 	|	BEGIN_DOUBLE_SQUARE_BRACKET identifier END_DOUBLE_SQUARE_BRACKET { $$ = new VariableAttribute(*$2); }	
 	;
 
+buffer_descriptor:
+		      LESS_THAN identifier COMMA ACCESS DOUBLE_COLON identifier GREATER_THAN { $$ = new BufferDescriptor(*$2, *$6); }
+	;
+
 qualifier: 	CONSTANT { $$ = VariableDeclaration::Qualifier::Constant; }
 	;
 
@@ -132,10 +142,14 @@ reserved_token:
 	;
 
 variable_declaration:
-		qualifier identifier reserved_token identifier variable_attribute { $$ = new VariableDeclaration($1, *$2, $3, *$4, $5); }
-	|	identifier identifier variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, ReservedToken::None, *$2, $3); }
-	|	qualifier identifier identifier variable_attribute { $$ = new VariableDeclaration($1, *$2, ReservedToken::None, *$3, $4); }
-	|	identifier reserved_token identifier variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, $2, *$3, $4); }
+	qualifier identifier reserved_token identifier variable_attribute { $$ = new VariableDeclaration($1, *$2, nullptr, $3, *$4, $5); }
+|	identifier identifier variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, nullptr, ReservedToken::None, *$2, $3); }
+|	qualifier identifier identifier variable_attribute { $$ = new VariableDeclaration($1, *$2, nullptr, ReservedToken::None, *$3, $4); }
+|	identifier reserved_token identifier variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, nullptr, $2, *$3, $4); }
+|	qualifier identifier buffer_descriptor reserved_token identifier variable_attribute { $$ = new VariableDeclaration($1, *$2, $3, $4, *$5, $6); }
+|	identifier buffer_descriptor identifier variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, $2, ReservedToken::None, *$3, $4); }
+|	qualifier identifier buffer_descriptor identifier variable_attribute { $$ = new VariableDeclaration($1, *$2, $3, ReservedToken::None, *$4, $5); }
+|	identifier buffer_descriptor reserved_token identifier variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, $2, $3, *$4, $5); }		
 		;
 
 variable_list:  variable_list COMMA variable_declaration { $$->_variableDeclarations.push_back($3);}

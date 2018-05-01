@@ -8,6 +8,11 @@ void Block::visit(Visitor * v)
   v->operateOn(this);
 }
 
+void BufferDescriptor::visit(Visitor * v)
+{
+  v->operateOn(this);
+}
+
 void Declaration::visit(Visitor * v)
 {
   v->operateOn(this);

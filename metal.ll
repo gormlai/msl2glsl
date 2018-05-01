@@ -39,20 +39,22 @@ int lines = 0;
 "}"                                        { return token::END_CURLY_BRACKET; }
 "*"                                        { return token::STAR; }
 "&"                                        { return token::AMPERSAND; }
-"using namespace"     { return token::USING_NAMESPACE; }
-[";"]                                        { return token::SEMICOLON; }
-[","]                                        { return token::COMMA; }
-
-"(" { return token::BEGIN_BRACKET; }
-")" { return token::END_BRACKET; }
-
-"[[" { return token::BEGIN_DOUBLE_SQUARE_BRACKET; }
-"]]" { return token::END_DOUBLE_SQUARE_BRACKET; }
-{DIGIT}+                                  { std::string t(yytext,yyleng); _yyval->intValue = atoi(t.c_str()); return token::INT_VALUE; }
-{LETTER}{LETTER_OR_DIGIT}*                { _yyval->string = new std::string(yytext,yyleng) ; return token::IDENTIFIER; }
-{WHITESPACE}                              { /* skip */ }
-{NEWLINE}                                 { lines++; }
-
+"<"                                        { return token::LESS_THAN; }
+">"                                        { return token::GREATER_THAN; }
+"using namespace"                          { return token::USING_NAMESPACE; }
+";"                                        { return token::SEMICOLON; }
+","                                        { return token::COMMA; }
+"::"                                       { return token::DOUBLE_COLON; }
+"access"                                   { return token::ACCESS; }
+"("                                        { return token::BEGIN_BRACKET; }
+")"                                        { return token::END_BRACKET; }
+"[["                                       { return token::BEGIN_DOUBLE_SQUARE_BRACKET; }
+"]]"                                       { return token::END_DOUBLE_SQUARE_BRACKET; }
+{DIGIT}+                                   { std::string t(yytext,yyleng); _yyval->intValue = atoi(t.c_str()); return token::INT_VALUE; }
+{LETTER}{LETTER_OR_DIGIT}*                 { _yyval->string = new std::string(yytext,yyleng) ; return token::IDENTIFIER; }
+{WHITESPACE}                               { /* skip */ }
+{NEWLINE}                                  { lines++; }
+	
 
 %%
 

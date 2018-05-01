@@ -7,6 +7,7 @@ class Visitor
   virtual ~Visitor() {}
   
   virtual void operateOn(struct Block * block) {}
+  virtual void operateOn(struct BufferDescriptor * desc) {}
   virtual void operateOn(struct Declaration * decl) {}
   virtual void operateOn(struct FunctionDeclaration * node) {}
   virtual void operateOn(struct Node * node) {}
