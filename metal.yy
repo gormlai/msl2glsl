@@ -59,7 +59,7 @@ class Scanner;
     VariableDeclaration * variableDeclaration;
     VariableList * variableList;
     VariableDeclaration::Qualifier qualifier;
-    
+    ReservedToken reservedToken;
 }
 			  
 %token		      TYPE_BOOL		      
@@ -78,7 +78,9 @@ class Scanner;
 %token 		      SKIP
 %token 		      STRUCT
 %token		      SEMICOLON
-%token	<VariableDeclaration::Qualifier>      CONSTANT
+%token	<reservedToken> STAR
+%token	<reservedToken> AMPERSAND
+%token	<qualifier>   CONSTANT
 %token	<string>      IDENTIFIER
 %token	<intValue>    INT_VALUE
 %token	<string>      VARIABLE_ATTRIBUTE_INDEX
@@ -100,6 +102,7 @@ class Scanner;
 %type	<variableAttribute> variable_attribute
 %type	<variableDeclaration> variable_declaration
 %type	<variableList> variable_list
+%type	<reservedToken>	 reserved_token
 %locations
 
 %%
@@ -109,27 +112,31 @@ translation_unit: declaration_list { _root = new Program($1); $$ = _root; delete
 struct: STRUCT identifier BEGIN_CURLY_BRACKET declaration_list END_CURLY_BRACKET { $$ = new Struct(*$2); $$->_block = *$4; delete $4; }
 		;
 
-declaration_list: /* empty */ { $$ = new Block() ; }
-	|	declaration_list declaration { $$->_nodes.push_back($2);}
+declaration_list: declaration_list declaration { $$->_nodes.push_back($2);}
 	|	declaration { $$ = new Block() ;  $$->_nodes.push_back($1); }
 		;
 
-variable_attribute: BEGIN_DOUBLE_SQUARE_BRACKET identifier BEGIN_BRACKET INT_VALUE END_BRACKET END_DOUBLE_SQUARE_BRACKET { $$ = new VariableAttribute(*$2,$4); }
+variable_attribute: /* empty */ { $$ = nullptr; }
+
+	|	BEGIN_DOUBLE_SQUARE_BRACKET identifier BEGIN_BRACKET INT_VALUE END_BRACKET END_DOUBLE_SQUARE_BRACKET { $$ = new VariableAttribute(*$2,$4); }
 	|	BEGIN_DOUBLE_SQUARE_BRACKET identifier END_DOUBLE_SQUARE_BRACKET { $$ = new VariableAttribute(*$2); }	
 	;
 
-qualifier:	CONSTANT { $$ = VariableDeclaration::Qualifier::Constant; }
+qualifier: /* empty */ { $$ = VariableDeclaration::Qualifier::None; }
+	|	CONSTANT { $$ = VariableDeclaration::Qualifier::Constant; }
+	;
+
+reserved_token:	/* empty */ { $$ = ReservedToken::None; }
+	|       STAR { $$ = ReservedToken::Star; }
+	|	AMPERSAND { $$ = ReservedToken::Ampersand; }
 	;
 
 variable_declaration:
-		identifier identifier { $$ = new VariableDeclaration(*$1, *$2); }
-	| 	identifier identifier variable_attribute { $$ = new VariableDeclaration(*$1, *$2, $3); }
-	|	qualifier identifier identifier { $$ = new VariableDeclaration($1, *$2, *$3); }
-	| 	qualifier identifier identifier variable_attribute { $$ = new VariableDeclaration($1, *$2,*$3, $4); }
+		qualifier identifier reserved_token identifier variable_attribute { $$ = new VariableDeclaration($1, *$2, $3, *$4, $5); }
 		;
 
-variable_list: /* empty */ { $$ = new VariableList(); }
-	|	variable_list variable_declaration { $$->_variableDeclarations.push_back($2);}
+variable_list:
+		variable_list variable_declaration { $$->_variableDeclarations.push_back($2);}
 	|	variable_declaration { $$ = new VariableList() ;  $$->_variableDeclarations.push_back($1); }
 		;
 

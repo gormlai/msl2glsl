@@ -90,6 +90,12 @@ struct Struct : public Declaration
   Block _block;
 };
 
+enum class ReservedToken
+{
+  None,
+  Star,
+  Ampersand,
+};
 
 struct VariableDeclaration : public Declaration
 {
@@ -99,25 +105,17 @@ struct VariableDeclaration : public Declaration
     None,
     Constant,
   };
-  
- VariableDeclaration(const std::string & type = std::string("") ,
-		     const std::string & variableName = std::string(""),
-		     VariableAttribute * attribute = nullptr)
-    :_type(type)
-    ,_variableName(variableName)
-    ,_attribute(attribute)
-    ,_qualifier(Qualifier::None)
-  {
-  }
-  
+    
  VariableDeclaration(Qualifier qualifier,
 		     const std::string & type = std::string("") ,
+		     const ReservedToken reservedToken = ReservedToken::None,
 		     const std::string & variableName = std::string(""),
 		     VariableAttribute * attribute = nullptr)
     :_type(type)
     ,_variableName(variableName)
     ,_attribute(attribute)
     ,_qualifier(qualifier)
+    ,_reservedToken(reservedToken)
   {
   }
   
@@ -127,6 +125,7 @@ struct VariableDeclaration : public Declaration
   std::string _variableName;
   VariableAttribute * _attribute;
   Qualifier _qualifier;
+  ReservedToken _reservedToken;
 };
 
 struct VariableList : public Node
@@ -165,6 +164,7 @@ struct FunctionDeclaration : public Declaration
   Block * _block;
 
 };
+
 
 extern Program * _root;
 

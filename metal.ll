@@ -37,7 +37,8 @@ int lines = 0;
 "constant"                                 { return token::CONSTANT;}
 "{"                                        { return token::BEGIN_CURLY_BRACKET; }
 "}"                                        { return token::END_CURLY_BRACKET; }
-
+"*"                                        { return token::STAR; }
+"&"                                        { return token::AMPERSAND; }
 "using namespace"     { return token::USING_NAMESPACE; }
 [";"]                                        { return token::SEMICOLON; }
 

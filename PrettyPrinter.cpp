@@ -92,7 +92,7 @@ void PrettyPrinter::operateOn(struct Struct * strct)
 void PrettyPrinter::operateOn(struct UsingDeclaration * usingDecl)
 {
   indent();
-  _result = _result + "using namespace " + usingDecl->_nmspace;
+  _result = _result + "using namespace " + usingDecl->_nmspace + ";\n";
 }
 
 void PrettyPrinter::operateOn(struct VariableAttribute * attribute)
@@ -122,10 +122,28 @@ void PrettyPrinter::operateOn(struct VariableDeclaration * node)
       break;
     }
   
-  _result =  _result + node->_type + " " + node->_variableName;
+  _result =  _result + node->_type;
+
+  std::string sToken = "";
+  switch(node->_reservedToken)
+    {
+    case ReservedToken::Star:
+      sToken = std::string(" *");
+      break;
+    case ReservedToken::Ampersand:
+      sToken = std::string(" &");
+      break;
+    case ReservedToken::None:
+    default:
+      break;
+    }
+
+  _result = _result + sToken + " " + node->_variableName;
 
   if(node->_attribute != nullptr)
     node->_attribute->visit(this);
+
+  _result = _result + ";\n";
 
   
 }

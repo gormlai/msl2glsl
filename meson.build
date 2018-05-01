@@ -23,7 +23,7 @@ lfiles = lgen.process('metal.ll')
 
 pgen = generator(bison,
 output : ['@BASENAME@.tab.cpp', '@BASENAME@.tab.h'],
-arguments : ['-t','@INPUT@', '--defines=@OUTPUT1@', '--output=@OUTPUT0@'])
+arguments : ['-r','all','-t','@INPUT@', '--defines=@OUTPUT1@', '--output=@OUTPUT0@'])
 
 pfiles = pgen.process('metal.yy')
 
