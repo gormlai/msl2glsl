@@ -90,6 +90,7 @@ class Scanner;
 %token                STAR
 %token                AMPERSAND
 %token		      FORWARD_SLASH
+%token		      RETURN
 %token	<qualifier>   CONSTANT
 %token	<string>      IDENTIFIER
 %token	<intValue>    INT_VALUE
@@ -171,12 +172,12 @@ function_declaration : identifier identifier identifier BEGIN_BRACKET variable_l
 		;
 
 statement:  USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$2); }
-			| 	struct SEMICOLON { $$ = $1; }
-			|	function_declaration { $$ = $1; }
-			| 	variable_declaration SEMICOLON { $$ = $1; }
-			|	variable_declaration ASSIGN expression SEMICOLON {}
-			|	identifier ASSIGN expression SEMICOLON {}
-			|	identifier DOT identifier ASSIGN expression SEMICOLON {}
+	| 	struct SEMICOLON { $$ = $1; }
+	|	function_declaration { $$ = $1; }
+	| 	variable_declaration SEMICOLON { $$ = $1; }
+	|	variable_declaration ASSIGN expression SEMICOLON {}
+	|	expression ASSIGN expression SEMICOLON {}
+	|	RETURN expression SEMICOLON {}
 	|	expression SEMICOLON {}
 		;
 
@@ -200,7 +201,6 @@ constant:	INT_VALUE
 
 expression1: constant
 	| 	identifier	
-	|	identifier DOT identifier
 	| 	BEGIN_BRACKET expression END_BRACKET
 	| 	function_call
 	| 	MINUS expression1
@@ -211,6 +211,7 @@ expression0:
 		expression0 STAR expression1
 	|	expression0 FORWARD_SLASH expression1
 	| 	expression1
+	| 	expression0 DOT expression1
 		;
 
 expression:
