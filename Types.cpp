@@ -13,11 +13,6 @@ void BufferDescriptor::visit(Visitor * v)
   v->operateOn(this);
 }
 
-void Declaration::visit(Visitor * v)
-{
-  v->operateOn(this);
-}
-
 void FunctionDeclaration::visit(Visitor * v)
 {
   v->operateOn(this);
@@ -29,6 +24,11 @@ void Node::visit(Visitor * v)
 }
 
 void Program::visit(Visitor * v)
+{
+  v->operateOn(this);
+}
+
+void Statement::visit(Visitor * v)
 {
   v->operateOn(this);
 }

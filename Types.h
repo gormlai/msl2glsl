@@ -34,10 +34,10 @@ struct VariableAttribute : public Node
   int _iAttribute;
 };
 
-struct Declaration : public Node
+struct Statement : public Node
 {
  public:
-  virtual ~Declaration() {}
+  virtual ~Statement() {}
   void visit(Visitor * v) override;
 };
 
@@ -61,7 +61,7 @@ struct Program : public Block
 };
 
 
-struct UsingDeclaration : public Declaration
+struct UsingDeclaration : public Statement
 {
  public:
   UsingDeclaration(const std::string & nmspace)
@@ -75,7 +75,7 @@ struct UsingDeclaration : public Declaration
   std::string _nmspace;
 };
 
-struct Struct : public Declaration
+struct Struct : public Statement
 {
  public:
   Struct(const std::string & name)
@@ -115,7 +115,7 @@ enum class ReservedToken
 };
 
 
-struct VariableDeclaration : public Declaration
+struct VariableDeclaration : public Statement
 {
  public:
   enum class Qualifier
@@ -159,7 +159,7 @@ struct VariableList : public Node
   
 };
 
-struct FunctionDeclaration : public Declaration
+struct FunctionDeclaration : public Statement
 {
  public:
   FunctionDeclaration(const std::string & functionType,

@@ -49,18 +49,18 @@ class Scanner;
 %union
 {
     Block * block;
-    Declaration *declaration;
+    BufferDescriptor * bufferDescriptor;
     FunctionDeclaration * functionDeclaration;
     int intValue;
     Program * program;
+    ReservedToken reservedToken;
     std::string * string;
+    Statement * statement;
     Struct * strct;
     VariableAttribute * variableAttribute;
     VariableDeclaration * variableDeclaration;
     VariableList * variableList;
     VariableDeclaration::Qualifier qualifier;
-    ReservedToken reservedToken;
-    BufferDescriptor * bufferDescriptor;
 }
 			  
 %token		      TYPE_BOOL		      
@@ -99,7 +99,7 @@ class Scanner;
 %token                GREATER_THAN
 
 %type	<block> statements
-%type	<declaration>	 declaration
+%type	<statement>	 statement
 %type	<functionDeclaration> function_declaration
 %type	<program> translation_unit
 %type	<string>	identifier
@@ -119,8 +119,8 @@ translation_unit: statements { _root = new Program($1); $$ = _root; delete $1; }
 struct: STRUCT identifier BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new Struct(*$2); $$->_block = *$4; delete $4; }
 		;
 
-statements: statements declaration { $$->_nodes.push_back($2);}
-	|	declaration { $$ = new Block() ;  $$->_nodes.push_back($1); }
+statements: statements statement { $$->_nodes.push_back($2);}
+	|	statement { $$ = new Block() ;  $$->_nodes.push_back($1); }
 		;
 
 variable_attribute: /* empty */ { $$ = nullptr; }
@@ -159,7 +159,7 @@ variable_list:  variable_list COMMA variable_declaration { $$->_variableDeclarat
 function_declaration : identifier identifier identifier BEGIN_BRACKET variable_list END_BRACKET BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new FunctionDeclaration(*$1, *$2, *$3, $5, $8); }
 		;
 
-declaration:  USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$2); }
+statement:  USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$2); }
 	| 	struct SEMICOLON { $$ = $1; }
 	|	function_declaration { $$ = $1; }
 	| 	variable_declaration SEMICOLON { $$ = $1; }

@@ -46,10 +46,6 @@ void PrettyPrinter::operateOn(struct BufferDescriptor * desc)
   _result = _result + "<" + desc->_type + ",access::" + desc->_accessor + ">";
 }
 
-void PrettyPrinter::operateOn(struct Declaration * decl)
-{
-}
-
 void PrettyPrinter::operateOn(struct FunctionDeclaration * node)
 {
   indent();
@@ -81,6 +77,10 @@ void PrettyPrinter::operateOn(struct Program * program)
 {
   for(auto node : program->_nodes)
     node->visit(this);
+}
+
+void PrettyPrinter::operateOn(struct Statement * statement)
+{
 }
 
 void PrettyPrinter::operateOn(struct Struct * strct)
