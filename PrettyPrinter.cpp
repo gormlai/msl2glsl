@@ -64,7 +64,9 @@ void PrettyPrinter::operateOn(struct FunctionDeclaration * node)
   _result = _result + ")\n";
 
   if(node->_block!=nullptr)
-    node->_block->visit(this);  
+    node->_block->visit(this);
+
+  _result = _result + "\n";
 }
 
 void PrettyPrinter::operateOn(struct Node * node)

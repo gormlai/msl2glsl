@@ -138,8 +138,8 @@ variable_declaration:
 	|	identifier reserved_token identifier variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, $2, *$3, $4); }
 		;
 
-variable_list:  variable_list variable_declaration { $$->_variableDeclarations.push_back($2);}
-	|	variable_declaration COMMA { $$ = new VariableList() ;  $$->_variableDeclarations.push_back($1); }
+variable_list:  variable_list COMMA variable_declaration { $$->_variableDeclarations.push_back($3);}
+	|	variable_declaration { $$ = new VariableList() ;  $$->_variableDeclarations.push_back($1); }
 		;
 
 function_declaration : identifier identifier identifier BEGIN_BRACKET variable_list END_BRACKET BEGIN_CURLY_BRACKET declaration_list END_CURLY_BRACKET { $$ = new FunctionDeclaration(*$1, *$2, *$3, $5, $8); }
