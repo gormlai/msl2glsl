@@ -105,6 +105,8 @@ void PrettyPrinter::operateOn(struct VariableAttribute * attribute)
     _result = _result + "position";
   else if(attribute->_sAttribute == std::string("stage_in"))
     _result = _result + "stage_in";
+  else if(attribute->_sAttribute == std::string("buffer"))
+    _result = _result + "buffer(" + std::to_string(attribute->_iAttribute) + ")";
 
   _result = _result + "]]";  
 }
