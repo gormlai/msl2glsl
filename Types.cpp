@@ -3,6 +3,11 @@
 
 Program * _root = nullptr;
 
+void BinaryExpression::visit(Visitor * v)
+{
+	v->operateOn(this);
+}
+
 void Block::visit(Visitor * v)
 {
   v->operateOn(this);
@@ -11,6 +16,16 @@ void Block::visit(Visitor * v)
 void BufferDescriptor::visit(Visitor * v)
 {
   v->operateOn(this);
+}
+
+void ConstantExpression::visit(Visitor * v)
+{
+	v->operateOn(this);
+}
+
+void Expression::visit(Visitor * v)
+{
+	v->operateOn(this);
 }
 
 void FunctionDeclaration::visit(Visitor * v)

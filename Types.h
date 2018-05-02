@@ -112,7 +112,69 @@ struct Expression : public Statement
  public:
   Expression() {}
   virtual ~Expression() {}
-  
+  void visit(Visitor * v) override;
+
+};
+
+enum class ConstantType
+{
+	Int,
+	Float,
+	Double,
+	Half,
+	Identifier,
+};
+
+struct ConstantExpression : public Expression
+{
+public:
+	ConstantExpression(ConstantType type, int value)
+		:_type(type)
+	{
+		_int = value;
+	}
+
+	ConstantExpression(ConstantType type, float value)
+		:_type(type)
+	{
+		switch (type)
+		{
+		case ConstantType::Float:
+			_float = value;
+			break;
+		case ConstantType::Half:
+			_half = value;
+			break;
+		}
+	}
+
+	ConstantExpression(ConstantType type, double value)
+		:_type(type)
+	{
+		_double = value;
+	}
+
+	ConstantExpression(ConstantType type, const std::string & value)
+		:_type(type)
+	{
+		_identifier = value;
+	}
+
+	ConstantExpression() {}
+	virtual ~ConstantExpression() {}
+	void visit(Visitor * v) override;
+
+	ConstantType _type;
+
+	union 
+	{
+		int _int;
+		float _float;
+		double _double;
+		float _half;
+		std::string _identifier;
+	};
+
 };
 
 enum class BinaryOperator
@@ -121,6 +183,7 @@ enum class BinaryOperator
   Minus,
   Multiply,
   Divide,
+  Dot
 };
 
 struct BinaryExpression : public Statement
@@ -134,6 +197,7 @@ struct BinaryExpression : public Statement
   }
 
   virtual ~BinaryExpression() {}
+  void visit(Visitor * v) override;
 
   Expression * _left;
   Expression * _right;

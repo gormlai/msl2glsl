@@ -49,6 +49,8 @@ void Metal::Driver::convert(const std::string & filename)
       printf("\n---------END PRETTY PRINTING FILE----------\n");
       
     }
+
+	int k = 9;
     
   }
   catch(const std::bad_alloc & e) {

@@ -198,14 +198,14 @@ function_call: 	identifier BEGIN_BRACKET function_argument_list END_BRACKET {}
 	|  	identifier BEGIN_BRACKET END_BRACKET {}	
 	;
 
-constant:	INT_VALUE
-	|	HALF_VALUE
-	|	FLOAT_VALUE
-	|	DOUBLE_VALUE
+constant:	INT_VALUE { $$ = new ConstantExpression(ConstantType::Int, *$1); }
+	|	HALF_VALUE { $$ = new ConstantExpression(ConstantType::Half, *$1); }
+	|	FLOAT_VALUE { $$ = new ConstantExpression(ConstantType::Float, *$1); }
+	|	DOUBLE_VALUE { $$ = new ConstantExpression(ConstantType::Double, *$1); }
 		;
 
 expression1: constant
-	| 	identifier	
+	| 	identifier	{ $$ = new ConstantExpression(ConstantType::Identifier, *$1); }
 	| 	BEGIN_BRACKET expression END_BRACKET
 	| 	function_call
 	| 	MINUS expression1
@@ -213,16 +213,16 @@ expression1: constant
 
 
 expression0:
-		expression0 STAR expression1
-	|	expression0 FORWARD_SLASH expression1
-	| 	expression1
-	| 	expression0 DOT expression1
+		expression0 STAR expression1 {  $$ = new BinaryExpression($1, BinaryOperator::Plus, $2); }
+	|	expression0 FORWARD_SLASH expression1 {  $$ = new BinaryExpression($1, BinaryOperator::Plus, $2); }
+	| 	expression1 { $$ = $1; }
+	| 	expression0 DOT expression1 {  $$ = new BinaryExpression($1, BinaryOperator::Plus, $2); }
 		;
 
 expression:
-	       expression PLUS expression0 { /* $$ = new BinaryExpression($1, BinaryOperator::Plus, $2);*/ }
-	| expression MINUS expression0
-	| expression0	
+	       expression PLUS expression0 {  $$ = new BinaryExpression($1, BinaryOperator::Plus, $2); }
+	| expression MINUS expression0 {  $$ = new BinaryExpression($1, BinaryOperator::Minus, $2); }
+	| expression0 { $$ = $1; }
 	;
 
 %%
