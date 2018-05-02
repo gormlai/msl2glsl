@@ -50,6 +50,7 @@ class Scanner;
 {
     Block * block;
     BufferDescriptor * bufferDescriptor;
+    Expression * expression;
     FunctionDeclaration * functionDeclaration;
     float halfValue;
     float floatValue;
@@ -122,6 +123,7 @@ class Scanner;
 %type	<variableList> variable_list
 %type	<reservedToken>	 reserved_token
 %type	<bufferDescriptor> buffer_descriptor
+%type	<expression>   expression expression0 expression1 constant
 %locations
 
 %%
@@ -178,7 +180,7 @@ statement:  USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$
 	|	variable_declaration ASSIGN expression SEMICOLON { $$ = nullptr; }
 	|	expression ASSIGN expression SEMICOLON { $$ = nullptr; }
 	|	RETURN expression SEMICOLON { $$ = nullptr; }
-	|	expression SEMICOLON { $$ = nullptr; }
+	|	expression SEMICOLON { $$ = $1; }
 		;
 
 identifier: IDENTIFIER { $$ = new std::string(*$1); delete $1; }
@@ -215,7 +217,7 @@ expression0:
 		;
 
 expression:
-	expression PLUS expression0
+	       expression PLUS expression0 { $$ = new BinaryExpression($1, BinaryOperator::Plus, $2); }
 	| expression MINUS expression0
 	| expression0	
 	;

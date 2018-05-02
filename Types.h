@@ -107,6 +107,39 @@ public:
 };
 
 
+struct Expression : public Statement
+{
+ public:
+  Expression() {}
+  virtual ~Expression() {}
+  
+};
+
+enum class BinaryOperator
+{
+  Plus,
+  Minus,
+  Multiply,
+  Divide,
+};
+
+struct BinaryExpression : public Statement
+{
+ public:
+  BinaryExpression(Expression * left, BinaryOperator op, Expression * right)
+    :_left(left)
+    ,_right(right)
+    ,_op(op)
+  {
+  }
+
+  virtual ~BinaryExpression() {}
+
+  Expression * _left;
+  Expression * _right;
+  BinaryOperator _op;
+};
+
 enum class ReservedToken
 {
   None,
