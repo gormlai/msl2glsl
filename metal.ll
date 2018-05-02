@@ -6,9 +6,10 @@ LETTER_OR_DIGIT ({LETTER}|{DIGIT})
 
 %{
 
+#include <iostream>
 #include "Types.h"
 #include <string.h>
-#include <Scanner.h>
+#include "Scanner.h"
 
 #undef YY_DECL
 #define YY_DECL int Metal::Scanner::yylex(Metal::Parser::semantic_type * const lval, Metal::Parser::location_type *loc)

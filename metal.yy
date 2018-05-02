@@ -123,7 +123,10 @@ class Scanner;
 %type	<variableList> variable_list
 %type	<reservedToken>	 reserved_token
 %type	<bufferDescriptor> buffer_descriptor
-%type	<expression>   expression expression0 expression1 constant
+%type	<expression>   expression
+%type	<expression>   expression0
+%type	<expression>   expression1
+%type	<expression>   constant
 %locations
 
 %%
@@ -217,7 +220,7 @@ expression0:
 		;
 
 expression:
-	       expression PLUS expression0 { $$ = new BinaryExpression($1, BinaryOperator::Plus, $2); }
+	       expression PLUS expression0 { /* $$ = new BinaryExpression($1, BinaryOperator::Plus, $2);*/ }
 	| expression MINUS expression0
 	| expression0	
 	;

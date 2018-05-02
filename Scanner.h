@@ -4,7 +4,7 @@
 #include "Types.h"
 
 #if !defined(yyFlexLexerOnce)
-#include <FlexLexer.h>
+#include "FlexLexer.h"
 #endif
 
 
