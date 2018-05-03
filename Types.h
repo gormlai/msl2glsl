@@ -116,6 +116,7 @@ struct Expression : public Statement
 
 };
 
+
 enum class ConstantType
 {
 	Int,
@@ -175,6 +176,29 @@ public:
 		std::string _identifier;
 	};
 
+};
+
+enum class UnaryType
+{
+	Minus,
+	Parenthesis,
+};
+
+struct UnaryExpression : public Expression
+{
+public:
+	UnaryExpression(UnaryType type, Expression * expression)
+		:_type(type)
+		,_expression(expression)
+	{
+
+	}
+
+	virtual ~UnaryExpression() {}
+	void visit(Visitor * v) override;
+
+	UnaryType _type;
+	Expression * _expression;
 };
 
 enum class BinaryOperator

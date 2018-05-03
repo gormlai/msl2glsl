@@ -191,7 +191,7 @@ identifier: IDENTIFIER { $$ = new std::string(*$1); delete $1; }
 
 function_argument_list:
 		function_argument_list COMMA expression {}
-	|	expression {}
+	|	expression { }
 	;
 
 function_call: 	identifier BEGIN_BRACKET function_argument_list END_BRACKET {}
@@ -206,9 +206,9 @@ constant:	INT_VALUE { $$ = new ConstantExpression(ConstantType::Int, *$1); }
 
 expression1: constant
 	| 	identifier	{ $$ = new ConstantExpression(ConstantType::Identifier, *$1); }
-	| 	BEGIN_BRACKET expression END_BRACKET
+	| 	BEGIN_BRACKET expression END_BRACKET { $$ = new UnaryExpression(UnaryType::Parenthesis, $1); }
 	| 	function_call
-	| 	MINUS expression1
+	| 	MINUS expression1 { $$ = new UnaryExpression(UnaryType::Minus, $1); }
 ;
 
 

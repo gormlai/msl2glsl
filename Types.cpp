@@ -53,6 +53,11 @@ void Struct::visit(Visitor * v)
   v->operateOn(this);
 }
 
+void UnaryExpression::visit(Visitor * v)
+{
+	v->operateOn(this);
+}
+
 void UsingDeclaration::visit(Visitor * v)
 {
   v->operateOn(this);
