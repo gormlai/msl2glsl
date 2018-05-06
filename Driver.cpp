@@ -50,8 +50,6 @@ void Metal::Driver::convert(const std::string & filename)
       
     }
 
-	int k = 9;
-    
   }
   catch(const std::bad_alloc & e) {
     std::cerr << "Bad Alloc: " << e.what() << std::endl;

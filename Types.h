@@ -146,6 +146,8 @@ public:
 		case ConstantType::Half:
 			_half = value;
 			break;
+		default: // we just need to add this to silence the compiler warnings
+		  break;
 		}
 	}
 
@@ -210,7 +212,7 @@ enum class BinaryOperator
   Dot
 };
 
-struct BinaryExpression : public Statement
+struct BinaryExpression : public Expression
 {
  public:
   BinaryExpression(Expression * left, BinaryOperator op, Expression * right)
