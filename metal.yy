@@ -198,30 +198,30 @@ function_call: 	identifier BEGIN_BRACKET function_argument_list END_BRACKET { $$
 	|  	identifier BEGIN_BRACKET END_BRACKET { $$ = new FunctionCall(*$1, nullptr); }	
 	;
 
-constant:	INT_VALUE { $$ = new ConstantExpression(ConstantType::Int, *$1); }
-	|	HALF_VALUE { $$ = new ConstantExpression(ConstantType::Half, *$1); }
-	|	FLOAT_VALUE { $$ = new ConstantExpression(ConstantType::Float, *$1); }
-	|	DOUBLE_VALUE { $$ = new ConstantExpression(ConstantType::Double, *$1); }
+constant:	INT_VALUE { $$ = new ConstantExpression(ConstantType::Int, $1); }
+	|	HALF_VALUE { $$ = new ConstantExpression(ConstantType::Half, $1); }
+	|	FLOAT_VALUE { $$ = new ConstantExpression(ConstantType::Float, $1); }
+	|	DOUBLE_VALUE { $$ = new ConstantExpression(ConstantType::Double, $1); }
 		;
 
 expression1: constant
 	| 	identifier	{ $$ = new ConstantExpression(ConstantType::Identifier, *$1); }
-	| 	BEGIN_BRACKET expression END_BRACKET { $$ = new UnaryExpression(UnaryType::Parenthesis, $1); }
+	| 	BEGIN_BRACKET expression END_BRACKET { $$ = new UnaryExpression(UnaryType::Parenthesis, $2); }
 	| 	function_call
-	| 	MINUS expression1 { $$ = new UnaryExpression(UnaryType::Minus, $1); }
+	| 	MINUS expression1 { $$ = new UnaryExpression(UnaryType::Minus, $2); }
 ;
 
 
 expression0:
-		expression0 STAR expression1 {  $$ = new BinaryExpression($1, BinaryOperator::Plus, $2); }
-	|	expression0 FORWARD_SLASH expression1 {  $$ = new BinaryExpression($1, BinaryOperator::Plus, $2); }
+		expression0 STAR expression1 {  $$ = new BinaryExpression($1, BinaryOperator::Plus, $3); }
+	|	expression0 FORWARD_SLASH expression1 {  $$ = new BinaryExpression($1, BinaryOperator::Plus, $3); }
 	| 	expression1 { $$ = $1; }
-	| 	expression0 DOT expression1 {  $$ = new BinaryExpression($1, BinaryOperator::Plus, $2); }
+	| 	expression0 DOT expression1 {  $$ = new BinaryExpression($1, BinaryOperator::Plus, $3); }
 		;
 
 expression:
-	       expression PLUS expression0 {  $$ = new BinaryExpression($1, BinaryOperator::Plus, $2); }
-	| expression MINUS expression0 {  $$ = new BinaryExpression($1, BinaryOperator::Minus, $2); }
+	       expression PLUS expression0 {  $$ = new BinaryExpression($1, BinaryOperator::Plus, $3); }
+	| expression MINUS expression0 {  $$ = new BinaryExpression($1, BinaryOperator::Minus, $3); }
 	| expression0 { $$ = $1; }
 	;
 
