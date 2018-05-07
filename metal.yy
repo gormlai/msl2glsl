@@ -194,8 +194,8 @@ function_argument_list:
 	|	expression { }
 	;
 
-function_call: 	identifier BEGIN_BRACKET function_argument_list END_BRACKET {}
-	|  	identifier BEGIN_BRACKET END_BRACKET {}	
+function_call: 	identifier BEGIN_BRACKET function_argument_list END_BRACKET { $$ = new FunctionCall(*$1, $2);}
+	|  	identifier BEGIN_BRACKET END_BRACKET { $$ = new FunctionCall(*$1, nullptr); }	
 	;
 
 constant:	INT_VALUE { $$ = new ConstantExpression(ConstantType::Int, *$1); }

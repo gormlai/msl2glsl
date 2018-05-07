@@ -307,6 +307,35 @@ struct FunctionDeclaration : public Statement
 
 };
 
+struct FunctionCallArgumentList : public Expression
+{
+public:
+	FunctionCallArgumentList()
+	{
+
+	}
+
+	virtual ~FunctionCallArgumentList();
+	void visit(Visitor * v) override;
+
+	std::vector<Expression *> _expressions;
+};
+
+struct FunctionCall : public Expression
+{
+	FunctionCall(const std::string & name, FunctionCallArgumentList * arguments)
+	{
+
+	}
+
+	virtual~FunctionCall();
+	void visit(Visitor * v) override;
+
+	std::string _name;
+	FunctionCallArgumentList * arguments;
+
+
+};
 
 extern Program * _root;
 

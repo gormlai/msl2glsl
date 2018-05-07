@@ -28,6 +28,16 @@ void Expression::visit(Visitor * v)
 	v->operateOn(this);
 }
 
+void FunctionCall::visit(Visitor * v)
+{
+	v->operateOn(this);
+}
+
+void FunctionCallArgumentList::visit(Visitor * v)
+{
+	v->operateOn(this);
+}
+
 void FunctionDeclaration::visit(Visitor * v)
 {
   v->operateOn(this);
