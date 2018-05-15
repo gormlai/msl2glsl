@@ -23,6 +23,10 @@ const std::string PrettyPrinter::print(struct Block * block)
   return _result;
 }
 
+void PrettyPrinter::operateOn(struct BinaryExpression * desc)
+{
+}
+
 void PrettyPrinter::operateOn(struct Block * block)
 {  
   indent();
@@ -49,6 +53,16 @@ void PrettyPrinter::operateOn(struct BufferDescriptor * desc)
 {
   _result = _result + "<" + desc->_type + ",access::" + desc->_accessor + ">";
 }
+
+void PrettyPrinter::operateOn(struct ConstantExpression * desc)
+{
+
+}
+
+void PrettyPrinter::operateOn(struct Expression * desc)
+{
+}
+
 
 void PrettyPrinter::operateOn(struct FunctionCall * node)
 {
@@ -106,6 +120,11 @@ void PrettyPrinter::operateOn(struct Struct * strct)
   _result = _result + ";\n";
   
 }
+
+void PrettyPrinter::operateOn(struct UnaryExpression * desc)
+{
+}
+
 
 void PrettyPrinter::operateOn(struct UsingDeclaration * usingDecl)
 {
