@@ -8,6 +8,8 @@ class Visitor
   
   virtual void operateOn(struct Block * block) {}
   virtual void operateOn(struct BufferDescriptor * desc) {}
+  virtual void operateOn(struct FunctionCall * node) {}
+  virtual void operateOn(struct FunctionCallArgumentList * node) {}
   virtual void operateOn(struct FunctionDeclaration * node) {}
   virtual void operateOn(struct Node * node) {}
   virtual void operateOn(struct Program * program) {}

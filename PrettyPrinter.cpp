@@ -50,6 +50,14 @@ void PrettyPrinter::operateOn(struct BufferDescriptor * desc)
   _result = _result + "<" + desc->_type + ",access::" + desc->_accessor + ">";
 }
 
+void PrettyPrinter::operateOn(struct FunctionCall * node)
+{
+}
+
+void PrettyPrinter::operateOn(struct FunctionCallArgumentList * node)
+{
+}
+
 void PrettyPrinter::operateOn(struct FunctionDeclaration * node)
 {
   indent();
