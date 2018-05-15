@@ -326,6 +326,8 @@ public:
 struct FunctionCall : public Expression
 {
 	FunctionCall(const std::string & name, FunctionCallArgumentList * arguments)
+	  :_name(name)
+    ,_arguments(arguments)
 	{
 
 	}
@@ -334,7 +336,7 @@ struct FunctionCall : public Expression
 	void visit(Visitor * v) override;
 
 	std::string _name;
-	FunctionCallArgumentList * arguments;
+	FunctionCallArgumentList * _arguments;
 
 
 };

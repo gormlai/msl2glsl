@@ -94,15 +94,33 @@ void PrettyPrinter::operateOn(struct ConstantExpression * desc)
 
 void PrettyPrinter::operateOn(struct Expression * desc)
 {
+  // Expression is a Base class. Don't do anything here
 }
 
 
 void PrettyPrinter::operateOn(struct FunctionCall * node)
 {
+  _result = _result + node->_name;
+  _result = _result + "(";
+
+  if(node->_arguments != nullptr)
+    node->_arguments->visit(this);
+
+  _result = _result + ")";  
 }
 
 void PrettyPrinter::operateOn(struct FunctionCallArgumentList * node)
 {
+  const unsigned int size = (unsigned int)node->_expressions.size();
+  for(unsigned int i=0 ; i < size ; i++ ) {
+
+    Expression * e = node->_expressions[i];
+    e->visit(this);
+
+    if(i != size-1)
+      _result = _result + ",";
+    
+  }
 }
 
 void PrettyPrinter::operateOn(struct FunctionDeclaration * node)
@@ -130,6 +148,7 @@ void PrettyPrinter::operateOn(struct FunctionDeclaration * node)
 
 void PrettyPrinter::operateOn(struct Node * node)
 {
+  // Node is a base class. Implementation should be in base classes
 }
 
 void PrettyPrinter::operateOn(struct Program * program)
@@ -140,6 +159,7 @@ void PrettyPrinter::operateOn(struct Program * program)
 
 void PrettyPrinter::operateOn(struct Statement * statement)
 {
+  // Statement is a base class. Implementation should be in base classes  
 }
 
 void PrettyPrinter::operateOn(struct Struct * strct)
@@ -156,6 +176,30 @@ void PrettyPrinter::operateOn(struct Struct * strct)
 
 void PrettyPrinter::operateOn(struct UnaryExpression * desc)
 {
+  // pre expression
+  switch(desc->_type)
+    {
+    case UnaryType::Minus:
+      _result = _result + "-";
+      break;
+    case UnaryType::Parenthesis:
+      _result = _result + "(";
+      break;
+    }
+
+  desc->_expression->visit(this);
+
+  // post expression
+  switch(desc->_type)
+    {
+    case UnaryType::Minus:
+      _result = _result + "-";
+      break;
+    case UnaryType::Parenthesis:
+      _result = _result + "(";
+      break;
+    }
+  
 }
 
 
