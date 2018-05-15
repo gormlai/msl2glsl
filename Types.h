@@ -317,7 +317,7 @@ public:
 
 	}
 
-	virtual ~FunctionCallArgumentList();
+	virtual ~FunctionCallArgumentList() {}
 	void visit(Visitor * v) override;
 
 	std::vector<Expression *> _expressions;
@@ -330,7 +330,7 @@ struct FunctionCall : public Expression
 
 	}
 
-	virtual~FunctionCall();
+	virtual~FunctionCall() {}
 	void visit(Visitor * v) override;
 
 	std::string _name;
