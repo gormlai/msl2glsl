@@ -65,6 +65,8 @@ class Scanner;
     VariableDeclaration * variableDeclaration;
     VariableList * variableList;
     VariableDeclaration::Qualifier qualifier;
+    FunctionCall * functionCall;
+    FunctionCallArgumentList * functionCallArgumentList;
 }
 			  
 %token		      TYPE_BOOL		      
@@ -127,6 +129,8 @@ class Scanner;
 %type	<expression>   expression0
 %type	<expression>   expression1
 %type	<expression>   constant
+%type	<functionCall>   function_call
+%type	<functionCallArgumentList> function_argument_list
 %locations
 
 %%
@@ -194,7 +198,7 @@ function_argument_list:
 	|	expression { }
 	;
 
-function_call: 	identifier BEGIN_BRACKET function_argument_list END_BRACKET { $$ = new FunctionCall(*$1, $2);}
+function_call: 	identifier BEGIN_BRACKET function_argument_list END_BRACKET { $$ = new FunctionCall(*$1, $3);}
 	|  	identifier BEGIN_BRACKET END_BRACKET { $$ = new FunctionCall(*$1, nullptr); }	
 	;
 
@@ -207,7 +211,7 @@ constant:	INT_VALUE { $$ = new ConstantExpression(ConstantType::Int, $1); }
 expression1: constant
 	| 	identifier	{ $$ = new ConstantExpression(ConstantType::Identifier, *$1); }
 	| 	BEGIN_BRACKET expression END_BRACKET { $$ = new UnaryExpression(UnaryType::Parenthesis, $2); }
-	| 	function_call
+	| 	function_call { $$ = $1; }
 	| 	MINUS expression1 { $$ = new UnaryExpression(UnaryType::Minus, $2); }
 ;
 
