@@ -25,6 +25,21 @@ const std::string PrettyPrinter::print(struct Block * block)
 
 void PrettyPrinter::operateOn(struct BinaryExpression * desc)
 {
+  const static std::string ops[] =
+    {
+      "+",
+      "-",
+      "*",
+      "/",
+      ".",
+    };
+
+  _result = _result + "(";
+  desc->_left->visit(this);
+  _result = _result + ops[(int)desc->_op];
+  desc->_right->visit(this);
+  _result = _result + ")";
+  
 }
 
 void PrettyPrinter::operateOn(struct Block * block)
