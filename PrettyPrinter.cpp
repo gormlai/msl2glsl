@@ -71,6 +71,24 @@ void PrettyPrinter::operateOn(struct BufferDescriptor * desc)
 
 void PrettyPrinter::operateOn(struct ConstantExpression * desc)
 {
+  switch(desc->_type)
+    {
+    case ConstantType::Int:
+      _result = _result + std::to_string(desc->_int);
+      break;
+    case ConstantType::Float:
+      _result = _result + std::to_string(desc->_float);
+      break;
+    case ConstantType::Double:
+      _result = _result + std::to_string(desc->_double);
+      break;
+    case ConstantType::Half:
+      _result = _result + std::to_string(desc->_half);
+      break;
+    case ConstantType::Identifier:
+      _result = _result + desc->_identifier;
+      break;
+    }
 
 }
 
