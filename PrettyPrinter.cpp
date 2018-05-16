@@ -157,6 +157,14 @@ void PrettyPrinter::operateOn(struct Program * program)
     node->visit(this);
 }
 
+void PrettyPrinter::operateOn(struct ReturnStatement * statement)
+{
+  indent();
+  _result = _result + "return ";
+  statement->_expression->visit(this);
+  _result = _result + ";\n"; 
+}
+
 void PrettyPrinter::operateOn(struct Statement * statement)
 {
   // Statement is a base class. Implementation should be in base classes  

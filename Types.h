@@ -351,9 +351,9 @@ struct ReturnStatement : public Statement
   virtual ~ReturnStatement() {}
   void visit(Visitor * v) override;
 	
-  Expression * e;
+  Expression * _expression;
       
-}
+};
 
 extern Program * _root;
 

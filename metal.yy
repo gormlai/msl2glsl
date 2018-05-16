@@ -186,7 +186,7 @@ statement:  USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$
 	| 	variable_declaration SEMICOLON { $$ = $1; }
 	|	variable_declaration ASSIGN expression SEMICOLON { $$ = nullptr; }
 	|	expression ASSIGN expression SEMICOLON { $$ = nullptr; }
-	|	RETURN expression SEMICOLON { $$ = nullptr; }
+	|	RETURN expression SEMICOLON { $$ = new ReturnStatement($2); }
 	|	expression SEMICOLON { $$ = $1; }
 		;
 
@@ -217,16 +217,16 @@ expression1: constant
 
 
 expression0:
-		expression0 STAR expression1 {  $$ = new BinaryExpression($1, BinaryOperator::Plus, $3); }
-	|	expression0 FORWARD_SLASH expression1 {  $$ = new BinaryExpression($1, BinaryOperator::Plus, $3); }
+		expression0 STAR expression1 {  $$ = new BinaryExpression($1, BinaryOperator::Multiply, $3); }
+	|	expression0 FORWARD_SLASH expression1 {  $$ = new BinaryExpression($1, BinaryOperator::Divide, $3); }
 	| 	expression1 { $$ = $1; }
-	| 	expression0 DOT expression1 {  $$ = new BinaryExpression($1, BinaryOperator::Plus, $3); }
+	| 	expression0 DOT expression1 {  $$ = new BinaryExpression($1, BinaryOperator::Dot, $3); }
 		;
 
 expression:
-	       expression PLUS expression0 {  $$ = new BinaryExpression($1, BinaryOperator::Plus, $3); }
-	| expression MINUS expression0 {  $$ = new BinaryExpression($1, BinaryOperator::Minus, $3); }
-	| expression0 { $$ = $1; }
+		expression PLUS expression0 {  $$ = new BinaryExpression($1, BinaryOperator::Plus, $3); }
+	| 	expression MINUS expression0 {  $$ = new BinaryExpression($1, BinaryOperator::Minus, $3); }
+	| 	expression0 { $$ = $1; }
 	;
 
 %%
