@@ -332,7 +332,7 @@ struct FunctionCall : public Expression
 
 	}
 
-	virtual~FunctionCall() {}
+	virtual ~FunctionCall() {}
 	void visit(Visitor * v) override;
 
 	std::string _name;
@@ -340,6 +340,20 @@ struct FunctionCall : public Expression
 
 
 };
+
+struct ReturnStatement : public Statement
+{
+  ReturnStatement(Expression * e)
+    :_expression(e)
+  {
+  }
+
+  virtual ~ReturnStatement() {}
+  void visit(Visitor * v) override;
+	
+  Expression * e;
+      
+}
 
 extern Program * _root;
 

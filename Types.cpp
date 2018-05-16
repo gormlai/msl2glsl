@@ -53,6 +53,11 @@ void Program::visit(Visitor * v)
   v->operateOn(this);
 }
 
+void ReturnStatement::visit(Visitor * v)
+{
+  v->operateOn(this);
+}
+
 void Statement::visit(Visitor * v)
 {
   v->operateOn(this);
