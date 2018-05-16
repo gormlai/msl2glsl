@@ -231,6 +231,8 @@ void PrettyPrinter::operateOn(struct VariableAttribute * attribute)
     _result = _result + "buffer(" + std::to_string(attribute->_iAttribute) + ")";
   else if(attribute->_sAttribute == std::string("texture"))
     _result = _result + "texture(" + std::to_string(attribute->_iAttribute) + ")";
+  else if(attribute->_sAttribute == std::string("sampler"))
+    _result = _result + "sampler(" + std::to_string(attribute->_iAttribute) + ")";
 
   _result = _result + "]]";  
 }
