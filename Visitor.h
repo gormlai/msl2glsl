@@ -6,6 +6,7 @@ class Visitor
  public:
   virtual ~Visitor() {}
   
+  virtual void operateOn(struct AssignStatement * desc) {}  
   virtual void operateOn(struct BinaryExpression * desc) {}  
   virtual void operateOn(struct Block * block) {}
   virtual void operateOn(struct BufferDescriptor * desc) {}

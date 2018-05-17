@@ -11,6 +11,7 @@ class PrettyPrinter : public Visitor
   
   const std::string  print(struct Block * block);
 
+  void operateOn(struct AssignStatement * desc) override; 
   void operateOn(struct BinaryExpression * desc) override;
   void operateOn(struct Block * block) override;
   void operateOn(struct BufferDescriptor * desc) override;

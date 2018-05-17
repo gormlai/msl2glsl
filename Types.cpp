@@ -3,9 +3,15 @@
 
 Program * _root = nullptr;
 
+void AssignStatement::visit(Visitor * v)
+{
+  v->operateOn(this);
+}
+
+
 void BinaryExpression::visit(Visitor * v)
 {
-	v->operateOn(this);
+  v->operateOn(this);
 }
 
 void Block::visit(Visitor * v)
@@ -20,22 +26,22 @@ void BufferDescriptor::visit(Visitor * v)
 
 void ConstantExpression::visit(Visitor * v)
 {
-	v->operateOn(this);
+  v->operateOn(this);
 }
 
 void Expression::visit(Visitor * v)
 {
-	v->operateOn(this);
+  v->operateOn(this);
 }
 
 void FunctionCall::visit(Visitor * v)
 {
-	v->operateOn(this);
+  v->operateOn(this);
 }
 
 void FunctionCallArgumentList::visit(Visitor * v)
 {
-	v->operateOn(this);
+  v->operateOn(this);
 }
 
 void FunctionDeclaration::visit(Visitor * v)
@@ -70,7 +76,7 @@ void Struct::visit(Visitor * v)
 
 void UnaryExpression::visit(Visitor * v)
 {
-	v->operateOn(this);
+  v->operateOn(this);
 }
 
 void UsingDeclaration::visit(Visitor * v)

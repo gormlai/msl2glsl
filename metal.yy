@@ -184,8 +184,8 @@ statement:  USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$
 	| 	struct SEMICOLON { $$ = $1; }
 	|	function_declaration { $$ = $1; }
 	| 	variable_declaration SEMICOLON { $$ = $1; }
-	|	variable_declaration ASSIGN expression SEMICOLON { $$ = nullptr; }
-	|	expression ASSIGN expression SEMICOLON { $$ = nullptr; }
+	|	variable_declaration ASSIGN expression SEMICOLON { $$ = new AssignStatement($1, $3); }
+	|	expression ASSIGN expression SEMICOLON { $$ = new AssignStatement($1, $3); }
 	|	RETURN expression SEMICOLON { $$ = new ReturnStatement($2); }
 	|	expression SEMICOLON { $$ = $1; }
 		;
@@ -194,8 +194,8 @@ identifier: IDENTIFIER { $$ = new std::string(*$1); delete $1; }
 		;
 
 function_argument_list:
-		function_argument_list COMMA expression {}
-	|	expression { }
+		function_argument_list COMMA expression { $$->_expressions.push_back($3); }
+	|	expression { $$ = new FunctionCallArgumentList(); $$->_expressions.push_back($1); }
 	;
 
 function_call: 	identifier BEGIN_BRACKET function_argument_list END_BRACKET { $$ = new FunctionCall(*$1, $3);}

@@ -23,6 +23,15 @@ const std::string PrettyPrinter::print(struct Block * block)
   return _result;
 }
 
+void PrettyPrinter::operateOn(struct AssignStatement * desc)
+{
+  indent();
+  desc->_left->visit(this);
+  _result = _result + " = ";
+  desc->_right->visit(this);
+}
+
+
 void PrettyPrinter::operateOn(struct BinaryExpression * desc)
 {
   const static std::string ops[] =
@@ -34,11 +43,15 @@ void PrettyPrinter::operateOn(struct BinaryExpression * desc)
       ".",
     };
 
-  _result = _result + "(";
+  //if(desc->_op != BinaryOperator::Dot)
+    //    _result = _result + "(";
+  
   desc->_left->visit(this);
   _result = _result + ops[(int)desc->_op];
   desc->_right->visit(this);
-  _result = _result + ")";
+  
+  //  if(desc->_op != BinaryOperator::Dot)
+  //  _result = _result + ")";
   
 }
 
@@ -204,7 +217,7 @@ void PrettyPrinter::operateOn(struct UnaryExpression * desc)
       _result = _result + "-";
       break;
     case UnaryType::Parenthesis:
-      _result = _result + "(";
+      _result = _result + ")";
       break;
     }
   

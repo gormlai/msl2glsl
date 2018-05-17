@@ -341,6 +341,23 @@ struct FunctionCall : public Expression
 
 };
 
+struct AssignStatement : public Statement
+{
+ AssignStatement(Node * left, Node * right)
+   :_left(left)
+    ,_right(right)
+  {
+  }
+
+  virtual ~AssignStatement() {}
+  void visit(Visitor * v) override;
+	
+  Node * _left;
+  Node * _right;
+      
+};
+
+
 struct ReturnStatement : public Statement
 {
   ReturnStatement(Expression * e)
