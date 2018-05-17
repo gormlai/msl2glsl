@@ -1,3 +1,5 @@
+#include <fstream>
+
 #include "Ast2GL.h"
 #include "ShaderCollector.h"
 #include "Transpiler.h"
@@ -43,9 +45,32 @@ void Ast2GL::convert(Block * block)
   printf("Converting and Writing Shaders\n");
   for(FunctionDeclaration * fDecl : _shaders)
   {
-    const std::string output = simplifiedFunctionSignature(fDecl);
-    printf("\tConverting shaders: %s\n", output.c_str() );
+    const std::string simpleSignature = simplifiedFunctionSignature(fDecl);
+    printf("\tConverting shader: %s\n", simpleSignature.c_str() );
+
+    Transpiler transpiler;
+    const std::string shader = transpiler.convert(block, fDecl);
+
+    std::string extension = "";
+    switch(fDecl->_functionType)
+      {
+      case FunctionType::Vertex:
+	extension = "vert";
+	break;
+      case FunctionType::Fragment:
+	extension = "frag";
+	break;
+      default:
+	extension = "unknown";
+	break;	
+      }
+
+    std::string filename = fDecl->_name + "." + extension;
     
+    printf("\tWriting shader: %s\n",filename.c_str() );
+    std::ofstream stream(filename, std::ofstream::out | std::ofstream::trunc );
+    stream << shader;
+    stream.close();
     
   }
   
