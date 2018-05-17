@@ -2,13 +2,19 @@
 #define _AST_TO_GL_H_
 
 #include "Types.h"
+#include "Visitor.h"
+#include <vector>
 
-class Ast2Gl
+
+class Ast2GL : public Visitor
 {
  public:
-  const std::string convert(Block * block);
+  void convert(Block * root);
 
  private:
+  std::vector<ShaderDescriptor> _shaders;
+
+  
 };
 
 #endif

@@ -48,6 +48,16 @@ void Metal::Driver::convert(const std::string & filename)
       printf("%s\n",result.c_str());
       printf("\n---------END PRETTY PRINTING FILE----------\n");
       
+      if(_root != nullptr)
+      {
+	printf("\n--------- BEGIN TRANSFORMING FILE ----------\n");
+	Ast2GL transpiler;
+	transpiler.convert(_root);
+	printf("\n--------- END TRANSFORMING FILE ----------\n");
+	
+      }
+      
+      
     }
 
   }

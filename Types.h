@@ -6,6 +6,19 @@
 
 class Visitor;
 
+enum class ShaderType {
+  Vertex,
+    Fragment,
+    Compute,
+};
+
+struct ShaderDescriptor {
+  ShaderType _type;
+  class FunctionDeclaration * _function;
+  
+};
+
+
 struct Node
 {
 public:
