@@ -27,7 +27,7 @@ arguments : ['-r','all','-t','@INPUT@', '--defines=@OUTPUT1@', '--output=@OUTPUT
 
 pfiles = pgen.process('metal.yy')
 
-sources = ['main.cpp', 'PrettyPrinter.cpp', 'Types.cpp', 'Scanner.cpp', 'Driver.cpp', 'PreProcessor.cpp', 'ast2gl.cpp', lfiles, pfiles]
+sources = ['main.cpp', 'PrettyPrinter.cpp', 'Types.cpp', 'Scanner.cpp', 'Driver.cpp', 'PreProcessor.cpp', 'Ast2GL.cpp', lfiles, pfiles]
 
 add_global_arguments(['-std=c++14','-g'], language : 'cpp')
 e = executable('metalparser', sources, )

@@ -2,7 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include "PreProcessor.h"
-#include "ast2gl.h"
+#include "Ast2GL.h"
 #include "PrettyPrinter.h"
 
 

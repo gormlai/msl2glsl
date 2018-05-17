@@ -1,4 +1,4 @@
-#include "ast2gl.h"
+#include "Ast2GL.h"
 
 const std::string Ast2Gl::convert(Block * block)
 {
