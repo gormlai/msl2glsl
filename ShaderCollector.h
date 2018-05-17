@@ -1,15 +1,15 @@
 #ifndef _SHADER_COLLECTOR_H_
 #define _SHADER_COLLECTOR_H_
 
-#include "Ast.h"
 #include "Visitor.h"
+#include "Types.h"
 
 #include <vector>
 
 class ShaderCollector : public Visitor
 {
  public:
-  void collect(Block * root);
+  std::vector<struct FunctionDeclaration *>  collect(Block * root);
   virtual ~ShaderCollector() {}
   
   void operateOn(struct AssignStatement * desc) override; 
@@ -33,7 +33,7 @@ class ShaderCollector : public Visitor
   void operateOn(struct VariableList * node) override;  
 
  private:
-  std::vector<ShaderDescriptor> _desc;
+  std::vector<struct FunctionDeclaration *> _shaders;
 
   
 };

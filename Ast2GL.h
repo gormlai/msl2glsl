@@ -12,7 +12,7 @@ class Ast2GL : public Visitor
   void convert(Block * root);
 
  private:
-  std::vector<ShaderDescriptor> _shaders;
+  std::vector<struct FunctionDeclaration *> _shaders;
 
   
 };

@@ -6,16 +6,11 @@
 
 class Visitor;
 
-enum class ShaderType {
-  Vertex,
+enum class FunctionType {
+  Utility,
+    Vertex,
     Fragment,
     Compute,
-};
-
-struct ShaderDescriptor {
-  ShaderType _type;
-  class FunctionDeclaration * _function;
-  
 };
 
 
@@ -298,23 +293,28 @@ struct VariableList : public Node
 struct FunctionDeclaration : public Statement
 {
  public:
-  FunctionDeclaration(const std::string & functionType,
+ FunctionDeclaration(const std::string & functionType,
 		      const std::string & returnType,
 		      const std::string & name,
 		      VariableList * variables,
 		      Block * block)
-    :_functionType(functionType)
-    ,_returnType(returnType)
+   :_returnType(returnType)
     ,_name(name)
     ,_variables(variables)
     ,_block(block)
   {
+    if(functionType == "vertex")
+      _functionType = FunctionType::Vertex;
+    else if(functionType == "fragment")
+      _functionType = FunctionType::Fragment;
+    else
+      _functionType = FunctionType::Utility;
   }
 		      
   virtual ~FunctionDeclaration() {}
   void visit(Visitor * v) override;
 
-  std::string _functionType;
+  FunctionType _functionType;
   std::string _returnType;
   std::string _name;
   VariableList * _variables;

@@ -140,8 +140,17 @@ void PrettyPrinter::operateOn(struct FunctionDeclaration * node)
 {
   indent();
 
-  if(!node->_functionType.empty())
-    _result = _result + node->_functionType + " ";
+  std::string functionType = "";
+  switch(node->_functionType)
+    {
+    case FunctionType::Vertex:
+      functionType = "vertex";
+      break;
+    default:
+      break;
+    }
+  
+      _result = _result + functionType + " ";
 
   if(!node->_returnType.empty())
     _result = _result + node->_returnType + " ";
