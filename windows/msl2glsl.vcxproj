@@ -120,6 +120,8 @@
     <ClCompile Include="..\PreProcessor.cpp" />
     <ClCompile Include="..\PrettyPrinter.cpp" />
     <ClCompile Include="..\Scanner.cpp" />
+    <ClCompile Include="..\ShaderCollector.cpp" />
+    <ClCompile Include="..\Transpiler.cpp" />
     <ClCompile Include="..\Types.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -131,7 +133,9 @@
     <ClInclude Include="..\PreProcessor.h" />
     <ClInclude Include="..\PrettyPrinter.h" />
     <ClInclude Include="..\Scanner.h" />
+    <ClInclude Include="..\ShaderCollector.h" />
     <ClInclude Include="..\stack.hh" />
+    <ClInclude Include="..\Transpiler.h" />
     <ClInclude Include="..\Types.h" />
     <ClInclude Include="..\Visitor.h" />
   </ItemGroup>
