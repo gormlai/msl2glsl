@@ -50,11 +50,11 @@ void Metal::Driver::convert(const std::string & filename)
       
       if(_root != nullptr)
       {
-	printf("\n--------- BEGIN TRANSFORMING FILE ----------\n");
-	Ast2GL transpiler;
-	transpiler.convert(_root);
-	printf("\n--------- END TRANSFORMING FILE ----------\n");
-	
+		  printf("\n--------- BEGIN TRANSFORMING FILE ----------\n");
+		  Ast2GL transpiler;
+		  transpiler.convert(_root);
+		  printf("\n--------- END TRANSFORMING FILE ----------\n");
+
       }
       
       

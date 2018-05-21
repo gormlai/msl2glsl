@@ -140,8 +140,8 @@ translation_unit: statements { _root = new Program($1); $$ = _root; delete $1; }
 struct: STRUCT identifier BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new Struct(*$2); $$->_block = *$4; delete $4; }
 		;
 
-statements: statements statement { $$->_nodes.push_back($2);}
-	|	statement { $$ = new Block() ;  $$->_nodes.push_back($1); }
+statements: statements statement { $$->_nodes.push_back($2); $2->_parent = $$; }
+	|	statement { $$ = new Block() ;  $$->_nodes.push_back($1); $1->_parent = $$; }
 		;
 
 variable_attribute: /* empty */ { $$ = nullptr; }
@@ -173,8 +173,8 @@ variable_declaration:
 |	identifier buffer_descriptor reserved_token identifier variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, $2, $3, *$4, $5); }		
 		;
 
-variable_list:  variable_list COMMA variable_declaration { $$->_variableDeclarations.push_back($3);}
-	|	variable_declaration { $$ = new VariableList() ;  $$->_variableDeclarations.push_back($1); }
+variable_list:  variable_list COMMA variable_declaration { $$->_variableDeclarations.push_back($3); $3->_parent = $$; }
+	|	variable_declaration { $$ = new VariableList() ;  $$->_variableDeclarations.push_back($1); $1->_parent = $$; }
 		;
 
 function_declaration : identifier identifier identifier BEGIN_BRACKET variable_list END_BRACKET BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new FunctionDeclaration(*$1, *$2, *$3, $5, $8); }
@@ -194,8 +194,8 @@ identifier: IDENTIFIER { $$ = new std::string(*$1); delete $1; }
 		;
 
 function_argument_list:
-		function_argument_list COMMA expression { $$->_expressions.push_back($3); }
-	|	expression { $$ = new FunctionCallArgumentList(); $$->_expressions.push_back($1); }
+		function_argument_list COMMA expression { $$->_expressions.push_back($3); $3->_parent = $$; }
+	|	expression { $$ = new FunctionCallArgumentList(); $$->_expressions.push_back($1); $1->_parent  = $$; }
 	;
 
 function_call: 	identifier BEGIN_BRACKET function_argument_list END_BRACKET { $$ = new FunctionCall(*$1, $3);}

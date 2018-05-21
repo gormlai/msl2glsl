@@ -18,12 +18,16 @@ struct Node
 {
 public:
   Node()
+	  :_parent(nullptr)
   {
     //    printf("Node::Node()\n");
   }
   
   virtual ~Node() {}
   virtual void visit(Visitor * v);
+
+public:
+	Node * _parent;
 };
 
 struct VariableAttribute : public Node
@@ -54,6 +58,7 @@ struct Block : public Node
  public:
   virtual ~Block() {}
   void visit(Visitor * v) override;
+
   std::vector<Node *> _nodes;
 };
 
@@ -201,7 +206,7 @@ public:
 		:_type(type)
 		,_expression(expression)
 	{
-
+		expression->_parent = this;
 	}
 
 	virtual ~UnaryExpression() {}
@@ -228,6 +233,8 @@ struct BinaryExpression : public Expression
     ,_right(right)
     ,_op(op)
   {
+	  left->_parent = this;
+	  right->_parent = this;
   }
 
   virtual ~BinaryExpression() {}
@@ -268,6 +275,11 @@ struct VariableDeclaration : public Statement
     ,_reservedToken(reservedToken)
     ,_bufferDescriptor(bufferDescriptor)
   {
+	 if (attribute != nullptr)
+		 attribute->_parent = this;
+
+	 if (bufferDescriptor != nullptr)
+		 bufferDescriptor->_parent = this;
   }
   
   void visit(Visitor * v) override;
@@ -309,6 +321,10 @@ struct FunctionDeclaration : public Statement
       _functionType = FunctionType::Fragment;
     else
       _functionType = FunctionType::Utility;
+
+	variables->_parent = this;
+	block->_parent = this;
+
   }
 		      
   virtual ~FunctionDeclaration() {}
@@ -342,6 +358,8 @@ struct FunctionCall : public Expression
 	  :_name(name)
     ,_arguments(arguments)
 	{
+		if (arguments != nullptr)
+			arguments->_parent = this;
 
 	}
 
@@ -360,6 +378,8 @@ struct AssignStatement : public Statement
    :_left(left)
     ,_right(right)
   {
+	 left->_parent = this;
+	 right->_parent = this;
   }
 
   virtual ~AssignStatement() {}
@@ -376,6 +396,8 @@ struct ReturnStatement : public Statement
   ReturnStatement(Expression * e)
     :_expression(e)
   {
+	  if(_expression!=nullptr)
+	  _expression->_parent = this;
   }
 
   virtual ~ReturnStatement() {}
