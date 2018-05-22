@@ -36,8 +36,12 @@ void Transpiler::indent()
 std::string Transpiler::convert(struct Block * program, struct FunctionDeclaration * shader)
 {
   _shaderString = std::string("");
-	_indent = 0;
-	_shader = shader;
+  _indent = 0;
+  _shader = shader;
+
+  // add version marker - needs more flexibility in future versions
+  _shaderString = _shaderString + "#version 430 core\n";
+
   program->visit(this);
   return _shaderString;
 }
