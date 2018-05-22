@@ -40,7 +40,7 @@ std::string Transpiler::convert(struct Block * program, struct FunctionDeclarati
   _shader = shader;
 
   // add version marker - needs more flexibility in future versions
-  _shaderString = _shaderString + "#version 430 core\n";
+  _shaderString = _shaderString + "#version 430 core\n\n";
 
   program->visit(this);
   return _shaderString;
@@ -160,12 +160,12 @@ void Transpiler::operateOn(struct FunctionDeclaration * node)
 	if (node == _shader)
 	{
 		// convert shader
-		_shaderString = _shaderString + "void main()";
+		_shaderString = _shaderString + "void main()\n";
 
 		if (node->_block != nullptr)
 			node->_block->visit(this);
 
-		_shaderString = _shaderString + "\n";
+		_shaderString = _shaderString + "\n\n";
 
 		// analyze arguments to set in and out variables correctly
 
@@ -185,7 +185,7 @@ void Transpiler::operateOn(struct FunctionDeclaration * node)
 		if (node->_block != nullptr)
 			node->_block->visit(this);
 
-		_shaderString = _shaderString + "\n";
+		_shaderString = _shaderString + "\n\n";
 
 	}
 	else
@@ -224,7 +224,7 @@ void Transpiler::operateOn(struct Struct * strct)
 	strct->_block.visit(this);
 
 	indent();
-	_shaderString = _shaderString + ";\n";
+	_shaderString = _shaderString + ";\n\n";
 }
 
 void Transpiler::operateOn(struct UnaryExpression * desc)
