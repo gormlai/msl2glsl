@@ -41,6 +41,7 @@ private:
 
 	void indent();
 	std::string mapIdentifier(const std::string & src) const;
+	std::string outputMain();
 
 };
 

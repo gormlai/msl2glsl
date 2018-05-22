@@ -15,6 +15,7 @@ std::string Transpiler::mapIdentifier(const std::string & src) const
 		{ "float2", "vec2" },
 		{ "float3", "vec3" },
 		{ "float4", "vec4" },
+		{ "float4x4", "mat4" },
 	};
 
 	std::string output = src;
@@ -39,10 +40,14 @@ std::string Transpiler::convert(struct Block * program, struct FunctionDeclarati
   _indent = 0;
   _shader = shader;
 
+  const std::string mainString = outputMain();
+
   // add version marker - needs more flexibility in future versions
   _shaderString = _shaderString + "#version 430 core\n\n";
 
   program->visit(this);
+
+  _shaderString += "\n" + mainString + "\n";
   return _shaderString;
 }
 
@@ -150,27 +155,39 @@ void Transpiler::operateOn(struct FunctionCallArgumentList * node)
 	}
 }
 
+std::string Transpiler::outputMain()
+{
+  std::string mainCode;
+  
+  // categorise arguments
+  VariableList * vList = _shader->_variables;
+  if(vList != nullptr) {
+    std::vector<VariableDeclaration *> & vDecls = vList->_variableDeclarations;
+    for(VariableDeclaration * vDecl : vDecls) {
+      
+    }
+    
+  }
+  
+  // convert shader
+  mainCode = mainCode + "void main()\n";
+  
+  if (_shader->_block != nullptr)
+    _shader->_block->visit(this);
+  
+  mainCode = mainCode + "\n\n";
+  
+  // analyze arguments to set in and out variables correctly
+
+  return mainCode;
+}
+
 void Transpiler::operateOn(struct FunctionDeclaration * node)
 {
-	// we are only interested in two types of functions - 
-	// the shader that we need to convert OR
+	// we are only interested in one type of function - 
 	// utility functions.
 	// all other functions should be ignored
-
-	if (node == _shader)
-	{
-		// convert shader
-		_shaderString = _shaderString + "void main()\n";
-
-		if (node->_block != nullptr)
-			node->_block->visit(this);
-
-		_shaderString = _shaderString + "\n\n";
-
-		// analyze arguments to set in and out variables correctly
-
-	}
-	else if (node->_functionType == FunctionType::Utility)
+	if (node->_functionType == FunctionType::Utility)
 	{
 		if (!node->_returnType.empty())
 			_shaderString = _shaderString + node->_returnType + " ";
@@ -188,8 +205,6 @@ void Transpiler::operateOn(struct FunctionDeclaration * node)
 		_shaderString = _shaderString + "\n\n";
 
 	}
-	else
-		return;
 }
 
 void Transpiler::operateOn(struct Node * node)
