@@ -39,14 +39,17 @@ std::string Transpiler::convert(struct Block * program, struct FunctionDeclarati
   _shaderString = std::string("");
   _indent = 0;
   _shader = shader;
+  _inDecl = nullptr; 
 
   const std::string mainString = outputMain();
+  const std::string inOutUniforms = outputInOutUniforms();
 
   // add version marker - needs more flexibility in future versions
   _shaderString = _shaderString + "#version 430 core\n\n";
 
   program->visit(this);
 
+  _shaderString += "\n" + inOutUniforms + "\n";  
   _shaderString += "\n" + mainString + "\n";
   return _shaderString;
 }
@@ -155,6 +158,26 @@ void Transpiler::operateOn(struct FunctionCallArgumentList * node)
 	}
 }
 
+void Transpiler::categoriseVariableDeclaration(VariableDeclaration * vDecl)
+{
+  VariableAttribute * vAttrib = vDecl->_attribute;
+  if(vAttrib != nullptr) {
+    const std::string & sAttrib = vAttrib->_sAttribute;
+    if(sAttrib == "stage_in") {
+      
+    }
+  }
+}
+
+std::string Transpiler::outputInOutUniforms()
+{
+  std::string result;
+
+
+  return result;
+}
+
+
 std::string Transpiler::outputMain()
 {
   std::string mainCode;
@@ -163,9 +186,8 @@ std::string Transpiler::outputMain()
   VariableList * vList = _shader->_variables;
   if(vList != nullptr) {
     std::vector<VariableDeclaration *> & vDecls = vList->_variableDeclarations;
-    for(VariableDeclaration * vDecl : vDecls) {
-      
-    }
+    for(VariableDeclaration * vDecl : vDecls)
+      categoriseVariableDeclaration(vDecl);
     
   }
   

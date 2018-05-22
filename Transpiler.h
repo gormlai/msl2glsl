@@ -38,10 +38,13 @@ private:
 	std::string _shaderString;
 	int _indent;
 	FunctionDeclaration * _shader;
+	VariableDeclaration * _inDecl;
 
 	void indent();
 	std::string mapIdentifier(const std::string & src) const;
 	std::string outputMain();
+	std::string outputInOutUniforms();
+	void categoriseVariableDeclaration(VariableDeclaration * vDecl);
 
 };
 
