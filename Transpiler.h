@@ -38,13 +38,14 @@ private:
 	std::string _shaderString;
 	int _indent;
 	FunctionDeclaration * _shader;
-	VariableDeclaration * _inDecl;
+	VariableDeclaration * _inDecl; // what are the in variables?
 
 	void indent();
 	std::string mapIdentifier(const std::string & src) const;
 	std::string outputMain();
 	std::string outputInOutUniforms();
 	void categoriseVariableDeclaration(VariableDeclaration * vDecl);
+	bool isSimpleGLType(const std::string & glType) const;
 
 };
 

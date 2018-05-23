@@ -2,6 +2,27 @@
 #include "Transpiler.h"
 
 #include <map>
+#include <set>
+
+namespace
+{
+  const std::set<std::string> g_simpleGLTypes = 
+    {
+      "float",
+      "double",
+      "int",
+      "mat4",
+      "uvec2",
+      "uvec3",
+      "uvec4",
+      "ivec2",
+      "ivec3",
+      "ivec4",
+      "vec2",
+      "vec3",
+      "vec4",
+    };
+}
 
 std::string Transpiler::mapIdentifier(const std::string & src) const
 {
@@ -164,15 +185,34 @@ void Transpiler::categoriseVariableDeclaration(VariableDeclaration * vDecl)
   if(vAttrib != nullptr) {
     const std::string & sAttrib = vAttrib->_sAttribute;
     if(sAttrib == "stage_in") {
-      
+      _inDecl = vDecl;
     }
   }
+}
+
+
+bool Transpiler::isSimpleGLType(const std::string & glType) const
+{
+  auto it = g_simpleGLTypes.find(glType);
+  return it != g_simpleGLTypes.end();
 }
 
 std::string Transpiler::outputInOutUniforms()
 {
   std::string result;
+  // handle in
+  if(_inDecl != nullptr) {
+    const std::string type = _inDecl->_type;
+    const std::string mappedType = mapIdentifier(type);
+    if(isSimpleGLType(mappedType))
+      result += "in " + mappedType + " " + mapIdentifier(_inDecl->_variableName) + ";\n";
+    else { // else search for struct
+      
+    }
+      
+  }
 
+  
 
   return result;
 }
