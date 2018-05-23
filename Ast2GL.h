@@ -2,11 +2,9 @@
 #define _AST_TO_GL_H_
 
 #include "Types.h"
-#include "Visitor.h"
 #include <vector>
 
-
-class Ast2GL : public Visitor
+class Ast2GL
 {
  public:
   void convert(Block * root);
