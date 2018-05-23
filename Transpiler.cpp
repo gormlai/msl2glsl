@@ -22,6 +22,21 @@ namespace
       "vec3",
       "vec4",
     };
+
+  std::vector<Struct*> gatherStructs(Block * block)
+  {
+    std::vector<Struct*> result;
+    
+    std::vector<Node*> nodes = block->_nodes;
+    for(auto node : nodes) {
+      if(node->getNodeType() == NodeType::Struct) {
+	Struct * strct = (Struct*)node;
+	result.push_back(strct);
+      }
+    }
+    return result;
+    
+  }
 }
 
 std::string Transpiler::mapIdentifier(const std::string & src) const
@@ -60,7 +75,8 @@ std::string Transpiler::convert(struct Block * program, struct FunctionDeclarati
   _shaderString = std::string("");
   _indent = 0;
   _shader = shader;
-  _inDecl = nullptr; 
+  _inDecl = nullptr;
+  _topLevelStructs = ::gatherStructs(program); 
 
   const std::string mainString = outputMain();
   const std::string inOutUniforms = outputInOutUniforms();
@@ -70,8 +86,8 @@ std::string Transpiler::convert(struct Block * program, struct FunctionDeclarati
 
   program->visit(this);
 
-  _shaderString += "\n" + inOutUniforms + "\n";  
-  _shaderString += "\n" + mainString + "\n";
+  //  _shaderString += "\n" + inOutUniforms + "\n";  
+  _shaderString += _shaderString + "\n" + mainString + "\n";
   return _shaderString;
 }
 
