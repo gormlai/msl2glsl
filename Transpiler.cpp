@@ -63,11 +63,18 @@ std::string Transpiler::mapIdentifier(const std::string & src) const
 	return output;
 }
 
-void Transpiler::indent()
+std::string Transpiler::indent()
 {
-	for (int i = 0; i < _indent; i++)
-		_shaderString = _shaderString + "  ";
+  std::string result;
+  for (int i = 0; i < _indent; i++)
+    result = result + "  ";
 
+  return result;
+}
+
+std::string Transpiler::traverse(struct Node * node)
+{
+  return std::string("");
 }
 
 std::string Transpiler::convert(struct Block * program, struct FunctionDeclaration * shader)
@@ -84,115 +91,131 @@ std::string Transpiler::convert(struct Block * program, struct FunctionDeclarati
   // add version marker - needs more flexibility in future versions
   _shaderString = _shaderString + "#version 430 core\n\n";
 
-  program->visit(this);
+  _shaderString += traverse(program);
 
   //  _shaderString += "\n" + inOutUniforms + "\n";  
   _shaderString += _shaderString + "\n" + mainString + "\n";
   return _shaderString;
 }
 
-void Transpiler::operateOn(struct AssignStatement * desc)
+std::string Transpiler::operateOn(struct AssignStatement * desc)
 {
-	indent();
-	desc->_left->visit(this);
-	_shaderString = _shaderString + " = ";
-	desc->_right->visit(this);
+  std::string result =  indent();
+  result = result + traverse(desc->_left);
+  result = result + " = ";
+  result = result + traverse(desc->_right);
+  return result;
 }
 
-void Transpiler::operateOn(struct BinaryExpression * desc)
+std::string Transpiler::operateOn(struct BinaryExpression * desc)
 {
-	const static std::string ops[] =
-	{
-		"+",
-		"-",
-		"*",
-		"/",
-		".",
-	};
-
-	// special attention needs to be to the dot operator - will come back to this
-	desc->_left->visit(this);
-	_shaderString = _shaderString + ops[(int)desc->_op];
-	desc->_right->visit(this);
+  const static std::string ops[] =
+    {
+      "+",
+      "-",
+      "*",
+      "/",
+      ".",
+    };
+  
+  // special attention needs to be to the dot operator - will come back to this
+  std::string result;
+  result = result + traverse(desc->_left);
+  result = result + ops[(int)desc->_op];
+  result = result + traverse(desc->_right);
+  return result;
 }
 
-void Transpiler::operateOn(struct Block * block)
+std::string Transpiler::operateOn(struct Block * block)
 {
-	indent();
-	_shaderString = _shaderString + "{\n";
+  std::string result = indent();
+  result = result + "{\n";
+  
+  _indent++;
+  
+  for (auto node : block->_nodes)
+    {
+      if (node == nullptr)
+	continue;
+      
+      result = result + traverse(node);
+      result = result + ";\n";
+    }
 
-	_indent++;
+  _indent--;
 
-	for (auto node : block->_nodes)
-	{
-		if (node == nullptr)
-			continue;
-
-		node->visit(this);
-		_shaderString = _shaderString + ";\n";
-	}
-
-	_indent--;
-
-	indent();
-	_shaderString = _shaderString + "}";
+  result = result + indent();
+  result = result + "}";
+  return result;
 }
 
-void Transpiler::operateOn(struct BufferDescriptor * desc)
+std::string Transpiler::operateOn(struct BufferDescriptor * desc)
 {
+  return std::string("");
 }
 
-void Transpiler::operateOn(struct ConstantExpression * desc)
+std::string Transpiler::operateOn(struct ConstantExpression * desc)
 {
-	switch (desc->_type)
-	{
-	case ConstantType::Int:
-		_shaderString = _shaderString + std::to_string(desc->_int);
+  std::string result;
+  
+  switch (desc->_type)
+    {
+    case ConstantType::Int:
+      result = result + std::to_string(desc->_int);
+      break;
+    case ConstantType::Float:
+      result = result + std::to_string(desc->_float) + "f";
 		break;
-	case ConstantType::Float:
-		_shaderString = _shaderString + std::to_string(desc->_float) + "f";
-		break;
-	case ConstantType::Double:
-		_shaderString = _shaderString + std::to_string(desc->_double);
-		break;
-	case ConstantType::Half:
-		_shaderString = _shaderString + std::to_string(desc->_half) + "f";
-		break;
-	case ConstantType::Identifier:
-		_shaderString = _shaderString + mapIdentifier(desc->_identifier);
-		break;
-	}
+    case ConstantType::Double:
+      result = result + std::to_string(desc->_double);
+      break;
+    case ConstantType::Half:
+      result = result + std::to_string(desc->_half) + "f";
+      break;
+    case ConstantType::Identifier:
+      result = result + mapIdentifier(desc->_identifier);
+      break;
+    }
 
+  return result;
 }
 
-void Transpiler::operateOn(struct Expression * desc)
+std::string Transpiler::operateOn(struct Expression * desc)
 {
-	// Expression is a Base class. Don't do anything here
+  // Expression is a Base class. Don't do anything here
+  std::string result;
+  return result;
 }
 
-void Transpiler::operateOn(struct FunctionCall * node)
+std::string Transpiler::operateOn(struct FunctionCall * node)
 {
-	_shaderString = _shaderString + mapIdentifier(node->_name);
-	_shaderString = _shaderString + "(";
+  std::string result;
+  result = result + mapIdentifier(node->_name);
+  result = result + "(";
 
-	if (node->_arguments != nullptr)
-		node->_arguments->visit(this);
+  if (node->_arguments != nullptr)
+    result = result + traverse(node->_arguments);
+  
+  result = result + ")";
 
-	_shaderString = _shaderString + ")";
-
+  return result;
 }
 
-void Transpiler::operateOn(struct FunctionCallArgumentList * node)
+std::string Transpiler::operateOn(struct FunctionCallArgumentList * node)
 {
-	const unsigned int size = (unsigned int)node->_expressions.size();
-	for (unsigned int i = 0; i < size; i++) {
+  std::string result;
+  
+  const unsigned int size = (unsigned int)node->_expressions.size();
+  for (unsigned int i = 0; i < size; i++) {
+    
+    Expression * e = node->_expressions[i];
+    result = result + traverse(e);
 
-		Expression * e = node->_expressions[i];
-		e->visit(this);
+    if (i != size - 1)
+      result = result + ",";
+  }
 
-		if (i != size - 1)
-			_shaderString = _shaderString + ",";
-	}
+  return result;
 }
 
 void Transpiler::categoriseVariableDeclaration(VariableDeclaration * vDecl)
@@ -251,7 +274,7 @@ std::string Transpiler::outputMain()
   mainCode = mainCode + "void main()\n";
   
   if (_shader->_block != nullptr)
-    _shader->_block->visit(this);
+    mainCode += traverse(_shader->_block);
   
   mainCode = mainCode + "\n\n";
   
@@ -260,135 +283,161 @@ std::string Transpiler::outputMain()
   return mainCode;
 }
 
-void Transpiler::operateOn(struct FunctionDeclaration * node)
+std::string Transpiler::operateOn(struct FunctionDeclaration * node)
 {
-	// we are only interested in one type of function - 
-	// utility functions.
-	// all other functions should be ignored
-	if (node->_functionType == FunctionType::Utility)
-	{
-		if (!node->_returnType.empty())
-			_shaderString = _shaderString + node->_returnType + " ";
+  std::string result;
+  
+  // we are only interested in one type of function - 
+  // utility functions.
+  // all other functions should be ignored
+  if (node->_functionType == FunctionType::Utility)
+    {
+      if (!node->_returnType.empty())
+	result = result + node->_returnType + " ";
+      
+      result = result + node->_name + "(";
+      
+      if (node->_variables != nullptr)
+	result += traverse(node->_variables);
+      
+      result = result + ")\n";
 
-		_shaderString = _shaderString + node->_name + "(";
+      if (node->_block != nullptr)
+	result += traverse(node->_block);
+      
+      result = result + "\n\n";
+      
+    }
 
-		if (node->_variables != nullptr)
-			node->_variables->visit(this);
+  return result;
+}
 
-		_shaderString = _shaderString + ")\n";
+std::string Transpiler::operateOn(struct Node * node)
+{
+  // Node is a base class. Implementation should be in base classes
+  std::string result;
+  return result;
+}
 
-		if (node->_block != nullptr)
-			node->_block->visit(this);
+std::string Transpiler::operateOn(struct Program * program)
+{
+  std::string result;
+  
+  for (auto node : program->_nodes)
+    result = result + traverse(node);
 
-		_shaderString = _shaderString + "\n\n";
+  return result;
+}
 
+std::string Transpiler::operateOn(struct ReturnStatement * statement)
+{
+  std::string result =  indent();
+  result = result + "return ";
+  result += traverse(statement->_expression);
+  result = result + ";\n";
+
+  return result;
+}
+
+std::string Transpiler::operateOn(struct Statement * statement)
+{
+  // Statement is a base class. Implementation should be in base classes  
+  std::string result;
+  return result;
+}
+
+std::string Transpiler::operateOn(struct Struct * strct)
+{
+  std::string result = indent();
+  result = result + "struct " + strct->_name + "\n";
+
+  result += traverse(&strct->_block);
+
+  result += indent();
+  result = result + ";\n\n";
+
+  return result;
+}
+
+std::string Transpiler::operateOn(struct UnaryExpression * desc)
+{
+  std::string result;
+  
+  // pre expression
+  switch (desc->_type)
+    {
+    case UnaryType::Minus:
+      result = result + "-";
+      break;
+    case UnaryType::Parenthesis:
+      result = result + "(";
+      break;
+    }
+  
+  result = result + traverse(desc->_expression);
+  
+  // post expression
+  switch (desc->_type)
+    {
+    case UnaryType::Minus:
+      result = result + "-";
+      break;
+    case UnaryType::Parenthesis:
+      result = result + ")";
+      break;
+    }
+
+  return result;
+}
+
+std::string Transpiler::operateOn(struct UsingDeclaration * usingDecl)
+{
+  // ignore for now. This needs special handling
+  std::string result;
+  return result;
+}
+
+std::string Transpiler::operateOn(struct VariableAttribute * node)
+{
+  // ignore for now. This needs special handling
+  std::string result;
+  return result;
+}
+
+std::string Transpiler::operateOn(struct VariableDeclaration * node)
+{
+  std::string result = indent();
+  
+  // ignore all qualifiers
+  std::string type = node->_type;
+  BufferDescriptor * bufDesc = node->_bufferDescriptor;
+  if (bufDesc != nullptr)
+    {
+      
+      if (node->_type == "texture2d"){
+	if (bufDesc->_type == "float" && bufDesc->_accessor == "sample") {
+	  type = "sampler2D";
 	}
+	
+      }
+    }
+  
+  std::string realType = mapIdentifier(type);
+  std::string realVariableName = mapIdentifier(node->_variableName);
+  result = result + realType + " " + realVariableName;
+  return result;
 }
 
-void Transpiler::operateOn(struct Node * node)
+std::string Transpiler::operateOn(struct VariableList * node)
 {
-	// Node is a base class. Implementation should be in base classes
-}
-
-void Transpiler::operateOn(struct Program * program)
-{
-	for (auto node : program->_nodes)
-		node->visit(this);
-}
-
-void Transpiler::operateOn(struct ReturnStatement * statement)
-{
-	indent();
-	_shaderString = _shaderString + "return ";
-	statement->_expression->visit(this);
-	_shaderString = _shaderString + ";\n";
-}
-
-void Transpiler::operateOn(struct Statement * statement)
-{
-	// Statement is a base class. Implementation should be in base classes  
-}
-
-void Transpiler::operateOn(struct Struct * strct)
-{
-	indent();
-	_shaderString = _shaderString + "struct " + strct->_name + "\n";
-
-	strct->_block.visit(this);
-
-	indent();
-	_shaderString = _shaderString + ";\n\n";
-}
-
-void Transpiler::operateOn(struct UnaryExpression * desc)
-{
-	// pre expression
-	switch (desc->_type)
-	{
-	case UnaryType::Minus:
-		_shaderString = _shaderString + "-";
-		break;
-	case UnaryType::Parenthesis:
-		_shaderString = _shaderString + "(";
-		break;
-	}
-
-	desc->_expression->visit(this);
-
-	// post expression
-	switch (desc->_type)
-	{
-	case UnaryType::Minus:
-		_shaderString = _shaderString + "-";
-		break;
-	case UnaryType::Parenthesis:
-		_shaderString = _shaderString + ")";
-		break;
-	}
-}
-
-void Transpiler::operateOn(struct UsingDeclaration * usingDecl)
-{
-	// ignore for now. This needs special handling
-}
-
-void Transpiler::operateOn(struct VariableAttribute * node)
-{
-	// ignore for now. This needs special handling
-}
-
-void Transpiler::operateOn(struct VariableDeclaration * node)
-{
-	indent();
-
-	// ignore all qualifiers
-	std::string type = node->_type;
-	BufferDescriptor * bufDesc = node->_bufferDescriptor;
-	if (bufDesc != nullptr)
-	{
-
-		if (node->_type == "texture2d"){
-			if (bufDesc->_type == "float" && bufDesc->_accessor == "sample") {
-				type = "sampler2D";
-			}
-
-		}
-	}
-
-	std::string realType = mapIdentifier(type);
-	std::string realVariableName = mapIdentifier(node->_variableName);
-	_shaderString = _shaderString + realType + " " + realVariableName;
-
-}
-
-void Transpiler::operateOn(struct VariableList * node)
-{
-	const int count = (int)node->_variableDeclarations.size();
-	for (int i = 0; i < count; i++) {
-		node->_variableDeclarations[i]->visit(this);
-
-		if (i != count - 1)
-			_shaderString = _shaderString + ", ";
-	}
+  std::string result;
+  const int count = (int)node->_variableDeclarations.size();
+  for (int i = 0; i < count; i++) {
+    result += traverse(node->_variableDeclarations[i]);
+    
+    if (i != count - 1)
+      result = result + ", ";
+  }
+  return result;
 
 }

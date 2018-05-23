@@ -1,38 +1,36 @@
 #ifndef _TRANSPILER_H_
 #define _TRANSPILER_H_
 
-#include "Visitor.h"
 #include <string>
 
-class Transpiler : public Visitor
+class Transpiler
 {
 public:
-
-
-
 	virtual ~Transpiler() {}
 
 	std::string convert(struct Block * program, struct FunctionDeclaration * shader);
 
-	void operateOn(struct AssignStatement * desc) override;
-	void operateOn(struct BinaryExpression * desc) override;
-	void operateOn(struct Block * block) override;
-	void operateOn(struct BufferDescriptor * desc) override;
-	void operateOn(struct ConstantExpression * desc) override;
-	void operateOn(struct Expression * desc) override;
-	void operateOn(struct FunctionCall * node) override;
-	void operateOn(struct FunctionCallArgumentList * node) override;
-	void operateOn(struct FunctionDeclaration * node) override;
-	void operateOn(struct Node * node) override;
-	void operateOn(struct Program * program) override;
-	void operateOn(struct ReturnStatement * statement) override;
-	void operateOn(struct Statement * statement) override;
-	void operateOn(struct Struct * strct) override;
-	void operateOn(struct UnaryExpression * desc) override;
-	void operateOn(struct UsingDeclaration * usingDecl) override;
-	void operateOn(struct VariableAttribute * node) override;
-	void operateOn(struct VariableDeclaration * node) override;
-	void operateOn(struct VariableList * node) override;
+	std::string operateOn(struct AssignStatement * desc);
+	std::string operateOn(struct BinaryExpression * desc);
+	std::string operateOn(struct Block * block);
+	std::string operateOn(struct BufferDescriptor * desc);
+	std::string operateOn(struct ConstantExpression * desc);
+	std::string operateOn(struct Expression * desc);
+	std::string operateOn(struct FunctionCall * node);
+	std::string operateOn(struct FunctionCallArgumentList * node);
+	std::string operateOn(struct FunctionDeclaration * node);
+	std::string operateOn(struct Node * node);
+	std::string operateOn(struct Program * program);
+	std::string operateOn(struct ReturnStatement * statement);
+	std::string operateOn(struct Statement * statement);
+	std::string operateOn(struct Struct * strct);
+	std::string operateOn(struct UnaryExpression * desc);
+	std::string operateOn(struct UsingDeclaration * usingDecl);
+	std::string operateOn(struct VariableAttribute * node);
+	std::string operateOn(struct VariableDeclaration * node);
+	std::string operateOn(struct VariableList * node);
+
+	std::string traverse(struct Node * node);
 
 private:
 	std::string _shaderString;
@@ -41,7 +39,7 @@ private:
 	VariableDeclaration * _inDecl; // what are the in variables?
 	std::vector<Struct*> _topLevelStructs; // for mapping in, out and uniform variables
 
-	void indent();
+	std::string indent();
 	std::string mapIdentifier(const std::string & src) const;
 	std::string outputMain();
 	std::string outputInOutUniforms();
