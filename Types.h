@@ -48,6 +48,8 @@ public:
   virtual ~Node() {}
   virtual void visit(Visitor * v);
   virtual NodeType getNodeType() { return NodeType::Node; }
+  Node * getParent() { return _parent; }
+  virtual std::vector<Node*> getChildren() { return std::vector<Node*>(); }
 
 public:
 	Node * _parent;
@@ -84,6 +86,7 @@ struct Block : public Node
   virtual ~Block() {}
   void visit(Visitor * v) override;
   NodeType getNodeType() override { return NodeType::Block; }
+  std::vector<Node*> getChildren() override { return _nodes; }
 
   std::vector<Node *> _nodes;
 };
@@ -127,6 +130,7 @@ struct Struct : public Statement
   virtual ~Struct() {}
   void visit(Visitor * v) override;
   NodeType getNodeType() override { return NodeType::Struct; }
+  std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(&_block); return nodes; }
   
   std::string _name;
   Block _block;
@@ -247,6 +251,7 @@ public:
 
 	UnaryType _type;
 	Expression * _expression;
+	std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(_expression); return nodes; }
 };
 
 enum class BinaryOperator
@@ -273,7 +278,7 @@ struct BinaryExpression : public Expression
   virtual ~BinaryExpression() {}
   void visit(Visitor * v) override;
   NodeType getNodeType() override { return NodeType::BinaryExpression; }
-
+  std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(_left); nodes.push_back(_right);  return nodes; }
   Expression * _left;
   Expression * _right;
   BinaryOperator _op;
@@ -335,7 +340,7 @@ struct VariableList : public Node
   NodeType getNodeType() override { return NodeType::VariableList; }
   
   std::vector<VariableDeclaration *> _variableDeclarations;
-  
+  std::vector<Node*> getChildren() override { std::vector<Node*> nodes; for(auto v : _variableDeclarations) nodes.push_back(v); return nodes;  }  
 };
 
 struct FunctionDeclaration : public Statement
@@ -366,6 +371,7 @@ struct FunctionDeclaration : public Statement
   virtual ~FunctionDeclaration() {}
   void visit(Visitor * v) override;
   NodeType getNodeType() override { return NodeType::FunctionDeclaration; }
+  std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(_block); return nodes; }  
 
   FunctionType _functionType;
   std::string _returnType;
@@ -388,6 +394,7 @@ public:
 	NodeType getNodeType() override { return NodeType::FunctionCallArgumentList; }
 
 	std::vector<Expression *> _expressions;
+	std::vector<Node*> getChildren() override { std::vector<Node*> nodes; for(auto v : _expressions) nodes.push_back(v); return nodes; }
 };
 
 struct FunctionCall : public Expression
@@ -407,7 +414,7 @@ struct FunctionCall : public Expression
 
 	std::string _name;
 	FunctionCallArgumentList * _arguments;
-
+	std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(_arguments); return nodes; }
 
 };
 
@@ -424,7 +431,7 @@ struct AssignStatement : public Statement
   virtual ~AssignStatement() {}
   void visit(Visitor * v) override;
   NodeType getNodeType() override { return NodeType::AssignStatement; }
-	
+  std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(_left); nodes.push_back(_right); return nodes; }	
   Node * _left;
   Node * _right;
       
@@ -445,7 +452,7 @@ struct ReturnStatement : public Statement
   NodeType getNodeType() override { return NodeType::ReturnStatement; }
 	
   Expression * _expression;
-      
+  std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(_expression); return nodes; }      
 };
 
 extern Program * _root;
