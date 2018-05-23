@@ -74,28 +74,92 @@ std::string Transpiler::indent()
 
 std::string Transpiler::traverse(struct Node * node)
 {
-  return std::string("");
+  std::string result;
+  
+  switch(node->getNodeType())
+    {
+    case NodeType::AssignStatement:
+      result = result + operateOn(static_cast<AssignStatement*>(node));
+      break;
+    case NodeType::BinaryExpression:
+      result = result + operateOn(static_cast<BinaryExpression*>(node));
+      break;
+    case NodeType::Block:
+      result = result + operateOn(static_cast<Block*>(node));
+      break;
+    case NodeType::BufferDescriptor:
+      result = result + operateOn(static_cast<BufferDescriptor*>(node));
+      break;
+    case NodeType::ConstantExpression:
+      result = result + operateOn(static_cast<ConstantExpression*>(node));
+      break;
+    case NodeType::Expression:
+      result = result + operateOn(static_cast<Expression*>(node));
+      break;
+    case NodeType::FunctionCall:
+      result = result + operateOn(static_cast<FunctionCall*>(node));
+      break;
+    case NodeType::FunctionCallArgumentList:
+      result = result + operateOn(static_cast<FunctionCallArgumentList*>(node));
+      break;
+    case NodeType::FunctionDeclaration:
+      result = result + operateOn(static_cast<FunctionDeclaration*>(node));
+      break;
+    case NodeType::Node:
+      result = result + operateOn(static_cast<Node*>(node));
+      break;
+    case NodeType::Program:
+      result = result + operateOn(static_cast<Program*>(node));
+      break;
+    case NodeType::ReturnStatement:
+      result = result + operateOn(static_cast<ReturnStatement*>(node));
+      break;
+    case NodeType::Statement:
+      result = result + operateOn(static_cast<Statement*>(node));
+      break;
+    case NodeType::Struct:
+      result = result + operateOn(static_cast<Struct*>(node));
+      break;
+    case NodeType::UnaryExpression:
+      result = result + operateOn(static_cast<UnaryExpression*>(node));
+      break;
+    case NodeType::UsingDeclaration:
+      result = result + operateOn(static_cast<UsingDeclaration*>(node));
+      break;
+    case NodeType::VariableAttribute:
+      result = result + operateOn(static_cast<VariableAttribute*>(node));
+      break;
+    case NodeType::VariableDeclaration:
+      result = result + operateOn(static_cast<VariableDeclaration*>(node));
+      break;
+    case NodeType::VariableList:
+      result = result + operateOn(static_cast<VariableList*>(node));
+      break;      
+    }
+  
+  return result;
 }
 
 std::string Transpiler::convert(struct Block * program, struct FunctionDeclaration * shader)
 {
-  _shaderString = std::string("");
+  std::string shaderString = std::string("");
+  
   _indent = 0;
   _shader = shader;
   _inDecl = nullptr;
   _topLevelStructs = ::gatherStructs(program); 
 
-  const std::string mainString = outputMain();
+  const std::string mainString = outputMain();  
   const std::string inOutUniforms = outputInOutUniforms();
 
   // add version marker - needs more flexibility in future versions
-  _shaderString = _shaderString + "#version 430 core\n\n";
+  shaderString = shaderString + "#version 430 core\n\n";
 
-  _shaderString += traverse(program);
+  shaderString += traverse(program);
 
   //  _shaderString += "\n" + inOutUniforms + "\n";  
-  _shaderString += _shaderString + "\n" + mainString + "\n";
-  return _shaderString;
+  shaderString = shaderString + "\n" + mainString + "\n";
+  return shaderString;
 }
 
 std::string Transpiler::operateOn(struct AssignStatement * desc)
@@ -273,8 +337,8 @@ std::string Transpiler::outputMain()
   // convert shader
   mainCode = mainCode + "void main()\n";
   
-  if (_shader->_block != nullptr)
-    mainCode += traverse(_shader->_block);
+  //  if (_shader->_block != nullptr)
+  mainCode += traverse(_shader->_block);
   
   mainCode = mainCode + "\n\n";
   

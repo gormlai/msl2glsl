@@ -33,7 +33,6 @@ public:
 	std::string traverse(struct Node * node);
 
 private:
-	std::string _shaderString;
 	int _indent;
 	FunctionDeclaration * _shader;
 	VariableDeclaration * _inDecl; // what are the in variables?
