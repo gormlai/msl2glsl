@@ -51,6 +51,9 @@ private:
 	std::vector<VariableDeclaration* > _uniformVariables;
 	TranspilerState _state;
 
+	VariableDeclaration * getVariableFromName(const std::string & name);
+
+	
 	std::string indent();
 	std::string mapIdentifier(const std::string & src) const;
 	std::string mapToGLType(VariableDeclaration * vDecl) const;

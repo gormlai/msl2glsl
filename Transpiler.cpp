@@ -22,6 +22,12 @@ namespace
       "vec2",
       "vec3",
       "vec4",
+      "sampler2D",
+      "sampler3D",
+      "usampler2D",
+      "usampler3D",
+      "isampler2D",
+      "isampler3D",
     };
 
   std::map<std::string, Struct*> gatherStructs(Block * block)
@@ -53,12 +59,16 @@ std::string Transpiler::mapStructMember(const std::string & possibleStructMember
 std::string Transpiler::mapToGLType(VariableDeclaration * vDecl) const
 {
   std::string result;
-  if(isSimpleGLType(vDecl))
-    result =  mapIdentifier(vDecl->_type);
-  else {
-  }
 
-  return result;
+  std::string type = vDecl->_type;
+  const BufferDescriptor * bufDesc = vDecl->_bufferDescriptor;
+  if(bufDesc != nullptr) {
+    if(type == "texture2d" && bufDesc->_accessor == "sample") {
+      if(bufDesc->_type == "float")
+	type = "sampler2D";
+    }
+  }
+  return mapIdentifier(type);
 }
 
 
@@ -84,6 +94,25 @@ std::string Transpiler::mapIdentifier(const std::string & src) const
 		output = it->second;
 
 	return output;
+}
+
+// TODO: eventually this method should include scoped variables
+// for now it only supports inputs
+VariableDeclaration * Transpiler::getVariableFromName(const std::string & name)
+{
+  // categorise arguments to main
+  VariableList * vList = _shader->_variables;
+  if(vList != nullptr) {
+    std::vector<VariableDeclaration *> & vDecls = vList->_variableDeclarations;
+    for(VariableDeclaration * vDecl : vDecls) {
+      if(name == vDecl->_variableName)
+	return vDecl;
+    }
+    
+  }
+
+  return nullptr;
+  
 }
 
 std::string Transpiler::indent()
@@ -225,12 +254,37 @@ std::string Transpiler::operateOn(struct BinaryExpression * desc)
     break;
   case BinaryOperator::Dot: {
     // special attention needs to be to the dot operator
-    const std::string leftExpression = traverse(desc->_left);
     const std::string rightExpression = traverse(desc->_right);
     const std::string dot = ops[(int)desc->_op];
-    const std::string structExpr = leftExpression + dot + rightExpression;
-    const std::string mappedStructExpr = mapStructMember(structExpr);
-    result = result + mappedStructExpr;
+    
+    const std::string leftExpression = traverse(desc->_left);
+    VariableDeclaration * vDecl = getVariableFromName(leftExpression);
+    if(vDecl == nullptr) {
+      result = leftExpression + dot + rightExpression;
+    }
+    else {
+      const std::string glType = mapToGLType(vDecl);
+      if(glType == "sampler2D") {
+	const std::string phraseToSearchFor = "sample(";
+	std::size_t samplePos = rightExpression.find(phraseToSearchFor);
+	if(samplePos == 0) {
+	  std::string intermediate = rightExpression.substr(phraseToSearchFor.length()-1);
+	  // TODO - replace the following code with a search for the correction VariableDeclaration
+	  std::size_t commaPos = intermediate.find(",");
+	  if(commaPos != std::string::npos) {
+	    std::string rightSide = intermediate.substr(commaPos);	    
+	    result = "texture(" + mapIdentifier(vDecl->_variableName) + rightSide;
+	  }
+	}
+      }
+      else {
+	const std::string structExpr = leftExpression + dot + rightExpression;
+	const std::string mappedStructExpr = mapStructMember(structExpr);
+	result = result + mappedStructExpr;
+      }
+      
+    }
+    
   }
     break;
   }
@@ -345,9 +399,8 @@ void Transpiler::categoriseVariableDeclaration(VariableDeclaration * vDecl)
 
 bool Transpiler::isSimpleGLType(VariableDeclaration * vDecl) const
 {
-  const std::string type = vDecl->_type;
-  const std::string mappedType = mapIdentifier(type);
-
+  std::string type = vDecl->_type;
+  const std::string mappedType = mapToGLType(vDecl);
   return isSimpleGLType(mappedType);
 }
 
@@ -365,7 +418,9 @@ std::string Transpiler::outputUniforms()
   for(VariableDeclaration * decl : _uniformVariables) {
     std::string glType = mapToGLType(decl);
     if(isSimpleGLType(glType))
-      result = "uniform " + glType + " " + decl->_variableName + ";\n";    
+      result = "uniform " + glType + " " + decl->_variableName + ";\n";
+    else {
+    }
   }
   
   return result;
@@ -661,21 +716,7 @@ std::string Transpiler::operateOn(struct VariableDeclaration * node)
 {
   std::string result = indent();
   
-  // ignore all qualifiers
-  std::string type = node->_type;
-  BufferDescriptor * bufDesc = node->_bufferDescriptor;
-  if (bufDesc != nullptr)
-    {
-      
-      if (node->_type == "texture2d"){
-	if (bufDesc->_type == "float" && bufDesc->_accessor == "sample") {
-	  type = "sampler2D";
-	}
-	
-      }
-    }
-  
-  std::string realType = mapIdentifier(type);
+  std::string realType = mapToGLType(node);
   std::string realVariableName = mapIdentifier(node->_variableName);
   result = result + realType + " " + realVariableName;
   return result;
