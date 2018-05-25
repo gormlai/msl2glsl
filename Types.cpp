@@ -69,10 +69,26 @@ void Statement::visit(Visitor * v)
   v->operateOn(this);
 }
 
+std::vector<struct VariableDeclaration*> Struct::getVariables() const
+{
+  std::vector<struct VariableDeclaration*> variables;
+  
+  const Block & block = _block;
+  const std::vector<Node*> & nodes = block._nodes;
+  for(Node * node : nodes) {
+    if(node->getNodeType() == NodeType::VariableDeclaration) {
+      variables.push_back(static_cast<VariableDeclaration*>(node));
+    }
+  }
+  return variables;
+}
+
 void Struct::visit(Visitor * v)
 {
   v->operateOn(this);
 }
+
+
 
 void UnaryExpression::visit(Visitor * v)
 {

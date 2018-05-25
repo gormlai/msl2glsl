@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <map>
 
 class Visitor;
 
@@ -131,6 +132,8 @@ struct Struct : public Statement
   void visit(Visitor * v) override;
   NodeType getNodeType() override { return NodeType::Struct; }
   std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(&_block); return nodes; }
+
+  std::vector<struct VariableDeclaration*> getVariables() const;
   
   std::string _name;
   Block _block;

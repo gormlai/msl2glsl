@@ -23,15 +23,16 @@ namespace
       "vec4",
     };
 
-  std::vector<Struct*> gatherStructs(Block * block)
+  std::map<std::string, Struct*> gatherStructs(Block * block)
   {
-    std::vector<Struct*> result;
+    std::map<std::string, Struct*> result;
     
     std::vector<Node*> nodes = block->_nodes;
     for(auto node : nodes) {
       if(node->getNodeType() == NodeType::Struct) {
 	Struct * strct = (Struct*)node;
-	result.push_back(strct);
+	const std::string & strctName = strct->_name;
+	result[strctName] = strct;
       }
     }
     return result;
@@ -310,6 +311,15 @@ std::string Transpiler::outputInOutUniforms()
     if(isSimpleGLType(mappedType))
       result += "in " + mappedType + " " + mapIdentifier(_inDecl->_variableName) + ";\n";
     else { // else search for struct
+      auto it = _topLevelStructs.find(type);
+      if(it != _topLevelStructs.end()) {
+	
+      }
+      else {
+	// we could find a type to match
+	// TODO - throw error!!
+      }
+      
       
     }
       

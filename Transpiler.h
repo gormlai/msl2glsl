@@ -36,7 +36,7 @@ private:
 	int _indent;
 	FunctionDeclaration * _shader;
 	VariableDeclaration * _inDecl; // what are the in variables?
-	std::vector<Struct*> _topLevelStructs; // for mapping in, out and uniform variables
+	std::map<std::string,Struct*> _topLevelStructs; // for mapping in, out and uniform variables
 
 	std::string indent();
 	std::string mapIdentifier(const std::string & src) const;
