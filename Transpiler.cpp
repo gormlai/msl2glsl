@@ -502,10 +502,31 @@ std::string Transpiler::operateOn(struct Program * program)
 
 std::string Transpiler::operateOn(struct ReturnStatement * statement)
 {
-  std::string result =  indent();
-  result = result + "return ";
-  result += traverse(statement->_expression);
-  result = result + ";\n";
+  std::string result;
+
+  std::string rightSide = traverse(statement->_expression);
+  
+  if(_state == TranspilerState::OutputRestOfProgram) {
+    // keep code as is
+    std::string result =  indent();
+    result = result + "return ";
+    result += rightSide;
+    result = result + ";\n";
+  }
+  else if(_state == TranspilerState::OutputMain) {
+    // rewrite code to assign to an out variable
+    const std::string type = _shader->_returnType;
+    const std::string mappedType = mapIdentifier(type);
+    if(isSimpleGLType(mappedType)) {
+      result = result + baseOutVariableName() + " = " + rightSide + ";\n"; 
+    }
+    else {
+    }
+  }
+  else {
+    // todo - handle error
+  }
+  
 
   return result;
 }
