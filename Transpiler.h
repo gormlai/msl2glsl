@@ -45,10 +45,12 @@ private:
 	std::string mapIdentifier(const std::string & src) const;
 	std::string outputMain();
 	std::string outputInOutUniforms();
+	std::string outputIn();
+	std::string outputOut();
 	void categoriseVariableDeclaration(VariableDeclaration * vDecl);
 	bool isSimpleGLType(const std::string & glType) const;
 
-	
+	inline std::string baseOutVariableName() const { return "outVariable"; }
 
 };
 

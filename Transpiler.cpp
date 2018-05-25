@@ -329,19 +329,10 @@ bool Transpiler::isSimpleGLType(const std::string & glType) const
   return it != g_simpleGLTypes.end();
 }
 
-std::string Transpiler::outputInOutUniforms()
+std::string Transpiler::outputIn()
 {
-  // categorise arguments to main
-  VariableList * vList = _shader->_variables;
-  if(vList != nullptr) {
-    std::vector<VariableDeclaration *> & vDecls = vList->_variableDeclarations;
-    for(VariableDeclaration * vDecl : vDecls)
-      categoriseVariableDeclaration(vDecl);
-    
-  }
-
-  
   std::string result;
+  
   // handle in
   if(_inDecl != nullptr) {
     const std::string type = _inDecl->_type;
@@ -375,8 +366,65 @@ std::string Transpiler::outputInOutUniforms()
       
   }
 
-  
+  return result;
+}
 
+std::string Transpiler::outputOut()
+{
+  std::string result;
+  
+  std::string type = _shader->_returnType;
+  std::string mappedType = mapIdentifier(type);
+
+  std::string mappedName = baseOutVariableName();
+
+  if(isSimpleGLType(mappedType))
+    result += "out " + mappedType + " " + mappedName + ";\n";
+  else { // else search for struct
+    auto it = _topLevelStructs.find(type);
+    if(it != _topLevelStructs.end()) {
+      Struct * strct = it->second;
+      std::vector<VariableDeclaration*> variables = strct->getVariables();
+      for(VariableDeclaration * variable : variables) {
+	const std::string & memberType = variable->_type;
+	const std::string mappedMemberType = mapIdentifier(memberType);	  
+	const std::string mappedMemberName = mapIdentifier(variable->_variableName);
+	const std::string srcMappedStructVariableName = mappedName + "." + mappedMemberName;
+	const std::string dstMappedStructVariableName = mappedName + "_" + mappedMemberName;
+	_structMemberMap[srcMappedStructVariableName] = dstMappedStructVariableName;	  
+	
+	result += "out " + mappedMemberType + " " + dstMappedStructVariableName + ";\n";
+      }
+    }
+    else {
+      // we could find a type to match
+      // TODO - throw error!!
+    }    
+  }
+
+  return result;
+  
+}
+
+std::string Transpiler::outputInOutUniforms()
+{
+  std::string result;
+  
+  // categorise arguments to main
+  VariableList * vList = _shader->_variables;
+  if(vList != nullptr) {
+    std::vector<VariableDeclaration *> & vDecls = vList->_variableDeclarations;
+    for(VariableDeclaration * vDecl : vDecls)
+      categoriseVariableDeclaration(vDecl);
+    
+  }
+  
+  std::string inVars = outputIn();
+  std::string outVars = outputOut();
+  
+  result = result + inVars;
+  result = result + outVars;
+  
   return result;
 }
 
