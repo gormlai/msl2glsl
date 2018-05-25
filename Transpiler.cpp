@@ -518,9 +518,26 @@ std::string Transpiler::operateOn(struct ReturnStatement * statement)
     const std::string type = _shader->_returnType;
     const std::string mappedType = mapIdentifier(type);
     if(isSimpleGLType(mappedType)) {
-      result = result + baseOutVariableName() + " = " + rightSide + ";\n"; 
+      result = indent() + result + baseOutVariableName() + " = " + rightSide + ";\n"; 
     }
     else {
+      std::string tempVariableName = baseOutVariableName() + "__temp__";
+      // assign right hand side result to an intermediate variable
+      result = indent() + mappedType + " " + tempVariableName + " = " + rightSide + ";\n";
+
+      auto it = _topLevelStructs.find(mappedType);
+      if(it != _topLevelStructs.end()) {
+	Struct * strct = it->second;
+	std::vector<VariableDeclaration*> variables = strct->getVariables();
+	for(VariableDeclaration * variable : variables) {
+	  const std::string mappedMemberName = mapIdentifier(variable->_variableName);
+	  const std::string leftHandSide = baseOutVariableName() + "_" + mappedMemberName;
+	  const std::string rightHandSide = tempVariableName + "." + mappedMemberName;
+	
+	  result += indent() + leftHandSide + " = " + rightHandSide + ";\n";
+      }
+    }
+      
     }
   }
   else {
