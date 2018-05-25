@@ -158,17 +158,24 @@ std::string Transpiler::convert(struct Block * program, struct FunctionDeclarati
   _indent = 0;
   _shader = shader;
   _inDecl = nullptr;
-  _topLevelStructs = ::gatherStructs(program); 
-
-  const std::string inOutUniforms = outputInOutUniforms();
-  const std::string mainString = outputMain();  
+  _topLevelStructs = ::gatherStructs(program);
+  
+  _state = TranspilerState::Init;
+  shaderString = shaderString + "#version 430 core\n\n";
 
   // add version marker - needs more flexibility in future versions
-  shaderString = shaderString + "#version 430 core\n\n";
-  shaderString = shaderString + "\n" + inOutUniforms + "\n";
-  
-  shaderString += traverse(program);
+  _state = TranspilerState::OutputGlobals;
+  const std::string inOutUniforms = outputInOutUniforms();
 
+  _state = TranspilerState::OutputMain;
+  const std::string mainString = outputMain();
+
+  _state = TranspilerState::OutputRestOfProgram;
+  const std::string mainProgram = traverse(program);
+
+  _state = TranspilerState::CleaningUp;
+  shaderString = shaderString + "\n" + inOutUniforms + "\n";  
+  shaderString += mainProgram;
   shaderString = shaderString + "\n" + mainString + "\n";
   return shaderString;
 }

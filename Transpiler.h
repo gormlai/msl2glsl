@@ -3,6 +3,14 @@
 
 #include <string>
 
+enum class TranspilerState {
+  Init,
+    OutputGlobals,
+    OutputMain,
+    OutputRestOfProgram,
+    CleaningUp,
+    };
+
 class Transpiler
 {
 public:
@@ -40,6 +48,7 @@ private:
 	VariableDeclaration * _inDecl; // what are the in variables?
 	std::map<std::string,Struct*> _topLevelStructs; // for mapping in, out and uniform variables
 	std::map<std::string, std::string> _structMemberMap;
+	TranspilerState _state;
 
 	std::string indent();
 	std::string mapIdentifier(const std::string & src) const;
