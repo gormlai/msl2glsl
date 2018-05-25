@@ -48,17 +48,21 @@ private:
 	VariableDeclaration * _inDecl; // what are the in variables?
 	std::map<std::string,Struct*> _topLevelStructs; // for mapping in, out and uniform variables
 	std::map<std::string, std::string> _structMemberMap;
+	std::vector<VariableDeclaration* > _uniformVariables;
 	TranspilerState _state;
 
 	std::string indent();
 	std::string mapIdentifier(const std::string & src) const;
+	std::string mapToGLType(VariableDeclaration * vDecl) const;
 	std::string outputMain();
 	std::string outputInOutUniforms();
 	std::string outputIn();
 	std::string outputOut();
+	std::string outputUniforms();
 	void categoriseVariableDeclaration(VariableDeclaration * vDecl);
 	bool isSimpleGLType(const std::string & glType) const;
-
+	bool isSimpleGLType(VariableDeclaration * vDecl) const;
+	
 	inline std::string baseOutVariableName() const { return "outVariable"; }
 
 };

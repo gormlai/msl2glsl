@@ -50,6 +50,18 @@ std::string Transpiler::mapStructMember(const std::string & possibleStructMember
   return it->second;
 }
 
+std::string Transpiler::mapToGLType(VariableDeclaration * vDecl) const
+{
+  std::string result;
+  if(isSimpleGLType(vDecl))
+    result =  mapIdentifier(vDecl->_type);
+  else {
+  }
+
+  return result;
+}
+
+
 std::string Transpiler::mapIdentifier(const std::string & src) const
 {
 	const static std::map<std::string, std::string> identifierMap =
@@ -326,7 +338,17 @@ void Transpiler::categoriseVariableDeclaration(VariableDeclaration * vDecl)
     if(sAttrib == "stage_in") {
       _inDecl = vDecl;
     }
+    else
+      _uniformVariables.push_back(vDecl);
   }
+}
+
+bool Transpiler::isSimpleGLType(VariableDeclaration * vDecl) const
+{
+  const std::string type = vDecl->_type;
+  const std::string mappedType = mapIdentifier(type);
+
+  return isSimpleGLType(mappedType);
 }
 
 
@@ -334,6 +356,19 @@ bool Transpiler::isSimpleGLType(const std::string & glType) const
 {
   auto it = g_simpleGLTypes.find(glType);
   return it != g_simpleGLTypes.end();
+}
+
+std::string Transpiler::outputUniforms()
+{
+  std::string result;
+
+  for(VariableDeclaration * decl : _uniformVariables) {
+    std::string glType = mapToGLType(decl);
+    if(isSimpleGLType(glType))
+      result = "uniform " + glType + " " + decl->_variableName + ";\n";    
+  }
+  
+  return result;
 }
 
 std::string Transpiler::outputIn()
@@ -425,10 +460,12 @@ std::string Transpiler::outputInOutUniforms()
       categoriseVariableDeclaration(vDecl);
     
   }
-  
+
+  std::string uniformVars = outputUniforms();
   std::string inVars = outputIn();
   std::string outVars = outputOut();
   
+  result = result + uniformVars;
   result = result + inVars;
   result = result + outVars;
   
@@ -521,7 +558,7 @@ std::string Transpiler::operateOn(struct ReturnStatement * statement)
       result = indent() + result + baseOutVariableName() + " = " + rightSide + ";\n"; 
     }
     else {
-      std::string tempVariableName = baseOutVariableName() + "__temp__";
+      std::string tempVariableName = baseOutVariableName() + "_temp_";
       // assign right hand side result to an intermediate variable
       result = indent() + mappedType + " " + tempVariableName + " = " + rightSide + ";\n";
 
