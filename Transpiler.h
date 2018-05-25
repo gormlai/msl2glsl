@@ -32,11 +32,14 @@ public:
 
 	std::string traverse(struct Node * node);
 
+	std::string mapStructMember(const std::string & possibleStructMember) const;
+
 private:
 	int _indent;
 	FunctionDeclaration * _shader;
 	VariableDeclaration * _inDecl; // what are the in variables?
 	std::map<std::string,Struct*> _topLevelStructs; // for mapping in, out and uniform variables
+	std::map<std::string, std::string> _structMemberMap;
 
 	std::string indent();
 	std::string mapIdentifier(const std::string & src) const;

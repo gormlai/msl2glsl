@@ -3,6 +3,7 @@
 
 #include <map>
 #include <set>
+#include <iostream>
 
 namespace
 {
@@ -38,6 +39,15 @@ namespace
     return result;
     
   }
+}
+
+std::string Transpiler::mapStructMember(const std::string & possibleStructMember) const
+{
+  auto it = _structMemberMap.find(possibleStructMember);
+  if(it == _structMemberMap.end())
+    return possibleStructMember;
+
+  return it->second;
 }
 
 std::string Transpiler::mapIdentifier(const std::string & src) const
@@ -150,15 +160,15 @@ std::string Transpiler::convert(struct Block * program, struct FunctionDeclarati
   _inDecl = nullptr;
   _topLevelStructs = ::gatherStructs(program); 
 
-  const std::string mainString = outputMain();  
   const std::string inOutUniforms = outputInOutUniforms();
+  const std::string mainString = outputMain();  
 
   // add version marker - needs more flexibility in future versions
   shaderString = shaderString + "#version 430 core\n\n";
-
+  shaderString = shaderString + "\n" + inOutUniforms + "\n";
+  
   shaderString += traverse(program);
 
-  //  _shaderString += "\n" + inOutUniforms + "\n";  
   shaderString = shaderString + "\n" + mainString + "\n";
   return shaderString;
 }
@@ -174,6 +184,8 @@ std::string Transpiler::operateOn(struct AssignStatement * desc)
 
 std::string Transpiler::operateOn(struct BinaryExpression * desc)
 {
+  std::string result;
+  
   const static std::string ops[] =
     {
       "+",
@@ -182,12 +194,28 @@ std::string Transpiler::operateOn(struct BinaryExpression * desc)
       "/",
       ".",
     };
+
+  switch(desc->_op){
+  case BinaryOperator::Plus:
+  case BinaryOperator::Minus:
+  case BinaryOperator::Multiply:
+  case BinaryOperator::Divide:
+    result = result + traverse(desc->_left);
+    result = result + ops[(int)desc->_op];
+    result = result + traverse(desc->_right);
+    break;
+  case BinaryOperator::Dot: {
+    // special attention needs to be to the dot operator
+    const std::string leftExpression = traverse(desc->_left);
+    const std::string rightExpression = traverse(desc->_right);
+    const std::string dot = ops[(int)desc->_op];
+    const std::string structExpr = leftExpression + dot + rightExpression;
+    const std::string mappedStructExpr = mapStructMember(structExpr);
+    result = result + mappedStructExpr;
+  }
+    break;
+  }
   
-  // special attention needs to be to the dot operator - will come back to this
-  std::string result;
-  result = result + traverse(desc->_left);
-  result = result + ops[(int)desc->_op];
-  result = result + traverse(desc->_right);
   return result;
 }
 
@@ -303,17 +331,39 @@ bool Transpiler::isSimpleGLType(const std::string & glType) const
 
 std::string Transpiler::outputInOutUniforms()
 {
+  // categorise arguments to main
+  VariableList * vList = _shader->_variables;
+  if(vList != nullptr) {
+    std::vector<VariableDeclaration *> & vDecls = vList->_variableDeclarations;
+    for(VariableDeclaration * vDecl : vDecls)
+      categoriseVariableDeclaration(vDecl);
+    
+  }
+
+  
   std::string result;
   // handle in
   if(_inDecl != nullptr) {
     const std::string type = _inDecl->_type;
     const std::string mappedType = mapIdentifier(type);
+    const std::string mappedName = mapIdentifier(_inDecl->_variableName);
     if(isSimpleGLType(mappedType))
-      result += "in " + mappedType + " " + mapIdentifier(_inDecl->_variableName) + ";\n";
+      result += "in " + mappedType + " " + mappedName + ";\n";
     else { // else search for struct
       auto it = _topLevelStructs.find(type);
       if(it != _topLevelStructs.end()) {
-	
+	Struct * strct = it->second;
+	std::vector<VariableDeclaration*> variables = strct->getVariables();
+	for(VariableDeclaration * variable : variables) {
+	  const std::string & memberType = variable->_type;
+	  const std::string mappedMemberType = mapIdentifier(memberType);	  
+	  const std::string mappedMemberName = mapIdentifier(variable->_variableName);
+	  const std::string srcMappedStructVariableName = mappedName + "." + mappedMemberName;
+	  const std::string dstMappedStructVariableName = mappedName + "_" + mappedMemberName;
+	  _structMemberMap[srcMappedStructVariableName] = dstMappedStructVariableName;	  
+	  
+	  result += "in " + mappedMemberType + " " + dstMappedStructVariableName + ";\n";
+	}
       }
       else {
 	// we could find a type to match
@@ -335,14 +385,6 @@ std::string Transpiler::outputMain()
 {
   std::string mainCode;
   
-  // categorise arguments
-  VariableList * vList = _shader->_variables;
-  if(vList != nullptr) {
-    std::vector<VariableDeclaration *> & vDecls = vList->_variableDeclarations;
-    for(VariableDeclaration * vDecl : vDecls)
-      categoriseVariableDeclaration(vDecl);
-    
-  }
   
   // convert shader
   mainCode = mainCode + "void main()\n";
