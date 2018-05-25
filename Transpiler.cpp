@@ -531,9 +531,16 @@ std::string Transpiler::operateOn(struct ReturnStatement * statement)
 	std::vector<VariableDeclaration*> variables = strct->getVariables();
 	for(VariableDeclaration * variable : variables) {
 	  const std::string mappedMemberName = mapIdentifier(variable->_variableName);
-	  const std::string leftHandSide = baseOutVariableName() + "_" + mappedMemberName;
 	  const std::string rightHandSide = tempVariableName + "." + mappedMemberName;
-	
+	  std::string leftHandSide;
+	  
+	  if(_shader->_functionType == FunctionType::Vertex && variable->_attribute!=nullptr && variable->_attribute->_sAttribute == "position") {
+	    leftHandSide = "gl_Position";
+	  }
+	  else {
+	    leftHandSide = baseOutVariableName() + "_" + mappedMemberName;
+	  }
+	  
 	  result += indent() + leftHandSide + " = " + rightHandSide + ";\n";
       }
     }
