@@ -1,7 +1,6 @@
 #include "Driver.h"
 #include <fstream>
 #include <sstream>
-#include "PreProcessor.h"
 #include "Ast2GL.h"
 #include "PrettyPrinter.h"
 
@@ -15,20 +14,6 @@ void Metal::Driver::convert(const std::string & filename)
   if(filename.empty())
     return;
 
-  PreProcessor preProcessor;
-  
-  printf("PREPROCESSING FILE: %s\n", filename.c_str());
-  std::string processedFileContents = preProcessor.convertFile(filename);
-  printf("\n---------BEGIN PREPROCESSEDFILE----------\n%s\n",processedFileContents.c_str());
-
-  // save out preprocessed contents
-  std::string outFileName("preprocessed.metal");
-  std::ofstream outStream(outFileName.c_str(), std::ofstream::out);
-  outStream << processedFileContents;
-  outStream.close();
-  printf("\n---------END PREPROCESSEDFILE----------\n%s\n",processedFileContents.c_str());
-  
-  //  std::istringstream stream(processedFileContents);
   std::ifstream stream(filename.c_str());
   
   _scanner = std::shared_ptr<Scanner>(new Scanner(&stream));
