@@ -65,6 +65,8 @@ int lines = 1;
 {WHITESPACE}                               { /* skip */ }
 {NEWLINE}                                  { lines++; }
 "#include"{WHITESPACE}"<"{LETTER}*">"      { /* skip */ }
+"//"[^\n]*                                 {/* skip */ }
+	       
 
 %%
 
