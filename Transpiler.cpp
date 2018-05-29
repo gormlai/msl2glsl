@@ -735,3 +735,16 @@ std::string Transpiler::operateOn(struct VariableList * node)
   return result;
 
 }
+
+std::string Transpiler::baseOutVariableName() const
+{
+  switch(_shader->_functionType)
+  {
+  case FunctionType::Vertex:
+    return "frag_in";
+    break;
+  default:
+    return "result";
+  }
+  
+}

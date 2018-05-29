@@ -66,7 +66,7 @@ private:
 	bool isSimpleGLType(const std::string & glType) const;
 	bool isSimpleGLType(VariableDeclaration * vDecl) const;
 	
-	inline std::string baseOutVariableName() const { return "outVariable"; }
+	std::string baseOutVariableName() const;
 
 };
 
