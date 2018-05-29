@@ -59,6 +59,7 @@ int lines = 1;
 "[["                                       { return token::BEGIN_DOUBLE_SQUARE_BRACKET; }
 "]]"                                       { return token::END_DOUBLE_SQUARE_BRACKET; }
 "return"                                   { return token::RETURN; }
+"typedef"                                  { return token::TYPEDEF; }
 {DIGIT}*"."{DIGIT}+"f"                     { std::string t(yytext,yyleng); _yyval->floatValue = atof(t.c_str()); return token::FLOAT_VALUE; }
 {DIGIT}*"."{DIGIT}+"h"                     { std::string t(yytext,yyleng); _yyval->halfValue = atof(t.c_str()); return token::HALF_VALUE; }
 {DIGIT}*"."{DIGIT}+                        { std::string t(yytext,yyleng); _yyval->doubleValue = (double)atof(t.c_str()); return token::DOUBLE_VALUE; }

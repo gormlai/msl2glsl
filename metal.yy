@@ -112,6 +112,7 @@ class Scanner;
 %token                ACCESS
 %token                LESS_THAN
 %token                GREATER_THAN
+%token                TYPEDEF
 
 %type	<block> statements
 %type	<statement>	 statement
@@ -138,6 +139,7 @@ translation_unit: statements { _root = new Program($1); $$ = _root; delete $1; }
 		;
 
 struct: STRUCT identifier BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new Struct(*$2); $$->_block = *$4; delete $4; }
+	| TYPEDEF STRUCT BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET identifier { $$ = new Struct(*$6); $$->_block = *$4; delete $4; }
 		;
 
 statements: statements statement { $$->_nodes.push_back($2); $2->_parent = $$; }
