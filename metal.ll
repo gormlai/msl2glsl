@@ -3,6 +3,8 @@ NEWLINE [\n]
 LETTER [_a-zA-Z]
 DIGIT [0-9]
 LETTER_OR_DIGIT ({LETTER}|{DIGIT})
+FORWARDSLASH [/]
+LETTER_OR_DIGIT_OR_FORWARDSLASH ({LETTER}|{DIGIT}|{FORWARDSLASH})
 
 %{
 
@@ -64,7 +66,7 @@ int lines = 1;
 {LETTER}{LETTER_OR_DIGIT}*                 { _yyval->string = new std::string(yytext,yyleng) ; return token::IDENTIFIER; }
 {WHITESPACE}                               { /* skip */ }
 {NEWLINE}                                  { lines++; }
-"#include"{WHITESPACE}"<"{LETTER}*">"      { /* skip */ }
+"#include"{WHITESPACE}"<"[^\n]*">" { /* skip */ }
 "//"[^\n]*                                 {/* skip */ }
 	       
 
