@@ -67,7 +67,7 @@ private:
 	bool isSimpleGLType(VariableDeclaration * vDecl) const;
 	
 	std::string baseOutVariableName() const;
-	std::string toCommaSeparatedList(const std::vector<std::string> & input, bool mapInput);
+	std::string toCommaSeparatedList(const std::vector<VariableNameDeclaration *> & input, bool mapInput);
 
 };
 

@@ -48,11 +48,13 @@ namespace
   }
 }
 
-std::string Transpiler::toCommaSeparatedList(const std::vector<std::string> & input, bool mapIdentifiers)
+std::string Transpiler::toCommaSeparatedList(const std::vector<VariableNameDeclaration*> & input, bool mapIdentifiers)
 {
   std::string result;
+  
   for(unsigned int i=0 ; i < (unsigned int)input.size() ; i++) {
-    const std::string val = mapIdentifiers ? mapIdentifier(input[i]) : input[i];
+    const VariableNameDeclaration * vDecl = input[i];
+    const std::string val = mapIdentifiers ? mapIdentifier(vDecl->_variableName) : vDecl->_variableName;
     result = result + val;
     if(i != input.size()-1)
       result = result + ", ";
@@ -119,8 +121,8 @@ VariableDeclaration * Transpiler::getVariableFromName(const std::string & name)
   if(vList != nullptr) {
     std::vector<VariableDeclaration *> & vDecls = vList->_variableDeclarations;
     for(VariableDeclaration * vDecl : vDecls) {
-      for(const std::string & variableName : vDecl->_variableNames) {
-      if(name == variableName)
+      for(const VariableNameDeclaration * variableName : vDecl->_variableNames) {
+      if(name == variableName->_variableName)
 	return vDecl;
       }
     }
@@ -432,10 +434,10 @@ std::string Transpiler::outputUniforms()
   std::string result;
 
   for(VariableDeclaration * decl : _uniformVariables) {
-    for(const std::string & variableName : decl->_variableNames) {
+    for(const VariableNameDeclaration * variableName : decl->_variableNames) {
       std::string glType = mapToGLType(decl);
       if(isSimpleGLType(glType))
-	result = "uniform " + glType + " " + variableName + ";\n";
+	result = "uniform " + glType + " " + variableName->_variableName + ";\n";
       else {
       }
     }
@@ -452,8 +454,8 @@ std::string Transpiler::outputIn()
   if(_inDecl != nullptr) {
     const std::string type = _inDecl->_type;
     const std::string mappedType = mapIdentifier(type);
-    for(const std::string & variableName : _inDecl->_variableNames) {
-      const std::string mappedName = mapIdentifier(variableName);
+    for(const VariableNameDeclaration * variableName : _inDecl->_variableNames) {
+      const std::string mappedName = mapIdentifier(variableName->_variableName);
       if(isSimpleGLType(mappedType))
 	result += "in " + mappedType + " " + mappedName + ";\n";
       else { // else search for struct
@@ -464,8 +466,8 @@ std::string Transpiler::outputIn()
 	  for(VariableDeclaration * variable : variables) {
 	      const std::string & memberType = variable->_type;
 	      const std::string mappedMemberType = mapIdentifier(memberType);	  
-	      for(const std::string & mappedVariableName : variable->_variableNames) {
-		const std::string mappedMemberName = mapIdentifier(mappedVariableName);
+	      for(const VariableNameDeclaration * mappedVariableName : variable->_variableNames) {
+		const std::string mappedMemberName = mapIdentifier(mappedVariableName->_variableName);
 		const std::string srcMappedStructVariableName = mappedName + "." + mappedMemberName;
 		const std::string dstMappedStructVariableName = mappedName + "_" + mappedMemberName;
 		_structMemberMap[srcMappedStructVariableName] = dstMappedStructVariableName;	  
@@ -508,8 +510,8 @@ std::string Transpiler::outputOut()
       for(VariableDeclaration * variable : variables) {
 	const std::string & memberType = variable->_type;
 	const std::string mappedMemberType = mapIdentifier(memberType);	  
-	for(const std::string & mappedVariableName : variable->_variableNames) {
-	  const std::string mappedMemberName = mapIdentifier(mappedVariableName);
+	for(const VariableNameDeclaration * mappedVariableName : variable->_variableNames) {
+	  const std::string mappedMemberName = mapIdentifier(mappedVariableName->_variableName);
 	  const std::string srcMappedStructVariableName = mappedName + "." + mappedMemberName;
 	  const std::string dstMappedStructVariableName = mappedName + "_" + mappedMemberName;
 	  _structMemberMap[srcMappedStructVariableName] = dstMappedStructVariableName;	  
@@ -647,8 +649,8 @@ std::string Transpiler::operateOn(struct ReturnStatement * statement)
 	Struct * strct = it->second;
 	std::vector<VariableDeclaration*> variables = strct->getVariables();
 	for(VariableDeclaration * variable : variables) {
-	  for(const std::string & variableName : variable->_variableNames) {
-	    const std::string mappedMemberName = mapIdentifier(variableName);
+	  for(const VariableNameDeclaration * variableName : variable->_variableNames) {
+	    const std::string mappedMemberName = mapIdentifier(variableName->_variableName);
 	    const std::string rightHandSide = tempVariableName + "." + mappedMemberName;
 	    std::string leftHandSide;
 	  

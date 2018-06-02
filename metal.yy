@@ -67,7 +67,7 @@ class Scanner;
     VariableDeclaration::Qualifier qualifier;
     FunctionCall * functionCall;
     FunctionCallArgumentList * functionCallArgumentList;
-    std::vector<std::string> * variableNameList;
+    std::vector<VariableNameDeclaration* > * variableNameList;
 }
 			  
 %token		      TYPE_BOOL		      
@@ -136,6 +136,7 @@ class Scanner;
 %type	<functionCall>   function_call
 %type	<functionCallArgumentList> function_argument_list
 %type	<variableNameList> variable_name_list
+%type	<intValue>     array_declaration
 %locations
 
 %%
@@ -168,9 +169,13 @@ reserved_token:
 //			|      '*' { $$ = ReservedToken::Ampersand; }
 	;
 
+array_declaration:
+		/* empty */ { $$ = 0; }
+	|	BEGIN_SINGLE_SQUARE_BRACKET INT_VALUE END_SINGLE_SQUARE_BRACKET { $$ = $2; }
+	;
 
-variable_name_list:  variable_name_list COMMA identifier { $$->push_back(*$3); }
-		      |	identifier { $$ = new std::vector<std::string>(); $$->push_back(*$1); }
+variable_name_list:  variable_name_list COMMA identifier array_declaration { $$->push_back( new VariableNameDeclaration(*$3, $4)); }
+		      |	identifier array_declaration { $$ = new std::vector<VariableNameDeclaration * >(); $$->push_back(new VariableNameDeclaration(*$1, $2)); }
 		;
 
 variable_declaration:

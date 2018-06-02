@@ -3,11 +3,20 @@
 
 namespace
 {
-  std::string toCommaSeparatedList(const std::vector<std::string> & input)
+
+  std::string arrayNumToString(const int arraySize) {
+    if(arraySize == 0 )
+      return std::string("");
+    else
+      return std::string("[") + std::to_string(arraySize) + std::string("]");
+  }
+  
+  std::string toCommaSeparatedList(const std::vector<VariableNameDeclaration *> & input)
   {
     std::string result;
     for(unsigned int i=0 ; i < (unsigned int)input.size() ; i++) {
-      result = result + input[i];
+      VariableNameDeclaration * vDecl = input[i];
+      result = result + vDecl->_variableName + arrayNumToString(vDecl->_arraySize);
       if(i != input.size()-1)
 	result = result + ", ";
     }

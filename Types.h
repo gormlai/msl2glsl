@@ -66,7 +66,7 @@ struct VariableAttribute : public Node
     }
 
   virtual ~VariableAttribute() {}
-  void visit(Visitor *v);
+  void visit(Visitor *v) override;
   NodeType getNodeType() override { return NodeType::VariableAttribute; }
 
   std::string _sAttribute;
@@ -307,7 +307,7 @@ struct VariableDeclaration : public Statement
 		     const std::string & type,
 		     BufferDescriptor * bufferDescriptor,
 		     const ReservedToken reservedToken,
-		     const std::vector<std::string> & variableNames,
+		     const std::vector<struct VariableNameDeclaration*> & variableNames,
 		     VariableAttribute * attribute = nullptr)
     :_type(type)
     ,_variableNames(variableNames)
@@ -327,7 +327,7 @@ struct VariableDeclaration : public Statement
   NodeType getNodeType() override { return NodeType::VariableDeclaration; }
   
   std::string _type;
-  std::vector<std::string> _variableNames;
+  std::vector<VariableNameDeclaration*> _variableNames;
   VariableAttribute * _attribute;
   Qualifier _qualifier;
   ReservedToken _reservedToken;
@@ -456,6 +456,19 @@ struct ReturnStatement : public Statement
   Expression * _expression;
   std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(_expression); return nodes; }      
 };
+
+struct VariableNameDeclaration : public Node
+{
+  VariableNameDeclaration(const std::string & variableName, int arraySize)
+    :_variableName(variableName)
+    ,_arraySize(arraySize) {
+  }
+  
+  std::string _variableName;
+  int _arraySize;
+};
+
+
 
 extern Program * _root;
 
