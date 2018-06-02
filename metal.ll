@@ -56,6 +56,8 @@ int lines = 1;
 "access"                                   { return token::ACCESS; }
 "("                                        { return token::BEGIN_BRACKET; }
 ")"                                        { return token::END_BRACKET; }
+"["                                        { return token::BEGIN_SINGLE_SQUARE_BRACKET; }
+"]"                                        { return token::END_SINGLE_SQUARE_BRACKET; }
 "[["                                       { return token::BEGIN_DOUBLE_SQUARE_BRACKET; }
 "]]"                                       { return token::END_DOUBLE_SQUARE_BRACKET; }
 "return"                                   { return token::RETURN; }

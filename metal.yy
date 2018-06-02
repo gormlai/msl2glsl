@@ -67,7 +67,7 @@ class Scanner;
     VariableDeclaration::Qualifier qualifier;
     FunctionCall * functionCall;
     FunctionCallArgumentList * functionCallArgumentList;
-    std::vector<std::string> * identifierList;
+    std::vector<std::string> * variableNameList;
 }
 			  
 %token		      TYPE_BOOL		      
@@ -107,6 +107,8 @@ class Scanner;
 %token                END_CURLY_BRACKET
 %token                BEGIN_BRACKET
 %token                END_BRACKET
+%token                BEGIN_SINGLE_SQUARE_BRACKET
+%token                END_SINGLE_SQUARE_BRACKET
 %token                BEGIN_DOUBLE_SQUARE_BRACKET
 %token                END_DOUBLE_SQUARE_BRACKET
 %token                DOUBLE_COLON
@@ -133,7 +135,7 @@ class Scanner;
 %type	<expression>   constant
 %type	<functionCall>   function_call
 %type	<functionCallArgumentList> function_argument_list
-%type	<identifierList> identifier_list
+%type	<variableNameList> variable_name_list
 %locations
 
 %%
@@ -166,19 +168,20 @@ reserved_token:
 //			|      '*' { $$ = ReservedToken::Ampersand; }
 	;
 
-identifier_list:  identifier_list COMMA identifier { $$->push_back(*$3); }
+
+variable_name_list:  variable_name_list COMMA identifier { $$->push_back(*$3); }
 		      |	identifier { $$ = new std::vector<std::string>(); $$->push_back(*$1); }
 		;
 
 variable_declaration:
-	qualifier identifier reserved_token identifier_list variable_attribute { $$ = new VariableDeclaration($1, *$2, nullptr, $3, *$4, $5); }
-|	identifier identifier_list variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, nullptr, ReservedToken::None, *$2, $3); }
-|	qualifier identifier identifier_list variable_attribute { $$ = new VariableDeclaration($1, *$2, nullptr, ReservedToken::None, *$3, $4); }
-|	identifier reserved_token identifier_list variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, nullptr, $2, *$3, $4); }
-|	qualifier identifier buffer_descriptor reserved_token identifier_list variable_attribute { $$ = new VariableDeclaration($1, *$2, $3, $4, *$5, $6); }
-|	identifier buffer_descriptor identifier_list variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, $2, ReservedToken::None, *$3, $4); }
-|	qualifier identifier buffer_descriptor identifier_list variable_attribute { $$ = new VariableDeclaration($1, *$2, $3, ReservedToken::None, *$4, $5); }
-|	identifier buffer_descriptor reserved_token identifier_list variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, $2, $3, *$4, $5); }
+	qualifier identifier reserved_token variable_name_list variable_attribute { $$ = new VariableDeclaration($1, *$2, nullptr, $3, *$4, $5); }
+|	identifier variable_name_list variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, nullptr, ReservedToken::None, *$2, $3); }
+|	qualifier identifier variable_name_list variable_attribute { $$ = new VariableDeclaration($1, *$2, nullptr, ReservedToken::None, *$3, $4); }
+|	identifier reserved_token variable_name_list variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, nullptr, $2, *$3, $4); }
+|	qualifier identifier buffer_descriptor reserved_token variable_name_list variable_attribute { $$ = new VariableDeclaration($1, *$2, $3, $4, *$5, $6); }
+|	identifier buffer_descriptor variable_name_list variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, $2, ReservedToken::None, *$3, $4); }
+|	qualifier identifier buffer_descriptor variable_name_list variable_attribute { $$ = new VariableDeclaration($1, *$2, $3, ReservedToken::None, *$4, $5); }
+|	identifier buffer_descriptor reserved_token variable_name_list variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, $2, $3, *$4, $5); }
 	
 		;
 
@@ -194,6 +197,7 @@ statement:  USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$
 	|	function_declaration { $$ = $1; }
 	| 	variable_declaration SEMICOLON { $$ = $1; }
 	|	variable_declaration ASSIGN expression SEMICOLON { $$ = new AssignStatement($1, $3); }
+	|	variable_declaration ASSIGN BEGIN_CURLY_BRACKET function_argument_list END_CURLY_BRACKET SEMICOLON { $$ = new AssignStatement($1, $4); }
 	|	expression ASSIGN expression SEMICOLON { $$ = new AssignStatement($1, $3); }
 	|	RETURN expression SEMICOLON { $$ = new ReturnStatement($2); }
 	|	expression SEMICOLON { $$ = $1; }
