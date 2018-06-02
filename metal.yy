@@ -67,6 +67,7 @@ class Scanner;
     VariableDeclaration::Qualifier qualifier;
     FunctionCall * functionCall;
     FunctionCallArgumentList * functionCallArgumentList;
+    std::vector<std::string> * identifierList;
 }
 			  
 %token		      TYPE_BOOL		      
@@ -132,6 +133,7 @@ class Scanner;
 %type	<expression>   constant
 %type	<functionCall>   function_call
 %type	<functionCallArgumentList> function_argument_list
+%type	<identifierList> identifier_list
 %locations
 
 %%
@@ -164,15 +166,20 @@ reserved_token:
 //			|      '*' { $$ = ReservedToken::Ampersand; }
 	;
 
+identifier_list:  identifier_list COMMA identifier { $$->push_back(*$3); }
+		      |	identifier { $$ = new std::vector<std::string>(); $$->push_back(*$1); }
+		;
+
 variable_declaration:
-	qualifier identifier reserved_token identifier variable_attribute { $$ = new VariableDeclaration($1, *$2, nullptr, $3, *$4, $5); }
-|	identifier identifier variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, nullptr, ReservedToken::None, *$2, $3); }
-|	qualifier identifier identifier variable_attribute { $$ = new VariableDeclaration($1, *$2, nullptr, ReservedToken::None, *$3, $4); }
-|	identifier reserved_token identifier variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, nullptr, $2, *$3, $4); }
-|	qualifier identifier buffer_descriptor reserved_token identifier variable_attribute { $$ = new VariableDeclaration($1, *$2, $3, $4, *$5, $6); }
-|	identifier buffer_descriptor identifier variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, $2, ReservedToken::None, *$3, $4); }
-|	qualifier identifier buffer_descriptor identifier variable_attribute { $$ = new VariableDeclaration($1, *$2, $3, ReservedToken::None, *$4, $5); }
-|	identifier buffer_descriptor reserved_token identifier variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, $2, $3, *$4, $5); }		
+	qualifier identifier reserved_token identifier_list variable_attribute { $$ = new VariableDeclaration($1, *$2, nullptr, $3, *$4, $5); }
+|	identifier identifier_list variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, nullptr, ReservedToken::None, *$2, $3); }
+|	qualifier identifier identifier_list variable_attribute { $$ = new VariableDeclaration($1, *$2, nullptr, ReservedToken::None, *$3, $4); }
+|	identifier reserved_token identifier_list variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, nullptr, $2, *$3, $4); }
+|	qualifier identifier buffer_descriptor reserved_token identifier_list variable_attribute { $$ = new VariableDeclaration($1, *$2, $3, $4, *$5, $6); }
+|	identifier buffer_descriptor identifier_list variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, $2, ReservedToken::None, *$3, $4); }
+|	qualifier identifier buffer_descriptor identifier_list variable_attribute { $$ = new VariableDeclaration($1, *$2, $3, ReservedToken::None, *$4, $5); }
+|	identifier buffer_descriptor reserved_token identifier_list variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, $2, $3, *$4, $5); }
+	
 		;
 
 variable_list:  variable_list COMMA variable_declaration { $$->_variableDeclarations.push_back($3); $3->_parent = $$; }

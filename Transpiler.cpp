@@ -7,6 +7,7 @@
 
 namespace
 {
+  
   const std::set<std::string> g_simpleGLTypes = 
     {
       "float",
@@ -46,6 +47,19 @@ namespace
     
   }
 }
+
+std::string Transpiler::toCommaSeparatedList(const std::vector<std::string> & input, bool mapIdentifiers)
+{
+  std::string result;
+  for(unsigned int i=0 ; i < (unsigned int)input.size() ; i++) {
+    const std::string val = mapIdentifiers ? mapIdentifier(input[i]) : input[i];
+    result = result + val;
+    if(i != input.size()-1)
+      result = result + ", ";
+  }
+  return result;
+}
+
 
 std::string Transpiler::mapStructMember(const std::string & possibleStructMember) const
 {
@@ -105,8 +119,10 @@ VariableDeclaration * Transpiler::getVariableFromName(const std::string & name)
   if(vList != nullptr) {
     std::vector<VariableDeclaration *> & vDecls = vList->_variableDeclarations;
     for(VariableDeclaration * vDecl : vDecls) {
-      if(name == vDecl->_variableName)
+      for(const std::string & variableName : vDecl->_variableNames) {
+      if(name == variableName)
 	return vDecl;
+      }
     }
     
   }
@@ -273,7 +289,7 @@ std::string Transpiler::operateOn(struct BinaryExpression * desc)
 	  std::size_t commaPos = intermediate.find(",");
 	  if(commaPos != std::string::npos) {
 	    std::string rightSide = intermediate.substr(commaPos);	    
-	    result = "texture(" + mapIdentifier(vDecl->_variableName) + rightSide;
+	    result = "texture(" + mapIdentifier(leftExpression) + rightSide;
 	  }
 	}
       }
@@ -416,10 +432,12 @@ std::string Transpiler::outputUniforms()
   std::string result;
 
   for(VariableDeclaration * decl : _uniformVariables) {
-    std::string glType = mapToGLType(decl);
-    if(isSimpleGLType(glType))
-      result = "uniform " + glType + " " + decl->_variableName + ";\n";
-    else {
+    for(const std::string & variableName : decl->_variableNames) {
+      std::string glType = mapToGLType(decl);
+      if(isSimpleGLType(glType))
+	result = "uniform " + glType + " " + variableName + ";\n";
+      else {
+      }
     }
   }
   
@@ -434,31 +452,36 @@ std::string Transpiler::outputIn()
   if(_inDecl != nullptr) {
     const std::string type = _inDecl->_type;
     const std::string mappedType = mapIdentifier(type);
-    const std::string mappedName = mapIdentifier(_inDecl->_variableName);
-    if(isSimpleGLType(mappedType))
-      result += "in " + mappedType + " " + mappedName + ";\n";
-    else { // else search for struct
-      auto it = _topLevelStructs.find(type);
-      if(it != _topLevelStructs.end()) {
-	Struct * strct = it->second;
-	std::vector<VariableDeclaration*> variables = strct->getVariables();
-	for(VariableDeclaration * variable : variables) {
-	  const std::string & memberType = variable->_type;
-	  const std::string mappedMemberType = mapIdentifier(memberType);	  
-	  const std::string mappedMemberName = mapIdentifier(variable->_variableName);
-	  const std::string srcMappedStructVariableName = mappedName + "." + mappedMemberName;
-	  const std::string dstMappedStructVariableName = mappedName + "_" + mappedMemberName;
-	  _structMemberMap[srcMappedStructVariableName] = dstMappedStructVariableName;	  
-	  
-	  result += "in " + mappedMemberType + " " + dstMappedStructVariableName + ";\n";
+    for(const std::string & variableName : _inDecl->_variableNames) {
+      const std::string mappedName = mapIdentifier(variableName);
+      if(isSimpleGLType(mappedType))
+	result += "in " + mappedType + " " + mappedName + ";\n";
+      else { // else search for struct
+	auto it = _topLevelStructs.find(type);
+	if(it != _topLevelStructs.end()) {
+	  Struct * strct = it->second;
+	  std::vector<VariableDeclaration*> variables = strct->getVariables();
+	  for(VariableDeclaration * variable : variables) {
+	      const std::string & memberType = variable->_type;
+	      const std::string mappedMemberType = mapIdentifier(memberType);	  
+	      for(const std::string & mappedVariableName : variable->_variableNames) {
+		const std::string mappedMemberName = mapIdentifier(mappedVariableName);
+		const std::string srcMappedStructVariableName = mappedName + "." + mappedMemberName;
+		const std::string dstMappedStructVariableName = mappedName + "_" + mappedMemberName;
+		_structMemberMap[srcMappedStructVariableName] = dstMappedStructVariableName;	  
+		
+		result += "in " + mappedMemberType + " " + dstMappedStructVariableName + ";\n";
+	      }
+	    }
+	    
 	}
-      }
-      else {
-	// we could find a type to match
-	// TODO - throw error!!
-      }
+	else {
+	  // we could not find a type to match
+	  // TODO - throw error!!
+	}
       
       
+      }
     }
       
   }
@@ -485,12 +508,14 @@ std::string Transpiler::outputOut()
       for(VariableDeclaration * variable : variables) {
 	const std::string & memberType = variable->_type;
 	const std::string mappedMemberType = mapIdentifier(memberType);	  
-	const std::string mappedMemberName = mapIdentifier(variable->_variableName);
-	const std::string srcMappedStructVariableName = mappedName + "." + mappedMemberName;
-	const std::string dstMappedStructVariableName = mappedName + "_" + mappedMemberName;
-	_structMemberMap[srcMappedStructVariableName] = dstMappedStructVariableName;	  
+	for(const std::string & mappedVariableName : variable->_variableNames) {
+	  const std::string mappedMemberName = mapIdentifier(mappedVariableName);
+	  const std::string srcMappedStructVariableName = mappedName + "." + mappedMemberName;
+	  const std::string dstMappedStructVariableName = mappedName + "_" + mappedMemberName;
+	  _structMemberMap[srcMappedStructVariableName] = dstMappedStructVariableName;	  
 	
-	result += "out " + mappedMemberType + " " + dstMappedStructVariableName + ";\n";
+	  result += "out " + mappedMemberType + " " + dstMappedStructVariableName + ";\n";
+	}
       }
     }
     else {
@@ -622,18 +647,20 @@ std::string Transpiler::operateOn(struct ReturnStatement * statement)
 	Struct * strct = it->second;
 	std::vector<VariableDeclaration*> variables = strct->getVariables();
 	for(VariableDeclaration * variable : variables) {
-	  const std::string mappedMemberName = mapIdentifier(variable->_variableName);
-	  const std::string rightHandSide = tempVariableName + "." + mappedMemberName;
-	  std::string leftHandSide;
+	  for(const std::string & variableName : variable->_variableNames) {
+	    const std::string mappedMemberName = mapIdentifier(variableName);
+	    const std::string rightHandSide = tempVariableName + "." + mappedMemberName;
+	    std::string leftHandSide;
 	  
-	  if(_shader->_functionType == FunctionType::Vertex && variable->_attribute!=nullptr && variable->_attribute->_sAttribute == "position") {
-	    leftHandSide = "gl_Position";
-	  }
-	  else {
-	    leftHandSide = baseOutVariableName() + "_" + mappedMemberName;
-	  }
+	    if(_shader->_functionType == FunctionType::Vertex && variable->_attribute!=nullptr && variable->_attribute->_sAttribute == "position") {
+	      leftHandSide = "gl_Position";
+	    }
+	    else {
+	      leftHandSide = baseOutVariableName() + "_" + mappedMemberName;
+	    }
 	  
-	  result += indent() + leftHandSide + " = " + rightHandSide + ";\n";
+	    result += indent() + leftHandSide + " = " + rightHandSide + ";\n";
+	  }
       }
     }
       
@@ -717,7 +744,7 @@ std::string Transpiler::operateOn(struct VariableDeclaration * node)
   std::string result = indent();
   
   std::string realType = mapToGLType(node);
-  std::string realVariableName = mapIdentifier(node->_variableName);
+  std::string realVariableName = toCommaSeparatedList(node->_variableNames, true /* map each variable name */);
   result = result + realType + " " + realVariableName;
   return result;
 }

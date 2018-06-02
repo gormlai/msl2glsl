@@ -127,14 +127,13 @@ struct Struct : public Statement
     :_name(name)
   {
   }
-  
+
   virtual ~Struct() {}
   void visit(Visitor * v) override;
   NodeType getNodeType() override { return NodeType::Struct; }
   std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(&_block); return nodes; }
 
   std::vector<struct VariableDeclaration*> getVariables() const;
-  
   std::string _name;
   Block _block;
 };
@@ -305,13 +304,13 @@ struct VariableDeclaration : public Statement
   };
     
  VariableDeclaration(Qualifier qualifier,
-		     const std::string & type = std::string("") ,
-		     BufferDescriptor * bufferDescriptor = nullptr,
-		     const ReservedToken reservedToken = ReservedToken::None,
-		     const std::string & variableName = std::string(""),
+		     const std::string & type,
+		     BufferDescriptor * bufferDescriptor,
+		     const ReservedToken reservedToken,
+		     const std::vector<std::string> & variableNames,
 		     VariableAttribute * attribute = nullptr)
     :_type(type)
-    ,_variableName(variableName)
+    ,_variableNames(variableNames)
     ,_attribute(attribute)
     ,_qualifier(qualifier)
     ,_reservedToken(reservedToken)
@@ -328,7 +327,7 @@ struct VariableDeclaration : public Statement
   NodeType getNodeType() override { return NodeType::VariableDeclaration; }
   
   std::string _type;
-  std::string _variableName;
+  std::vector<std::string> _variableNames;
   VariableAttribute * _attribute;
   Qualifier _qualifier;
   ReservedToken _reservedToken;

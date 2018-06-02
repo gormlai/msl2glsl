@@ -1,6 +1,20 @@
 #include "PrettyPrinter.h"
 #include "Types.h"
 
+namespace
+{
+  std::string toCommaSeparatedList(const std::vector<std::string> & input)
+  {
+    std::string result;
+    for(unsigned int i=0 ; i < (unsigned int)input.size() ; i++) {
+      result = result + input[i];
+      if(i != input.size()-1)
+	result = result + ", ";
+    }
+    return result;
+  }
+}
+
 void PrettyPrinter::indent()
 {
 	for (int i = 0; i < _indent; i++)
@@ -195,6 +209,7 @@ void PrettyPrinter::operateOn(struct Statement * statement)
 void PrettyPrinter::operateOn(struct Struct * strct)
 {
 	indent();
+	
 	_result = _result + "struct " + strct->_name + "\n";
 
 	strct->_block.visit(this);
@@ -291,7 +306,7 @@ void PrettyPrinter::operateOn(struct VariableDeclaration * node)
 		break;
 	}
 
-	_result = _result + sToken + " " + node->_variableName;
+	_result = _result + sToken + " " + toCommaSeparatedList(node->_variableNames);
 
 	if (node->_attribute != nullptr)
 		node->_attribute->visit(this);
