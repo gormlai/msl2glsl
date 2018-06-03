@@ -42,6 +42,7 @@ int lines = 1;
 "/*"                                       { Scanner::getInstance()->comment(lines); }
 "struct"                                   { return token::STRUCT;}
 "constant"                                 { return token::CONSTANT;}
+"const"                                    { return token::CONST;}
 "{"                                        { return token::BEGIN_CURLY_BRACKET; }
 "}"                                        { return token::END_CURLY_BRACKET; }
 "/"                                        { return token::FORWARD_SLASH; }
@@ -56,6 +57,7 @@ int lines = 1;
 "*"                                        { return token::STAR; }
 "&"                                        { return token::AMPERSAND; }
 "."                                        { return token::DOT; }
+"->"                                       { return token::POINTER; }
 "::"                                       { return token::DOUBLE_COLON; }
 "access"                                   { return token::ACCESS; }
 "("                                        { return token::BEGIN_BRACKET; }

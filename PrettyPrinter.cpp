@@ -64,6 +64,7 @@ void PrettyPrinter::operateOn(struct BinaryExpression * desc)
 		"*",
 		"/",
 		".",
+		"->",
 	};
 
 	//if(desc->_op != BinaryOperator::Dot)
@@ -168,6 +169,9 @@ void PrettyPrinter::operateOn(struct FunctionDeclaration * node)
 	{
 	case FunctionType::Vertex:
 		functionType = "vertex";
+		break;
+	case FunctionType::Fragment:
+		functionType = "fragment";
 		break;
 	default:
 		break;

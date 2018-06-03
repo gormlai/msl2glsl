@@ -259,6 +259,7 @@ std::string Transpiler::operateOn(struct BinaryExpression * desc)
       "*",
       "/",
       ".",
+      "->",
     };
 
   switch(desc->_op){
@@ -270,7 +271,8 @@ std::string Transpiler::operateOn(struct BinaryExpression * desc)
     result = result + ops[(int)desc->_op];
     result = result + traverse(desc->_right);
     break;
-  case BinaryOperator::Dot: {
+  case BinaryOperator::Dot: 
+  case BinaryOperator::Pointer: {
     // special attention needs to be to the dot operator
     const std::string rightExpression = traverse(desc->_right);
     const std::string dot = ops[(int)desc->_op];

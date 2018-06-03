@@ -262,7 +262,8 @@ enum class BinaryOperator
   Minus,
   Multiply,
   Divide,
-  Dot
+    Dot,
+    Pointer,
 };
 
 struct BinaryExpression : public Expression
@@ -301,6 +302,7 @@ struct VariableDeclaration : public Statement
   {
     None,
     Constant,
+    Const,
   };
     
  VariableDeclaration(Qualifier qualifier,

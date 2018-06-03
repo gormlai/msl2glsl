@@ -91,6 +91,7 @@ class Scanner;
 %token		      SEMICOLON
 %token		      COMMA
 %token                DOT
+%token                POINTER
 %token                ASSIGN
 %token                PLUS
 %token                MINUS
@@ -99,6 +100,7 @@ class Scanner;
 %token		      FORWARD_SLASH
 %token		      RETURN
 %token	<qualifier>   CONSTANT
+%token	<qualifier>   CONST
 %token	<string>      IDENTIFIER
 %token	<intValue>    INT_VALUE
 %token	<halfValue>   HALF_VALUE
@@ -165,12 +167,14 @@ buffer_descriptor:
 		      LESS_THAN identifier COMMA ACCESS DOUBLE_COLON identifier GREATER_THAN { $$ = new BufferDescriptor(*$2, *$6); }
 	;
 
-qualifier: 	CONSTANT { $$ = VariableDeclaration::Qualifier::Constant; }
+qualifier:
+		CONSTANT { $$ = VariableDeclaration::Qualifier::Constant; }
+	|	CONST { $$ = VariableDeclaration::Qualifier::Const; }
 	;
 
 reserved_token:
-	       AMPERSAND { $$ = ReservedToken::Star; }
-//			|      '*' { $$ = ReservedToken::Ampersand; }
+	       AMPERSAND { $$ = ReservedToken::Ampersand; }
+	|      STAR {$$ = ReservedToken::Star; }
 	;
 
 array_declaration:
@@ -245,6 +249,7 @@ expression0:
 	|	expression0 FORWARD_SLASH expression1 {  $$ = new BinaryExpression($1, BinaryOperator::Divide, $3); }
 	| 	expression1 { $$ = $1; }
 	| 	expression0 DOT expression1 {  $$ = new BinaryExpression($1, BinaryOperator::Dot, $3); }
+	| 	expression0 POINTER expression1 {  $$ = new BinaryExpression($1, BinaryOperator::Pointer, $3); }
 		;
 
 expression:
