@@ -24,6 +24,11 @@ void BufferDescriptor::visit(Visitor * v)
   v->operateOn(this);
 }
 
+void CastExpression::visit(Visitor * v)
+{
+  v->operateOn(this);
+}
+
 void ConstantExpression::visit(Visitor * v)
 {
   v->operateOn(this);

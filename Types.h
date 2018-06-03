@@ -264,6 +264,7 @@ enum class BinaryOperator
   Divide,
     Dot,
     Pointer,
+    Cast,
 };
 
 struct BinaryExpression : public Expression
@@ -294,6 +295,23 @@ enum class ReservedToken
   Ampersand,
 };
 
+struct CastExpression : public Expression
+{
+ public:
+  CastExpression(const std::string & castTo, Expression * right)
+    :_castTo(castTo)
+    ,_right(right)
+  {
+    _right->_parent = this;
+  }
+
+  virtual ~CastExpression() {}
+  void visit(Visitor * v) override;
+
+  std::string _castTo;
+  Expression * _right;
+  
+};
 
 struct VariableDeclaration : public Statement
 {

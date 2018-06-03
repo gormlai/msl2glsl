@@ -137,6 +137,7 @@ class Scanner;
 %type	<expression>   expression
 %type	<expression>   expression0
 %type	<expression>   expression1
+%type	<expression>   cast_expression
 %type	<expression>   constant
 %type	<functionCall>   function_call
 %type	<functionCallArgumentList> function_argument_list
@@ -243,13 +244,17 @@ expression1: constant
 	| 	MINUS expression1 { $$ = new UnaryExpression(UnaryType::Minus, $2); }
 ;
 
+cast_expression:
+		expression1 { $$ = $1; }
+	| 	BEGIN_BRACKET identifier END_BRACKET expression1 { $$ = new CastExpression(*$2, $4); }		
+	;
 
 expression0:
-		expression0 STAR expression1 {  $$ = new BinaryExpression($1, BinaryOperator::Multiply, $3); }
-	|	expression0 FORWARD_SLASH expression1 {  $$ = new BinaryExpression($1, BinaryOperator::Divide, $3); }
-	| 	expression1 { $$ = $1; }
-	| 	expression0 DOT expression1 {  $$ = new BinaryExpression($1, BinaryOperator::Dot, $3); }
-	| 	expression0 POINTER expression1 {  $$ = new BinaryExpression($1, BinaryOperator::Pointer, $3); }
+		expression0 STAR cast_expression {  $$ = new BinaryExpression($1, BinaryOperator::Multiply, $3); }
+	|	expression0 FORWARD_SLASH cast_expression {  $$ = new BinaryExpression($1, BinaryOperator::Divide, $3); }
+	| 	cast_expression { $$ = $1; }
+	| 	expression0 DOT cast_expression {  $$ = new BinaryExpression($1, BinaryOperator::Dot, $3); }
+	| 	expression0 POINTER cast_expression {  $$ = new BinaryExpression($1, BinaryOperator::Pointer, $3); }
 		;
 
 expression:
