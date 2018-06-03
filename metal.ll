@@ -12,6 +12,7 @@ LETTER_OR_DIGIT_OR_FORWARDSLASH ({LETTER}|{DIGIT}|{FORWARDSLASH})
 #include "Types.h"
 #include <string.h>
 #include "Scanner.h"
+#include <stdio.h>
 
 #undef YY_DECL
 #define YY_DECL int Metal::Scanner::yylex(Metal::Parser::semantic_type * const lval, Metal::Parser::location_type *loc)
@@ -35,7 +36,7 @@ int lines = 1;
   _yyval = lval;
 %}
 
-
+"/*"                                       { Scanner::getInstance()->comment(lines); }
 "struct"                                   { return token::STRUCT;}
 "constant"                                 { return token::CONSTANT;}
 "{"                                        { return token::BEGIN_CURLY_BRACKET; }
@@ -74,6 +75,7 @@ int lines = 1;
 	       
 
 %%
+
 
 void Metal::Parser::error(const location_type &line, const std::string &err)
 {

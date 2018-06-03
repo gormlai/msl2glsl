@@ -17,15 +17,13 @@ namespace Metal
   
   class Scanner : public yyFlexLexer {
   public:
-    Scanner(std::istream *in) : yyFlexLexer(in)
-    {
-    }
-
-    virtual ~Scanner () {}
+    Scanner(std::istream *in);    
+    virtual ~Scanner();
 
     using FlexLexer::yylex;
     virtual int yylex(Metal::Parser::semantic_type * const lval, Metal::Parser::location_type * location);
-    
+    void comment(int &lines);
+    static Scanner * getInstance();
 
   private:
     Metal::Parser::semantic_type * _yyval= nullptr;
