@@ -348,26 +348,19 @@ struct VariableList : public Node
 struct FunctionDeclaration : public Statement
 {
  public:
- FunctionDeclaration(const std::string & functionType,
+ FunctionDeclaration(const FunctionType functionType,
 		      const std::string & returnType,
 		      const std::string & name,
 		      VariableList * variables,
 		      Block * block)
-   :_returnType(returnType)
+   :_functionType(functionType)
+    ,_returnType(returnType)
     ,_name(name)
     ,_variables(variables)
     ,_block(block)
   {
-    if(functionType == "vertex")
-      _functionType = FunctionType::Vertex;
-    else if(functionType == "fragment")
-      _functionType = FunctionType::Fragment;
-    else
-      _functionType = FunctionType::Utility;
-
-	variables->_parent = this;
-	block->_parent = this;
-
+    variables->_parent = this;
+    block->_parent = this;
   }
 		      
   virtual ~FunctionDeclaration() {}

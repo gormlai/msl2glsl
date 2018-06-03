@@ -83,6 +83,7 @@ class Scanner;
 %token		      TYPE_DOUBLE	
 %token		      TYPE_INT	
 %token		      TYPE_STRING
+%token                STATIC
 %token 		      SKIP
 %token 		      STRUCT
 %token		      SEMICOLON
@@ -171,12 +172,12 @@ reserved_token:
 	;
 
 array_declaration:
-		/* empty */ { $$ = 0; }
-	|	BEGIN_SINGLE_SQUARE_BRACKET INT_VALUE END_SINGLE_SQUARE_BRACKET { $$ = $2; }
+		BEGIN_SINGLE_SQUARE_BRACKET INT_VALUE END_SINGLE_SQUARE_BRACKET { $$ = $2; }
 	;
 
-variable_name_list:  variable_name_list COMMA identifier array_declaration { $$->push_back( new VariableNameDeclaration(*$3, $4)); }
-		      |	identifier array_declaration { $$ = new std::vector<VariableNameDeclaration * >(); $$->push_back(new VariableNameDeclaration(*$1, $2)); }
+variable_name_list: /* variable_name_list COMMA identifier { $$->push_back( new VariableNameDeclaration(*$3, 0)); }*/
+		identifier array_declaration { $$ = new std::vector<VariableNameDeclaration * >(); $$->push_back(new VariableNameDeclaration(*$1, $2)); }
+|		identifier { $$ = new std::vector<VariableNameDeclaration * >(); $$->push_back(new VariableNameDeclaration(*$1, 0)); }
 		;
 
 variable_declaration:
@@ -188,14 +189,15 @@ variable_declaration:
 |	identifier buffer_descriptor variable_name_list variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, $2, ReservedToken::None, *$3, $4); }
 |	qualifier identifier buffer_descriptor variable_name_list variable_attribute { $$ = new VariableDeclaration($1, *$2, $3, ReservedToken::None, *$4, $5); }
 |	identifier buffer_descriptor reserved_token variable_name_list variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, $2, $3, *$4, $5); }
-	
 		;
 
 variable_list:  variable_list COMMA variable_declaration { $$->_variableDeclarations.push_back($3); $3->_parent = $$; }
 	|	variable_declaration { $$ = new VariableList() ;  $$->_variableDeclarations.push_back($1); $1->_parent = $$; }
 		;
 
-function_declaration : identifier identifier identifier BEGIN_BRACKET variable_list END_BRACKET BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new FunctionDeclaration(*$1, *$2, *$3, $5, $8); }
+function_declaration : "vertex" identifier identifier BEGIN_BRACKET variable_list END_BRACKET BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new FunctionDeclaration(FunctionType::Vertex, *$2, *$3, $5, $8); }
+	| "fragment" identifier identifier BEGIN_BRACKET variable_list END_BRACKET BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new FunctionDeclaration(FunctionType::Fragment, *$2, *$3, $5, $8); }
+		| identifier identifier BEGIN_BRACKET variable_list END_BRACKET BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new FunctionDeclaration(FunctionType::Utility, *$1, *$2, $4, $7); }
 		;
 
 statement:  USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$2); }

@@ -36,6 +36,7 @@ int lines = 1;
   _yyval = lval;
 %}
 
+"static"                                   { return token::STATIC; }
 "/*"                                       { Scanner::getInstance()->comment(lines); }
 "struct"                                   { return token::STRUCT;}
 "constant"                                 { return token::CONSTANT;}
