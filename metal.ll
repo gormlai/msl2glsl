@@ -36,6 +36,8 @@ int lines = 1;
   _yyval = lval;
 %}
 
+"fragment"                                 { return token::FRAGMENT; }
+"vertex"                                   { return token::VERTEX; }
 "static"                                   { return token::STATIC; }
 "/*"                                       { Scanner::getInstance()->comment(lines); }
 "struct"                                   { return token::STRUCT;}

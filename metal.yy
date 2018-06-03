@@ -84,6 +84,8 @@ class Scanner;
 %token		      TYPE_INT	
 %token		      TYPE_STRING
 %token                STATIC
+%token                VERTEX
+%token                FRAGMENT
 %token 		      SKIP
 %token 		      STRUCT
 %token		      SEMICOLON
@@ -195,8 +197,9 @@ variable_list:  variable_list COMMA variable_declaration { $$->_variableDeclarat
 	|	variable_declaration { $$ = new VariableList() ;  $$->_variableDeclarations.push_back($1); $1->_parent = $$; }
 		;
 
-function_declaration : "vertex" identifier identifier BEGIN_BRACKET variable_list END_BRACKET BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new FunctionDeclaration(FunctionType::Vertex, *$2, *$3, $5, $8); }
-	| "fragment" identifier identifier BEGIN_BRACKET variable_list END_BRACKET BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new FunctionDeclaration(FunctionType::Fragment, *$2, *$3, $5, $8); }
+function_declaration : VERTEX identifier identifier BEGIN_BRACKET variable_list END_BRACKET BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new FunctionDeclaration(FunctionType::Vertex, *$2, *$3, $5, $8); }
+	| FRAGMENT identifier identifier BEGIN_BRACKET variable_list END_BRACKET BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new FunctionDeclaration(FunctionType::Fragment, *$2, *$3, $5, $8); }
+	| STATIC identifier identifier BEGIN_BRACKET variable_list END_BRACKET BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new FunctionDeclaration(FunctionType::Utility, *$2, *$3, $5, $8); }
 		| identifier identifier BEGIN_BRACKET variable_list END_BRACKET BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new FunctionDeclaration(FunctionType::Utility, *$1, *$2, $4, $7); }
 		;
 
