@@ -433,10 +433,20 @@ struct FunctionCall : public Expression
 
 };
 
+enum class AssignOperator {
+  Equal,
+    EqualPlus,
+    EqualMinus,
+    EqualDivide,
+    EqualMultiply,
+};
+
+
 struct AssignStatement : public Statement
 {
- AssignStatement(Node * left, Node * right)
+ AssignStatement(Node * left, AssignOperator op,  Node * right)
    :_left(left)
+    ,_operator(op)
     ,_right(right)
   {
 	 left->_parent = this;
@@ -446,8 +456,10 @@ struct AssignStatement : public Statement
   virtual ~AssignStatement() {}
   void visit(Visitor * v) override;
   NodeType getNodeType() override { return NodeType::AssignStatement; }
-  std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(_left); nodes.push_back(_right); return nodes; }	
+  std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(_left); nodes.push_back(_right); return nodes; }
+  
   Node * _left;
+  AssignOperator _operator;
   Node * _right;
       
 };

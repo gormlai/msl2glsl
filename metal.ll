@@ -48,7 +48,11 @@ int lines = 1;
 "/"                                        { return token::FORWARD_SLASH; }
 "<"                                        { return token::LESS_THAN; }
 ">"                                        { return token::GREATER_THAN; }
-"="                                        { return token::ASSIGN; }
+"="                                        { return token::ASSIGN_EQUAL; }
+"+="                                        { return token::ASSIGN_PLUS; }
+"-="                                        { return token::ASSIGN_MINUS; }
+"*="                                        { return token::ASSIGN_MULTIPLY; }
+"/="                                        { return token::ASSIGN_DIVIDE; }
 "using namespace"                          { return token::USING_NAMESPACE; }
 ";"                                        { return token::SEMICOLON; }
 ","                                        { return token::COMMA; }

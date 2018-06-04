@@ -68,6 +68,8 @@ class Scanner;
     FunctionCall * functionCall;
     FunctionCallArgumentList * functionCallArgumentList;
     std::vector<VariableNameDeclaration* > * variableNameList;
+    AssignOperator assignOperator;
+
 }
 			  
 %token		      TYPE_BOOL		      
@@ -92,7 +94,11 @@ class Scanner;
 %token		      COMMA
 %token                DOT
 %token                POINTER
-%token                ASSIGN
+%token                ASSIGN_EQUAL
+%token                ASSIGN_PLUS
+%token                ASSIGN_MINUS
+%token                ASSIGN_MULTIPLY
+%token                ASSIGN_DIVIDE
 %token                PLUS
 %token                MINUS
 %token                STAR
@@ -143,6 +149,7 @@ class Scanner;
 %type	<functionCallArgumentList> function_argument_list
 %type	<variableNameList> variable_name_list
 %type	<intValue>     array_declaration
+%type	<assignOperator> assign_operator
 %locations
 
 %%
@@ -208,13 +215,21 @@ function_declaration : VERTEX identifier identifier BEGIN_BRACKET variable_list 
 		| identifier identifier BEGIN_BRACKET variable_list END_BRACKET BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new FunctionDeclaration(FunctionType::Utility, *$1, *$2, $4, $7); }
 		;
 
+assign_operator:
+		ASSIGN_EQUAL { $$ = AssignOperator::Equal; }
+	|	ASSIGN_PLUS { $$ = AssignOperator::EqualPlus; }
+	|	ASSIGN_MINUS { $$ = AssignOperator::EqualMinus; }
+	|	ASSIGN_MULTIPLY { $$ = AssignOperator::EqualMultiply; }
+	|	ASSIGN_DIVIDE { $$ = AssignOperator::EqualDivide; }
+	;
+
 statement:  USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$2); }
 	| 	struct SEMICOLON { $$ = $1; }
 	|	function_declaration { $$ = $1; }
 	| 	variable_declaration SEMICOLON { $$ = $1; }
-	|	variable_declaration ASSIGN expression SEMICOLON { $$ = new AssignStatement($1, $3); }
-	|	variable_declaration ASSIGN BEGIN_CURLY_BRACKET function_argument_list END_CURLY_BRACKET SEMICOLON { $$ = new AssignStatement($1, $4); }
-	|	expression ASSIGN expression SEMICOLON { $$ = new AssignStatement($1, $3); }
+	|	variable_declaration assign_operator expression SEMICOLON { $$ = new AssignStatement($1, $2, $3); }
+	|	variable_declaration assign_operator BEGIN_CURLY_BRACKET function_argument_list END_CURLY_BRACKET SEMICOLON { $$ = new AssignStatement($1, $2, $4); }
+	|	expression assign_operator expression SEMICOLON { $$ = new AssignStatement($1, $2, $3); }
 	|	RETURN expression SEMICOLON { $$ = new ReturnStatement($2); }
 	|	expression SEMICOLON { $$ = $1; }
 		;
