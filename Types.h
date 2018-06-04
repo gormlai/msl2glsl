@@ -482,6 +482,31 @@ struct ReturnStatement : public Statement
   std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(_expression); return nodes; }      
 };
 
+struct SelectExpression : public Expression
+{
+  SelectExpression(Node * left, Node * middle, Node * right)
+    :_left(left)
+    ,_middle(middle)
+    ,_right(right)
+  {
+    if(_left!=nullptr)
+      _left->_parent = this;
+
+    if(_middle!=nullptr)
+      _middle->_parent = this;
+    
+    if(_right!=nullptr)
+      _right->_parent = this;
+    
+  }
+
+  virtual ~SelectExpression() {}
+
+  Node * _left;
+  Node * _middle;
+  Node * _right;
+};
+
 struct VariableNameDeclaration : public Node
 {
   VariableNameDeclaration(const std::string & variableName, int arraySize)

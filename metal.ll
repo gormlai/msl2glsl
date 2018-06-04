@@ -55,6 +55,8 @@ int lines = 1;
 "/="                                        { return token::ASSIGN_DIVIDE; }
 "using namespace"                          { return token::USING_NAMESPACE; }
 ";"                                        { return token::SEMICOLON; }
+":"                                        { return token::COLON; }
+"?"                                        { return token::QUESTION_MARK; }
 ","                                        { return token::COMMA; }
 "+"                                        { return token::PLUS; }
 "-"                                        { return token::MINUS; }

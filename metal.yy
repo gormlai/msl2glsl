@@ -91,6 +91,8 @@ class Scanner;
 %token 		      SKIP
 %token 		      STRUCT
 %token		      SEMICOLON
+%token		      COLON
+%token		      QUESTION_MARK
 %token		      COMMA
 %token                DOT
 %token                POINTER
@@ -275,6 +277,7 @@ expression0:
 expression:
 		expression PLUS expression0 {  $$ = new BinaryExpression($1, BinaryOperator::Plus, $3); }
 	| 	expression MINUS expression0 {  $$ = new BinaryExpression($1, BinaryOperator::Minus, $3); }
+	|	expression QUESTION_MARK expression0 COLON expression0 { $$ = new SelectExpression($1, $3, $5); }
 	| 	expression0 { $$ = $1; }
 	;
 
