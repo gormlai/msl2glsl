@@ -29,6 +29,11 @@ void CastExpression::visit(Visitor * v)
   v->operateOn(this);
 }
 
+void CompareExpression::visit(Visitor * v)
+{
+  v->operateOn(this);
+}
+
 void ConstantExpression::visit(Visitor * v)
 {
   v->operateOn(this);

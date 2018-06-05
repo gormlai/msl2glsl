@@ -128,6 +128,10 @@ class Scanner;
 %token                ACCESS
 %token                LESS_THAN
 %token                GREATER_THAN
+%token                LESS_THAN_OR_EQUAL
+%token                GREATER_THAN_OR_EQUAL
+%token                EQUAL_TO
+%token                NOT_EQUAL_TO
 %token                TYPEDEF
 
 %type	<block> statements
@@ -146,6 +150,7 @@ class Scanner;
 %type	<expression>   expression0
 %type	<expression>   expression1
 %type	<expression>   cast_expression
+%type	<expression>   compare_expression
 %type	<expression>   constant
 %type	<functionCall>   function_call
 %type	<functionCallArgumentList> function_argument_list
@@ -261,9 +266,19 @@ expression1: constant
 	| 	MINUS expression1 { $$ = new UnaryExpression(UnaryType::Minus, $2); }
 ;
 
-cast_expression:
+compare_expression:
 		expression1 { $$ = $1; }
-	| 	BEGIN_BRACKET identifier END_BRACKET expression1 { $$ = new CastExpression(*$2, $4); }		
+	|	compare_expression GREATER_THAN expression1 { $$ = new CompareExpression($1, CompareOperator::GreaterThan, $3); }		
+	|	compare_expression GREATER_THAN_OR_EQUAL expression1 { $$ = new CompareExpression($1, CompareOperator::GreaterThanOrEqualTo, $3); }		
+	|	compare_expression LESS_THAN expression1 { $$ = new CompareExpression($1, CompareOperator::LessThan, $3); }		
+	|	compare_expression LESS_THAN_OR_EQUAL expression1 { $$ = new CompareExpression($1, CompareOperator::LessThanOrEqualTo, $3); }		
+	|	compare_expression EQUAL_TO expression1 { $$ = new CompareExpression($1, CompareOperator::EqualTo, $3); }
+	|	compare_expression NOT_EQUAL_TO expression1 { $$ = new CompareExpression($1, CompareOperator::NotEqualTo, $3); }
+	;
+
+cast_expression:
+		compare_expression { $$ = $1; }
+	| 	BEGIN_BRACKET identifier END_BRACKET compare_expression { $$ = new CastExpression(*$2, $4); }		
 	;
 
 expression0:

@@ -12,6 +12,7 @@ enum class NodeType {
     BinaryExpression,
     Block,
     BufferDescriptor,
+    CompareExpression,
     ConstantExpression,
     Expression,
     FunctionCall,
@@ -255,6 +256,38 @@ public:
 	Expression * _expression;
 	std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(_expression); return nodes; }
 };
+
+enum class CompareOperator
+  {
+    LessThan,
+      GreaterThan,
+      LessThanOrEqualTo,
+      GreaterThanOrEqualTo,
+      EqualTo,
+      NotEqualTo,
+  };
+
+struct CompareExpression : public Expression
+{
+ public:
+  CompareExpression(Expression * left, CompareOperator op, Expression * right)
+    :_left(left)
+    ,_right(right)
+    ,_op(op)
+  {
+	  left->_parent = this;
+	  right->_parent = this;
+  }
+
+  virtual ~CompareExpression() {}
+  void visit(Visitor * v) override;
+  NodeType getNodeType() override { return NodeType::CompareExpression; }
+  std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(_left); nodes.push_back(_right);  return nodes; }
+  Expression * _left;
+  Expression * _right;
+  CompareOperator _op;
+};
+
 
 enum class BinaryOperator
 {

@@ -48,6 +48,10 @@ int lines = 1;
 "/"                                        { return token::FORWARD_SLASH; }
 "<"                                        { return token::LESS_THAN; }
 ">"                                        { return token::GREATER_THAN; }
+"<="                                        { return token::LESS_THAN_OR_EQUAL; }
+">="                                        { return token::GREATER_THAN_OR_EQUAL; }
+"=="                                        { return token::EQUAL_TO; }
+"!="                                        { return token::NOT_EQUAL_TO; }
 "="                                        { return token::ASSIGN_EQUAL; }
 "+="                                        { return token::ASSIGN_PLUS; }
 "-="                                        { return token::ASSIGN_MINUS; }
