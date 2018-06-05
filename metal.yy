@@ -133,6 +133,9 @@ class Scanner;
 %token                EQUAL_TO
 %token                NOT_EQUAL_TO
 %token                TYPEDEF
+%token                IF
+%token                ELSEIF
+%token                ELSE
 
 %type	<block> statements
 %type	<statement>	 statement
@@ -238,6 +241,10 @@ statement:  USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$
 	|	variable_declaration assign_operator BEGIN_CURLY_BRACKET function_argument_list END_CURLY_BRACKET SEMICOLON { $$ = new AssignStatement($1, $2, $4); }
 	|	expression assign_operator expression SEMICOLON { $$ = new AssignStatement($1, $2, $3); }
 	|	RETURN expression SEMICOLON { $$ = new ReturnStatement($2); }
+	|	IF BEGIN_BRACKET expression END_BRACKET statement { $$ = new IfStatement(IfStatementType::If, $3, $5); }
+	|	ELSEIF BEGIN_BRACKET expression END_BRACKET statement { $$ = new IfStatement(IfStatementType::ElseIf, $3, $5); }
+	|	ELSE statement { $$ = new IfStatement(IfStatementType::Else, nullptr, $2); }
+	|	BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = $2; }
 	|	expression SEMICOLON { $$ = $1; }
 		;
 

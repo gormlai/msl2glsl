@@ -18,6 +18,7 @@ enum class NodeType {
     FunctionCall,
     FunctionCallArgumentList,
     FunctionDeclaration,
+    IfStatement,
     Node,
     Program,
     ReturnStatement,
@@ -82,7 +83,7 @@ struct Statement : public Node
   NodeType getNodeType() override { return NodeType::Statement; }
 };
 
-struct Block : public Node
+struct Block : public Statement
 {
  public:
   virtual ~Block() {}
@@ -396,6 +397,37 @@ struct VariableList : public Node
   
   std::vector<VariableDeclaration *> _variableDeclarations;
   std::vector<Node*> getChildren() override { std::vector<Node*> nodes; for(auto v : _variableDeclarations) nodes.push_back(v); return nodes;  }  
+};
+
+enum class IfStatementType
+{
+  If,
+    Else,
+    ElseIf,
+};
+
+struct IfStatement : public Statement
+{
+ public:
+  IfStatement(IfStatementType ifType, Expression * conditional, Statement * statement)
+    :_ifType(ifType)
+    ,_conditional(conditional)
+    ,_statement(statement)
+    {
+      if(_conditional != nullptr)
+	_conditional->_parent = this;
+
+      if(_statement != nullptr)
+	_statement->_parent = this;
+    }
+
+  virtual ~IfStatement() {}
+  void visit(Visitor * v) override;
+  NodeType getNodeType() override { return NodeType::IfStatement; }
+
+  IfStatementType _ifType;
+  Expression * _conditional;
+  Statement * _statement;
 };
 
 struct FunctionDeclaration : public Statement

@@ -59,6 +59,11 @@ void FunctionDeclaration::visit(Visitor * v)
   v->operateOn(this);
 }
 
+void IfStatement::visit(Visitor * v)
+{
+  v->operateOn(this);
+}
+
 void Node::visit(Visitor * v)
 {
   v->operateOn(this);
