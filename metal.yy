@@ -84,6 +84,7 @@ class Scanner;
 %token		      TYPE_HALF 	
 %token		      TYPE_DOUBLE	
 %token		      TYPE_INT	
+%token		      TYPE_HEX	
 %token		      TYPE_STRING
 %token                STATIC
 %token                VERTEX
@@ -109,6 +110,7 @@ class Scanner;
 %token		      RETURN
 %token	<qualifier>   CONSTANT
 %token	<qualifier>   CONST
+%token	<string>      HEX_VALUE
 %token	<string>      IDENTIFIER
 %token	<intValue>    INT_VALUE
 %token	<halfValue>   HALF_VALUE
@@ -276,13 +278,16 @@ function_call: 	identifier BEGIN_BRACKET function_argument_list END_BRACKET { $$
 	|  	identifier BEGIN_BRACKET END_BRACKET { $$ = new FunctionCall(*$1, nullptr); }	
 	;
 
-constant:	INT_VALUE { $$ = new ConstantExpression(ConstantType::Int, $1); }
+constant:
+		INT_VALUE { $$ = new ConstantExpression(ConstantType::Int, $1); }
+	|	HEX_VALUE { $$ = new ConstantExpression(ConstantType::Hex, *$1); }
 	|	HALF_VALUE { $$ = new ConstantExpression(ConstantType::Half, $1); }
 	|	FLOAT_VALUE { $$ = new ConstantExpression(ConstantType::Float, $1); }
 	|	DOUBLE_VALUE { $$ = new ConstantExpression(ConstantType::Double, $1); }
 		;
 
-expression1: constant
+expression1:
+		constant        { $$ = $1; }
 	| 	identifier	{ $$ = new ConstantExpression(ConstantType::Identifier, *$1); }
 	| 	BEGIN_BRACKET expression END_BRACKET { $$ = new UnaryExpression(UnaryType::Parenthesis, $2); }
 	| 	function_call { $$ = $1; }

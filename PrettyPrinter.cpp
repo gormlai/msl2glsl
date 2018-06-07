@@ -122,6 +122,9 @@ void PrettyPrinter::operateOn(struct ConstantExpression * desc)
 	case ConstantType::Half:
 		_result = _result + std::to_string(desc->_half);
 		break;
+	case ConstantType::Hex:
+		_result = _result + desc->_identifier;
+		break;
 	case ConstantType::Identifier:
 		_result = _result + desc->_identifier;
 		break;

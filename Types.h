@@ -172,11 +172,12 @@ struct Expression : public Statement
 
 enum class ConstantType
 {
-	Int,
-	Float,
-	Double,
-	Half,
-	Identifier,
+  Int,
+    Hex,
+    Float,
+    Double,
+    Half,
+    Identifier,
 };
 
 struct ConstantExpression : public Expression
