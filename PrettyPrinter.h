@@ -17,6 +17,7 @@ class PrettyPrinter : public Visitor
   void operateOn(struct BufferDescriptor * desc) override;
   void operateOn(struct ConstantExpression * desc) override;  
   void operateOn(struct Expression * desc) override;  
+  void operateOn(struct ForLoop * node) override;
   void operateOn(struct FunctionCall * node) override;
   void operateOn(struct FunctionCallArgumentList * node) override;
   void operateOn(struct FunctionDeclaration * node) override;

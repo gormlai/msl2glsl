@@ -14,6 +14,7 @@ class Visitor
   virtual void operateOn(struct BufferDescriptor * desc)=0;
   virtual void operateOn(struct ConstantExpression * desc)=0;
   virtual void operateOn(struct Expression * desc)=0;  
+  virtual void operateOn(struct ForLoop * node)=0;
   virtual void operateOn(struct FunctionCall * node)=0;
   virtual void operateOn(struct FunctionCallArgumentList * node)=0;
   virtual void operateOn(struct FunctionDeclaration * node)=0;

@@ -134,6 +134,28 @@ void PrettyPrinter::operateOn(struct Expression * desc)
 	// Expression is a Base class. Don't do anything here
 }
 
+void PrettyPrinter::operateOn(struct ForLoop * node)
+{
+  _result = _result + "for (";
+
+  if(node->_variableDeclarations != nullptr)
+    node->_variableDeclarations->visit(this);
+
+  if(node->_conditionals != nullptr)
+    node->_conditionals->visit(this);
+
+  if(node->_increment != nullptr)
+    node->_increment->visit(this);
+
+  _result = _result + ")";
+  _result = _result + "\n";
+  
+  indent();  
+  
+  if(node->_loop != nullptr)
+    node->_loop->visit(this);
+  
+}
 
 void PrettyPrinter::operateOn(struct FunctionCall * node)
 {
