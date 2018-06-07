@@ -67,6 +67,8 @@ int lines = 1;
 "*"                                        { return token::STAR; }
 "|"                                        { return token::PIPE; }
 "||"                                       { return token::DOUBLE_PIPE; }
+"--"                                       { return token::MINUS_MINUS; }
+"++"                                       { return token::PLUS_PLUS; }
 "&"                                        { return token::AMPERSAND; }
 "&&"                                       { return token::DOUBLE_AMPERSAND; }
 "<<"                                       { return token::LEFT_SHIFT; }

@@ -113,6 +113,8 @@ class Scanner;
 %token                RIGHT_SHIFT			
 %token		      FORWARD_SLASH
 %token		      RETURN
+%token		      PLUS_PLUS
+%token		      MINUS_MINUS
 %token	<qualifier>   CONSTANT
 %token	<qualifier>   CONST
 %token	<string>      HEX_VALUE
@@ -164,6 +166,7 @@ class Scanner;
 %type	<expression>   cast_expression
 %type	<expression>   compare_expression
 %type	<expression>   constant
+%type	<expression>   pre_postfix_expression
 %type	<expression>   expression_statement
 %type	<functionCall>   function_call
 %type	<functionCallArgumentList> function_argument_list
@@ -289,11 +292,19 @@ constant:
 	|	HALF_VALUE { $$ = new ConstantExpression(ConstantType::Half, $1); }
 	|	FLOAT_VALUE { $$ = new ConstantExpression(ConstantType::Float, $1); }
 	|	DOUBLE_VALUE { $$ = new ConstantExpression(ConstantType::Double, $1); }
+	| 	identifier	{ $$ = new ConstantExpression(ConstantType::Identifier, *$1); }
 		;
 
+pre_postfix_expression:
+		constant
+	|	MINUS_MINUS constant { $$ = new UnaryExpression(UnaryType::PreFixMinusMinus, $2); }
+	|	PLUS_PLUS constant { $$ = new UnaryExpression(UnaryType::PreFixPlusPlus, $2); }
+	|       constant PLUS_PLUS { $$ = new UnaryExpression(UnaryType::PostFixPlusPlus, $1); }
+	|       constant MINUS_MINUS { $$ = new UnaryExpression(UnaryType::PostFixMinusMinus, $1); }
+	;
+
 expression1:
-		constant        { $$ = $1; }
-	| 	identifier	{ $$ = new ConstantExpression(ConstantType::Identifier, *$1); }
+		pre_postfix_expression        { $$ = $1; }
 	| 	BEGIN_BRACKET expression END_BRACKET { $$ = new UnaryExpression(UnaryType::Parenthesis, $2); }
 	| 	function_call { $$ = $1; }
 	| 	MINUS expression1 { $$ = new UnaryExpression(UnaryType::Minus, $2); }

@@ -239,6 +239,10 @@ enum class UnaryType
 {
 	Minus,
 	Parenthesis,
+	  PreFixPlusPlus,
+	  PostFixPlusPlus,
+	  PreFixMinusMinus,
+	  PostFixMinusMinus,
 };
 
 struct UnaryExpression : public Expression

@@ -262,11 +262,19 @@ void PrettyPrinter::operateOn(struct UnaryExpression * desc)
 	switch (desc->_type)
 	{
 	case UnaryType::Minus:
-		_result = _result + "-";
-		break;
+	  _result = _result + "-";
+	  break;
 	case UnaryType::Parenthesis:
-		_result = _result + "(";
-		break;
+	  _result = _result + "(";
+	  break;
+	case UnaryType::PreFixMinusMinus:
+	  _result = _result + "--";
+	  break;
+	case UnaryType::PreFixPlusPlus:
+	  _result = _result + "++";
+	  break;
+	default:
+	  break;
 	}
 
 	desc->_expression->visit(this);
@@ -274,12 +282,17 @@ void PrettyPrinter::operateOn(struct UnaryExpression * desc)
 	// post expression
 	switch (desc->_type)
 	{
-	case UnaryType::Minus:
-		_result = _result + "-";
-		break;
 	case UnaryType::Parenthesis:
 		_result = _result + ")";
 		break;
+	case UnaryType::PostFixMinusMinus:
+	  _result = _result + "--";
+	  break;
+	case UnaryType::PostFixPlusPlus:
+	  _result = _result + "++";
+	  break;
+	default:
+	  break;
 	}
 
 }
