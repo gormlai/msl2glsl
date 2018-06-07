@@ -141,9 +141,13 @@ void PrettyPrinter::operateOn(struct ForLoop * node)
   if(node->_variableDeclarations != nullptr)
     node->_variableDeclarations->visit(this);
 
+  _result = _result + " ; ";
+  
   if(node->_conditionals != nullptr)
     node->_conditionals->visit(this);
 
+  _result = _result + " ; ";
+  
   if(node->_increment != nullptr)
     node->_increment->visit(this);
 

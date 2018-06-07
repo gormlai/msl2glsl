@@ -258,7 +258,8 @@ statement:  	USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*
 	|	IF BEGIN_BRACKET expression END_BRACKET statement { $$ = new IfStatement(IfStatementType::If, $3, $5); }
 	|	ELSEIF BEGIN_BRACKET expression END_BRACKET statement { $$ = new IfStatement(IfStatementType::ElseIf, $3, $5); }
 	|	ELSE statement { $$ = new IfStatement(IfStatementType::Else, nullptr, $2); }
-	|	FOR BEGIN_BRACKET END_BRACKET statement { $$ = new ForLoop(nullptr, nullptr, nullptr, $4); }
+	|	FOR BEGIN_BRACKET expression_statement expression_statement END_BRACKET statement { $$ = new ForLoop($3, $4, nullptr, $6); }
+	|	FOR BEGIN_BRACKET expression_statement expression_statement expression END_BRACKET statement { $$ = new ForLoop($3, $4, $5, $7); }
 	|	compound_statement { $$ = $1; }
 	|	expression_statement { $$ = $1; }
 		;
