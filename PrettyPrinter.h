@@ -20,7 +20,6 @@ class PrettyPrinter : public Visitor
   void operateOn(struct FunctionCall * node) override;
   void operateOn(struct FunctionCallArgumentList * node) override;
   void operateOn(struct FunctionDeclaration * node) override;
-  void operateOn(struct Node * node) override;  
   void operateOn(struct Program * program) override;
   void operateOn(struct ReturnStatement * statement) override;
   void operateOn(struct Statement * statement) override;

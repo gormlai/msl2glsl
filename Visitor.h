@@ -4,6 +4,8 @@
 class Visitor
 {
  public:
+  void operateOn(struct Node * node);
+  
   virtual ~Visitor() {}
   
   virtual void operateOn(struct AssignStatement * desc)=0;  
@@ -15,7 +17,6 @@ class Visitor
   virtual void operateOn(struct FunctionCall * node)=0;
   virtual void operateOn(struct FunctionCallArgumentList * node)=0;
   virtual void operateOn(struct FunctionDeclaration * node)=0;
-  virtual void operateOn(struct Node * node)=0;
   virtual void operateOn(struct Program * program)=0;
   virtual void operateOn(struct ReturnStatement * statement)=0;
   virtual void operateOn(struct Statement * statement)=0;

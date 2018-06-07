@@ -195,11 +195,6 @@ void PrettyPrinter::operateOn(struct FunctionDeclaration * node)
 	_result = _result + "\n";
 }
 
-void PrettyPrinter::operateOn(struct Node * node)
-{
-	// Node is a base class. Implementation should be in base classes
-}
-
 void PrettyPrinter::operateOn(struct Program * program)
 {
 	for (auto node : program->_nodes)
