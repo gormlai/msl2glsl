@@ -44,6 +44,11 @@ void Expression::visit(Visitor * v)
   v->operateOn(this);
 }
 
+void ForLoop::visit(Visitor * v)
+{
+  v->operateOn(this);
+}
+
 void FunctionCall::visit(Visitor * v)
 {
   v->operateOn(this);

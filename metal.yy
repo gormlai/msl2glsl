@@ -136,6 +136,7 @@ class Scanner;
 %token                IF
 %token                ELSEIF
 %token                ELSE
+%token                FOR
 
 %type	<block> statements
 %type	<statement>	 statement
@@ -244,6 +245,7 @@ statement:  USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$
 	|	IF BEGIN_BRACKET expression END_BRACKET statement { $$ = new IfStatement(IfStatementType::If, $3, $5); }
 	|	ELSEIF BEGIN_BRACKET expression END_BRACKET statement { $$ = new IfStatement(IfStatementType::ElseIf, $3, $5); }
 	|	ELSE statement { $$ = new IfStatement(IfStatementType::Else, nullptr, $2); }
+	|	FOR BEGIN_BRACKET statement expression SEMICOLON statement END_BRACKET statement { $$ = new ForLoop($3, $4, $6, $8); }
 	|	BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = $2; }
 	|	expression SEMICOLON { $$ = $1; }
 		;

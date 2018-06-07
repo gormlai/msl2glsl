@@ -15,6 +15,7 @@ enum class NodeType {
     CompareExpression,
     ConstantExpression,
     Expression,
+    ForLoop,
     FunctionCall,
     FunctionCallArgumentList,
     FunctionDeclaration,
@@ -428,6 +429,38 @@ struct IfStatement : public Statement
   IfStatementType _ifType;
   Expression * _conditional;
   Statement * _statement;
+};
+
+struct ForLoop : public Statement
+{
+ public:
+ ForLoop(Node * variableDeclarations, Node * conditionals, Node * increment, Node * loop)
+    :_variableDeclarations(variableDeclarations)
+    ,_conditionals(conditionals)
+    ,_increment(increment)
+    ,_loop(loop)
+    {
+      if(_variableDeclarations!=nullptr)
+	_variableDeclarations->_parent = this;
+      
+      if(_conditionals!=nullptr)
+	_conditionals->_parent = this;
+      
+      if(_increment!=nullptr)
+	_increment->_parent = this;
+
+      if(_loop!=nullptr)
+	_loop->_parent = this;
+    }
+
+  virtual ~ForLoop() {}
+  void visit(Visitor * v) override;
+  NodeType getNodeType() override { return NodeType::ForLoop; }
+  
+  Node * _variableDeclarations;
+  Node * _conditionals;
+  Node * _increment;
+  Node * _loop;
 };
 
 struct FunctionDeclaration : public Statement
