@@ -139,6 +139,7 @@ class Scanner;
 %token                FOR
 
 %type	<block> statements
+%type	<block> statement_list
 %type	<statement>	 statement
 %type	<functionDeclaration> function_declaration
 %type	<program> translation_unit
@@ -156,6 +157,7 @@ class Scanner;
 %type	<expression>   cast_expression
 %type	<expression>   compare_expression
 %type	<expression>   constant
+%type	<expression>   expression_statement
 %type	<functionCall>   function_call
 %type	<functionCallArgumentList> function_argument_list
 %type	<variableNameList> variable_name_list
@@ -164,16 +166,21 @@ class Scanner;
 %locations
 
 %%
-translation_unit: statements { _root = new Program($1); $$ = _root; delete $1; }
+translation_unit: statement_list { _root = new Program($1); $$ = _root; delete $1; }
 		;
 
-struct: STRUCT identifier BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new Struct(*$2); $$->_block = *$4; delete $4; }
-	| TYPEDEF STRUCT BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET identifier { $$ = new Struct(*$6); $$->_block = *$4; delete $4; }
-	| TYPEDEF STRUCT identifier BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET identifier { $$ = new Struct(*$7); $$->_block = *$5; delete $5; }
+struct: STRUCT identifier statements { $$ = new Struct(*$2); $$->_block = *$3; delete $3; }
+	| TYPEDEF STRUCT statements identifier { $$ = new Struct(*$4); $$->_block = *$3; delete $3; }
+	| TYPEDEF STRUCT identifier statements identifier { $$ = new Struct(*$5); $$->_block = *$4; delete $4; }
 		;
 
-statements: statements statement { $$->_nodes.push_back($2); $2->_parent = $$; }
+statement_list:	
+		statement_list statement { $$->_nodes.push_back($2); $2->_parent = $$; }
 	|	statement { $$ = new Block() ;  $$->_nodes.push_back($1); $1->_parent = $$; }
+	;
+
+statements: 	BEGIN_CURLY_BRACKET END_CURLY_BRACKET { $$ = new Block(); }
+	|      BEGIN_CURLY_BRACKET statement_list END_CURLY_BRACKET { $$ = $2; }
 		;
 
 variable_attribute: /* empty */ { $$ = nullptr; }
@@ -220,10 +227,10 @@ variable_list:  variable_list COMMA variable_declaration { $$->_variableDeclarat
 	|	variable_declaration { $$ = new VariableList() ;  $$->_variableDeclarations.push_back($1); $1->_parent = $$; }
 		;
 
-function_declaration : VERTEX identifier identifier BEGIN_BRACKET variable_list END_BRACKET BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new FunctionDeclaration(FunctionType::Vertex, *$2, *$3, $5, $8); }
-	| FRAGMENT identifier identifier BEGIN_BRACKET variable_list END_BRACKET BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new FunctionDeclaration(FunctionType::Fragment, *$2, *$3, $5, $8); }
-	| STATIC identifier identifier BEGIN_BRACKET variable_list END_BRACKET BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new FunctionDeclaration(FunctionType::Utility, *$2, *$3, $5, $8); }
-		| identifier identifier BEGIN_BRACKET variable_list END_BRACKET BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = new FunctionDeclaration(FunctionType::Utility, *$1, *$2, $4, $7); }
+function_declaration : VERTEX identifier identifier BEGIN_BRACKET variable_list END_BRACKET statements { $$ = new FunctionDeclaration(FunctionType::Vertex, *$2, *$3, $5, $7); }
+	| FRAGMENT identifier identifier BEGIN_BRACKET variable_list END_BRACKET statements { $$ = new FunctionDeclaration(FunctionType::Fragment, *$2, *$3, $5, $7); }
+	| STATIC identifier identifier BEGIN_BRACKET variable_list END_BRACKET statements { $$ = new FunctionDeclaration(FunctionType::Utility, *$2, *$3, $5, $7); }
+		| identifier identifier BEGIN_BRACKET variable_list END_BRACKET statements { $$ = new FunctionDeclaration(FunctionType::Utility, *$1, *$2, $4, $6); }
 		;
 
 assign_operator:
@@ -234,7 +241,13 @@ assign_operator:
 	|	ASSIGN_DIVIDE { $$ = AssignOperator::EqualDivide; }
 	;
 
-statement:  USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$2); }
+expression_statement:
+		SEMICOLON { /* empty */ $$ = nullptr; }
+	|	expression SEMICOLON { $$ = $1; }
+
+	;
+
+statement:  	USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$2); }
 	| 	struct SEMICOLON { $$ = $1; }
 	|	function_declaration { $$ = $1; }
 	| 	variable_declaration SEMICOLON { $$ = $1; }
@@ -245,9 +258,9 @@ statement:  USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$
 	|	IF BEGIN_BRACKET expression END_BRACKET statement { $$ = new IfStatement(IfStatementType::If, $3, $5); }
 	|	ELSEIF BEGIN_BRACKET expression END_BRACKET statement { $$ = new IfStatement(IfStatementType::ElseIf, $3, $5); }
 	|	ELSE statement { $$ = new IfStatement(IfStatementType::Else, nullptr, $2); }
-	|	FOR BEGIN_BRACKET statement expression SEMICOLON statement END_BRACKET statement { $$ = new ForLoop($3, $4, $6, $8); }
-	|	BEGIN_CURLY_BRACKET statements END_CURLY_BRACKET { $$ = $2; }
-	|	expression SEMICOLON { $$ = $1; }
+	|	FOR BEGIN_BRACKET expression_statement expression_statement expression END_BRACKET statement { $$ = new ForLoop($3, $4, $5, $7); }
+	|	statements { $$ = $1; }
+	|	expression_statement { $$ = $1; }
 		;
 
 identifier: IDENTIFIER { $$ = new std::string(*$1); delete $1; }
