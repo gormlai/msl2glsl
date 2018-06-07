@@ -69,6 +69,8 @@ int lines = 1;
 "||"                                       { return token::DOUBLE_PIPE; }
 "&"                                        { return token::AMPERSAND; }
 "&&"                                       { return token::DOUBLE_AMPERSAND; }
+"<<"                                       { return token::LEFT_SHIFT; }
+">>"                                       { return token::RIGHT_SHIFT; }
 "."                                        { return token::DOT; }
 "->"                                       { return token::POINTER; }
 "::"                                       { return token::DOUBLE_COLON; }

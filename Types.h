@@ -305,6 +305,8 @@ enum class BinaryOperator
     LogicalOr,
     BinaryAnd,
     LogicalAnd,
+    LeftShift,
+    RightShift,
 };
 
 struct BinaryExpression : public Expression
