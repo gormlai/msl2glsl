@@ -48,15 +48,15 @@ int lines = 1;
 "/"                                        { return token::FORWARD_SLASH; }
 "<"                                        { return token::LESS_THAN; }
 ">"                                        { return token::GREATER_THAN; }
-"<="                                        { return token::LESS_THAN_OR_EQUAL; }
-">="                                        { return token::GREATER_THAN_OR_EQUAL; }
-"=="                                        { return token::EQUAL_TO; }
-"!="                                        { return token::NOT_EQUAL_TO; }
+"<="                                       { return token::LESS_THAN_OR_EQUAL; }
+">="                                       { return token::GREATER_THAN_OR_EQUAL; }
+"=="                                       { return token::EQUAL_TO; }
+"!="                                       { return token::NOT_EQUAL_TO; }
 "="                                        { return token::ASSIGN_EQUAL; }
-"+="                                        { return token::ASSIGN_PLUS; }
-"-="                                        { return token::ASSIGN_MINUS; }
-"*="                                        { return token::ASSIGN_MULTIPLY; }
-"/="                                        { return token::ASSIGN_DIVIDE; }
+"+="                                       { return token::ASSIGN_PLUS; }
+"-="                                       { return token::ASSIGN_MINUS; }
+"*="                                       { return token::ASSIGN_MULTIPLY; }
+"/="                                       { return token::ASSIGN_DIVIDE; }
 "using namespace"                          { return token::USING_NAMESPACE; }
 ";"                                        { return token::SEMICOLON; }
 ":"                                        { return token::COLON; }
@@ -65,7 +65,10 @@ int lines = 1;
 "+"                                        { return token::PLUS; }
 "-"                                        { return token::MINUS; }
 "*"                                        { return token::STAR; }
+"|"                                        { return token::PIPE; }
+"||"                                       { return token::DOUBLE_PIPE; }
 "&"                                        { return token::AMPERSAND; }
+"&&"                                       { return token::DOUBLE_AMPERSAND; }
 "."                                        { return token::DOT; }
 "->"                                       { return token::POINTER; }
 "::"                                       { return token::DOUBLE_COLON; }

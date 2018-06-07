@@ -106,6 +106,9 @@ class Scanner;
 %token                MINUS
 %token                STAR
 %token                AMPERSAND
+%token                PIPE
+%token                DOUBLE_AMPERSAND
+%token                DOUBLE_PIPE
 %token		      FORWARD_SLASH
 %token		      RETURN
 %token	<qualifier>   CONSTANT
@@ -310,7 +313,11 @@ cast_expression:
 	;
 
 expression0:
-		expression0 STAR cast_expression {  $$ = new BinaryExpression($1, BinaryOperator::Multiply, $3); }
+		expression0 PIPE cast_expression {  $$ = new BinaryExpression($1, BinaryOperator::BinaryOr, $3); }
+	|	expression0 DOUBLE_PIPE cast_expression {  $$ = new BinaryExpression($1, BinaryOperator::LogicalOr, $3); }
+	|	expression0 AMPERSAND cast_expression {  $$ = new BinaryExpression($1, BinaryOperator::BinaryAnd, $3); }
+	|	expression0 DOUBLE_AMPERSAND cast_expression {  $$ = new BinaryExpression($1, BinaryOperator::LogicalAnd, $3); }
+	|	expression0 STAR cast_expression {  $$ = new BinaryExpression($1, BinaryOperator::Multiply, $3); }
 	|	expression0 FORWARD_SLASH cast_expression {  $$ = new BinaryExpression($1, BinaryOperator::Divide, $3); }
 	| 	cast_expression { $$ = $1; }
 	| 	expression0 DOT cast_expression {  $$ = new BinaryExpression($1, BinaryOperator::Dot, $3); }

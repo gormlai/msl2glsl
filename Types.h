@@ -301,6 +301,10 @@ enum class BinaryOperator
     Dot,
     Pointer,
     Cast,
+    BinaryOr,
+    LogicalOr,
+    BinaryAnd,
+    LogicalAnd,
 };
 
 struct BinaryExpression : public Expression
