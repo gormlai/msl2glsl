@@ -138,7 +138,7 @@ class Scanner;
 %token                ELSE
 %token                FOR
 
-%type	<block> statements
+%type	<block> compound_statement
 %type	<block> statement_list
 %type	<statement>	 statement
 %type	<functionDeclaration> function_declaration
@@ -169,9 +169,9 @@ class Scanner;
 translation_unit: statement_list { _root = new Program($1); $$ = _root; delete $1; }
 		;
 
-struct: STRUCT identifier statements { $$ = new Struct(*$2); $$->_block = *$3; delete $3; }
-	| TYPEDEF STRUCT statements identifier { $$ = new Struct(*$4); $$->_block = *$3; delete $3; }
-	| TYPEDEF STRUCT identifier statements identifier { $$ = new Struct(*$5); $$->_block = *$4; delete $4; }
+struct: STRUCT identifier compound_statement { $$ = new Struct(*$2); $$->_block = *$3; delete $3; }
+	| TYPEDEF STRUCT compound_statement identifier { $$ = new Struct(*$4); $$->_block = *$3; delete $3; }
+	| TYPEDEF STRUCT identifier compound_statement identifier { $$ = new Struct(*$5); $$->_block = *$4; delete $4; }
 		;
 
 statement_list:	
@@ -179,7 +179,7 @@ statement_list:
 	|	statement { $$ = new Block() ;  $$->_nodes.push_back($1); $1->_parent = $$; }
 	;
 
-statements: 	BEGIN_CURLY_BRACKET END_CURLY_BRACKET { $$ = new Block(); }
+compound_statement: 	BEGIN_CURLY_BRACKET END_CURLY_BRACKET { $$ = new Block(); }
 	|      BEGIN_CURLY_BRACKET statement_list END_CURLY_BRACKET { $$ = $2; }
 		;
 
@@ -227,10 +227,10 @@ variable_list:  variable_list COMMA variable_declaration { $$->_variableDeclarat
 	|	variable_declaration { $$ = new VariableList() ;  $$->_variableDeclarations.push_back($1); $1->_parent = $$; }
 		;
 
-function_declaration : VERTEX identifier identifier BEGIN_BRACKET variable_list END_BRACKET statements { $$ = new FunctionDeclaration(FunctionType::Vertex, *$2, *$3, $5, $7); }
-	| FRAGMENT identifier identifier BEGIN_BRACKET variable_list END_BRACKET statements { $$ = new FunctionDeclaration(FunctionType::Fragment, *$2, *$3, $5, $7); }
-	| STATIC identifier identifier BEGIN_BRACKET variable_list END_BRACKET statements { $$ = new FunctionDeclaration(FunctionType::Utility, *$2, *$3, $5, $7); }
-		| identifier identifier BEGIN_BRACKET variable_list END_BRACKET statements { $$ = new FunctionDeclaration(FunctionType::Utility, *$1, *$2, $4, $6); }
+function_declaration : VERTEX identifier identifier BEGIN_BRACKET variable_list END_BRACKET compound_statement { $$ = new FunctionDeclaration(FunctionType::Vertex, *$2, *$3, $5, $7); }
+	| FRAGMENT identifier identifier BEGIN_BRACKET variable_list END_BRACKET compound_statement { $$ = new FunctionDeclaration(FunctionType::Fragment, *$2, *$3, $5, $7); }
+	| STATIC identifier identifier BEGIN_BRACKET variable_list END_BRACKET compound_statement { $$ = new FunctionDeclaration(FunctionType::Utility, *$2, *$3, $5, $7); }
+		| identifier identifier BEGIN_BRACKET variable_list END_BRACKET compound_statement { $$ = new FunctionDeclaration(FunctionType::Utility, *$1, *$2, $4, $6); }
 		;
 
 assign_operator:
@@ -259,7 +259,7 @@ statement:  	USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*
 	|	ELSEIF BEGIN_BRACKET expression END_BRACKET statement { $$ = new IfStatement(IfStatementType::ElseIf, $3, $5); }
 	|	ELSE statement { $$ = new IfStatement(IfStatementType::Else, nullptr, $2); }
 	|	FOR BEGIN_BRACKET expression_statement expression_statement expression END_BRACKET statement { $$ = new ForLoop($3, $4, $5, $7); }
-	|	statements { $$ = $1; }
+	|	compound_statement { $$ = $1; }
 	|	expression_statement { $$ = $1; }
 		;
 
