@@ -389,6 +389,9 @@ std::string Transpiler::operateOn(struct ConstantExpression * desc)
     case ConstantType::Identifier:
       result = result + mapIdentifier(desc->_identifier);
       break;
+    case ConstantType::Hex:
+      result = result + desc->_identifier;
+      break;
     }
 
   return result;
