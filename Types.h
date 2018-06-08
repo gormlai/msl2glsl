@@ -313,6 +313,7 @@ enum class BinaryOperator
     LeftShift,
     RightShift,
     Index,
+    XOr,
 };
 
 struct BinaryExpression : public Expression

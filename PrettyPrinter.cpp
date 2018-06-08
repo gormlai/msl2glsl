@@ -73,6 +73,7 @@ void PrettyPrinter::operateOn(struct BinaryExpression * desc)
 		"<<",
 		">>",
 		"[",
+		"^",
 	};
 
 	if(desc->_op == BinaryOperator::Cast)

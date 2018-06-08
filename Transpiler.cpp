@@ -276,6 +276,8 @@ std::string Transpiler::operateOn(struct BinaryExpression * desc)
       "&&",
       "<<",
       ">>",
+      "",
+      "^",
     };
 
   switch(desc->_op){
@@ -289,6 +291,7 @@ std::string Transpiler::operateOn(struct BinaryExpression * desc)
   case BinaryOperator::LogicalOr:
   case BinaryOperator::LeftShift:
   case BinaryOperator::RightShift:
+  case BinaryOperator::XOr:
     result = result + traverse(desc->_left);
     result = result + ops[(int)desc->_op];
     result = result + traverse(desc->_right);

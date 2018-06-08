@@ -69,6 +69,7 @@ int lines = 1;
 "-"                                        { return token::MINUS; }
 "*"                                        { return token::STAR; }
 "|"                                        { return token::PIPE; }
+"^"                                        { return token::HAT; }
 "||"                                       { return token::DOUBLE_PIPE; }
 "--"                                       { return token::MINUS_MINUS; }
 "++"                                       { return token::PLUS_PLUS; }
@@ -97,10 +98,12 @@ int lines = 1;
 {DIGIT}*"."{DIGIT}+                        { std::string t(yytext,yyleng); _yyval->doubleValue = (double)atof(t.c_str()); return token::DOUBLE_VALUE; }
 {DIGIT}+                                   { std::string t(yytext,yyleng); _yyval->intValue = atoi(t.c_str()); return token::INT_VALUE; }
 "0x"{DIGIT}+                               { std::string t(yytext,yyleng); _yyval->string = new std::string(yytext,yyleng) ; return token::HEX_VALUE; }
+{DIGIT}+"u"                                { std::string t(yytext,yyleng); _yyval->intValue = atoi(t.c_str()); return token::INT_VALUE; /* TODO: does this need expansion with uints? */ }
 {LETTER}{LETTER_OR_DIGIT}*                 { _yyval->string = new std::string(yytext,yyleng) ; return token::IDENTIFIER; }
 {WHITESPACE}                               { /* skip */ }
 {NEWLINE}                                  { lines++; }
 "#include"{WHITESPACE}"<"[^\n]*">" { /* skip */ }
+"#include"{WHITESPACE}"\""[^\n]*"\"" { /* add file to include path */ }
 "//"[^\n]*                                 {/* skip */ }
 	       
 

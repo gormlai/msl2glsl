@@ -111,6 +111,7 @@ class Scanner;
 %token                STAR
 %token                AMPERSAND
 %token                PIPE
+%token                HAT
 %token                DOUBLE_AMPERSAND
 %token                DOUBLE_PIPE
 %token                LEFT_SHIFT
@@ -377,6 +378,7 @@ binary_operator:
 	|	POINTER { $$ = BinaryOperator::Pointer; }
 	|	PLUS { $$ = BinaryOperator::Plus; }
 	|	MINUS { $$ = BinaryOperator::Minus; }
+	|	HAT { $$ = BinaryOperator::XOr; }
 	;
 
 binary_expression:
