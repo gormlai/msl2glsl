@@ -14,6 +14,7 @@ enum class NodeType {
     BufferDescriptor,
     CompareExpression,
     ConstantExpression,
+    Define,
     Expression,
     ForLoop,
     FunctionCall,
@@ -105,6 +106,22 @@ struct Program : public Block
   
   void visit(Visitor * v) override;
   NodeType getNodeType() override { return NodeType::Program; }
+};
+
+struct Define : public Statement
+{
+ public:
+  Define(const std::string & definition)
+    :_definition(definition)
+  {
+  }
+
+  virtual ~Define() {}
+
+  void visit(Visitor * v) override;
+  NodeType getNodeType() override { return NodeType::Define; }
+
+  std::string _definition;  
 };
 
 

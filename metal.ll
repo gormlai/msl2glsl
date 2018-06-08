@@ -104,6 +104,7 @@ int lines = 1;
 {LETTER}{LETTER_OR_DIGIT}*                 { _yyval->string = new std::string(yytext,yyleng) ; return token::IDENTIFIER; }
 {WHITESPACE}                               { /* skip */ }
 {NEWLINE}                                  { lines++; }
+"#define"[^\n]*{NEWLINE}                   { lines++; _yyval->string = new std::string(yytext,yyleng) ; return token::DEFINE; }
 "#include"{WHITESPACE}"<"[^\n]*">" { /* skip */ }
 "#include"{WHITESPACE}"\""[^\n]*"\"" { /* add file to include path */ }
 "//"[^\n]*                                 {/* skip */ }

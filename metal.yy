@@ -70,7 +70,6 @@ class Scanner;
     std::vector<VariableNameDeclaration* > * variableNameList;
     AssignOperator assignOperator;
     BinaryOperator binaryOperator;
-
 }
 			  
 %token		      TYPE_BOOL		      
@@ -124,6 +123,7 @@ class Scanner;
 %token	<qualifier>   CONST
 %token	<string>      HEX_VALUE
 %token	<string>      IDENTIFIER
+%token	<string>      DEFINE
 %token	<intValue>    INT_VALUE
 %token	<halfValue>   HALF_VALUE
 %token	<floatValue>  FLOAT_VALUE
@@ -160,6 +160,7 @@ class Scanner;
 %type	<statement>	 selection_statement
 %type	<statement>	 init_statement
 %type	<statement>	 simple_initialisation
+%type	<statement>	 define
 %type	<functionDeclaration> function_declaration
 %type	<program> translation_unit
 %type	<string>	identifier
@@ -268,7 +269,7 @@ assign_operator:
 	;
 
 expression_statement:
-		SEMICOLON { /* empty */ $$ = nullptr; }
+		SEMICOLON { /* empty */ $$ = new Expression(); }
 	|	expression SEMICOLON { $$ = $1; }
 
 	;
@@ -302,6 +303,10 @@ jump_statement:
 	|	RETURN expression SEMICOLON { $$ = new ReturnStatement($2); }		
 	;
 
+define:
+		DEFINE { $$ = new Define(*$1); }
+		;
+
 statement:	
 		compound_statement { $$ = $1; }
 	|	init_statement { $$ = $1; }
@@ -309,6 +314,7 @@ statement:
 	|	iteration_statement { $$ = $1; }
 	|	jump_statement { $$ = $1; }
 	|	USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$2); }
+	|	define { $$ = $1; }
 	| 	struct SEMICOLON { $$ = $1; }
 	|	function_declaration { $$ = $1; }
 		;

@@ -39,6 +39,11 @@ void ConstantExpression::visit(Visitor * v)
   v->operateOn(this);
 }
 
+void Define::visit(Visitor * v)
+{
+  v->operateOn(this);
+}
+
 void Expression::visit(Visitor * v)
 {
   v->operateOn(this);

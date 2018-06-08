@@ -141,6 +141,12 @@ void PrettyPrinter::operateOn(struct ConstantExpression * desc)
 
 }
 
+void PrettyPrinter::operateOn(struct Define * def)
+{
+  _result = _result + def->_definition;
+}
+
+
 void PrettyPrinter::operateOn(struct Expression * desc)
 {
 	// Expression is a Base class. Don't do anything here
