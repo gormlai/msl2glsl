@@ -298,9 +298,9 @@ statement:
 	| 	struct SEMICOLON { $$ = $1; }
 	|	function_declaration { $$ = $1; }
 	| 	variable_declaration SEMICOLON { $$ = $1; }
-	|	variable_declaration assign_operator expression SEMICOLON { $$ = new AssignStatement($1, $2, $3); }
-	|	variable_declaration assign_operator BEGIN_CURLY_BRACKET function_argument_list END_CURLY_BRACKET SEMICOLON { $$ = new AssignStatement($1, $2, $4); }
-	|	expression assign_operator expression SEMICOLON { $$ = new AssignStatement($1, $2, $3); }
+	|	variable_declaration assign_operator expression SEMICOLON { $$ = new Assignment($1, $2, $3); }
+	|	variable_declaration assign_operator BEGIN_CURLY_BRACKET function_argument_list END_CURLY_BRACKET SEMICOLON { $$ = new Assignment($1, $2, $4); }
+	|	expression assign_operator expression SEMICOLON { $$ = new Assignment($1, $2, $3); }
 		;
 
 identifier: IDENTIFIER { $$ = new std::string(*$1); delete $1; }

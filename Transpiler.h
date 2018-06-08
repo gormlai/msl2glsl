@@ -18,7 +18,7 @@ public:
 
 	std::string convert(struct Block * program, struct FunctionDeclaration * shader);
 
-	std::string operateOn(struct AssignStatement * desc);
+	std::string operateOn(struct Assignment * desc);
 	std::string operateOn(struct BinaryExpression * desc);
 	std::string operateOn(struct Block * block);
 	std::string operateOn(struct BufferDescriptor * desc);

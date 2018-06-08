@@ -8,7 +8,7 @@ class Visitor
   
   virtual ~Visitor() {}
   
-  virtual void operateOn(struct AssignStatement * desc)=0;  
+  virtual void operateOn(struct Assignment * desc)=0;  
   virtual void operateOn(struct BinaryExpression * desc)=0;  
   virtual void operateOn(struct Block * block) =0;
   virtual void operateOn(struct BufferDescriptor * desc)=0;

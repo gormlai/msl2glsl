@@ -8,7 +8,7 @@
 class Visitor;
 
 enum class NodeType {
-  AssignStatement,
+  Assignment,
     BinaryExpression,
     Block,
     BufferDescriptor,
@@ -554,9 +554,9 @@ enum class AssignOperator {
 };
 
 
-struct AssignStatement : public Statement
+struct Assignment : public Statement
 {
- AssignStatement(Node * left, AssignOperator op,  Node * right)
+ Assignment(Node * left, AssignOperator op,  Node * right)
    :_left(left)
     ,_operator(op)
     ,_right(right)
@@ -565,9 +565,9 @@ struct AssignStatement : public Statement
 	 right->_parent = this;
   }
 
-  virtual ~AssignStatement() {}
+  virtual ~Assignment() {}
   void visit(Visitor * v) override;
-  NodeType getNodeType() override { return NodeType::AssignStatement; }
+  NodeType getNodeType() override { return NodeType::Assignment; }
   std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(_left); nodes.push_back(_right); return nodes; }
   
   Node * _left;

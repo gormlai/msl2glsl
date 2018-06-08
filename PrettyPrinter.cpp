@@ -46,7 +46,7 @@ const std::string PrettyPrinter::print(struct Block * block)
 	return _result;
 }
 
-void PrettyPrinter::operateOn(struct AssignStatement * desc)
+void PrettyPrinter::operateOn(struct Assignment * desc)
 {
 	indent();
 	desc->_left->visit(this);

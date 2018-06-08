@@ -3,7 +3,7 @@
 
 Program * _root = nullptr;
 
-void AssignStatement::visit(Visitor * v)
+void Assignment::visit(Visitor * v)
 {
   v->operateOn(this);
 }

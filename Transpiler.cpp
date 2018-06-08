@@ -148,8 +148,8 @@ std::string Transpiler::traverse(struct Node * node)
   
   switch(node->getNodeType())
     {
-    case NodeType::AssignStatement:
-      result = result + operateOn(static_cast<AssignStatement*>(node));
+    case NodeType::Assignment:
+      result = result + operateOn(static_cast<Assignment*>(node));
       break;
     case NodeType::BinaryExpression:
       result = result + operateOn(static_cast<BinaryExpression*>(node));
@@ -248,7 +248,7 @@ std::string Transpiler::convert(struct Block * program, struct FunctionDeclarati
   return shaderString;
 }
 
-std::string Transpiler::operateOn(struct AssignStatement * desc)
+std::string Transpiler::operateOn(struct Assignment * desc)
 {
   std::string result =  indent();
   result = result + traverse(desc->_left);
