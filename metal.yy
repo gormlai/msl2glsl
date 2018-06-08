@@ -103,6 +103,9 @@ class Scanner;
 %token                ASSIGN_MINUS
 %token                ASSIGN_MULTIPLY
 %token                ASSIGN_DIVIDE
+%token                ASSIGN_XOR
+%token                ASSIGN_OR
+%token                ASSIGN_AND
 %token                PLUS
 %token                MINUS
 %token                STAR
@@ -151,6 +154,9 @@ class Scanner;
 %type	<block> compound_statement
 %type	<block> statement_list
 %type	<statement>	 statement
+%type	<statement>	 jump_statement
+%type	<statement>	 iteration_statement
+%type	<statement>	 selection_statement
 %type	<functionDeclaration> function_declaration
 %type	<program> translation_unit
 %type	<string>	identifier
@@ -249,10 +255,13 @@ function_declaration : VERTEX identifier identifier BEGIN_BRACKET variable_list 
 
 assign_operator:
 		ASSIGN_EQUAL { $$ = AssignOperator::Equal; }
-	|	ASSIGN_PLUS { $$ = AssignOperator::EqualPlus; }
-	|	ASSIGN_MINUS { $$ = AssignOperator::EqualMinus; }
-	|	ASSIGN_MULTIPLY { $$ = AssignOperator::EqualMultiply; }
-	|	ASSIGN_DIVIDE { $$ = AssignOperator::EqualDivide; }
+	|	ASSIGN_PLUS { $$ = AssignOperator::Plus; }
+	|	ASSIGN_MINUS { $$ = AssignOperator::Minus; }
+	|	ASSIGN_MULTIPLY { $$ = AssignOperator::Multiply; }
+	|	ASSIGN_DIVIDE { $$ = AssignOperator::Divide; }
+	|	ASSIGN_XOR { $$ = AssignOperator::XOr; }
+	|	ASSIGN_OR { $$ = AssignOperator::Or; }
+	|	ASSIGN_AND { $$ = AssignOperator::And; }
 	;
 
 expression_statement:
@@ -261,21 +270,37 @@ expression_statement:
 
 	;
 
-statement:  	USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$2); }
+selection_statement:
+		IF BEGIN_BRACKET expression END_BRACKET statement { $$ = new IfStatement(IfStatementType::If, $3, $5); }
+	|	ELSEIF BEGIN_BRACKET expression END_BRACKET statement { $$ = new IfStatement(IfStatementType::ElseIf, $3, $5); }
+	|	ELSE statement { $$ = new IfStatement(IfStatementType::Else, nullptr, $2); }
+		
+	;
+
+iteration_statement:
+		FOR BEGIN_BRACKET expression_statement expression_statement END_BRACKET statement { $$ = new ForLoop($3, $4, nullptr, $6); }
+ 	|	FOR BEGIN_BRACKET expression_statement expression_statement expression END_BRACKET statement { $$ = new ForLoop($3, $4, $5, $7); }
+		
+	;
+
+jump_statement:
+		RETURN SEMICOLON { $$ = new ReturnStatement(nullptr); }		
+	|	RETURN expression SEMICOLON { $$ = new ReturnStatement($2); }		
+	;
+
+statement:	
+		compound_statement { $$ = $1; }
+	|	expression_statement { $$ = $1; }
+	|	selection_statement { $$ = $1; }
+	|	iteration_statement { $$ = $1; }
+	|	jump_statement { $$ = $1; }
+	|	USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$2); }
 	| 	struct SEMICOLON { $$ = $1; }
 	|	function_declaration { $$ = $1; }
 	| 	variable_declaration SEMICOLON { $$ = $1; }
 	|	variable_declaration assign_operator expression SEMICOLON { $$ = new AssignStatement($1, $2, $3); }
 	|	variable_declaration assign_operator BEGIN_CURLY_BRACKET function_argument_list END_CURLY_BRACKET SEMICOLON { $$ = new AssignStatement($1, $2, $4); }
 	|	expression assign_operator expression SEMICOLON { $$ = new AssignStatement($1, $2, $3); }
-	|	RETURN expression SEMICOLON { $$ = new ReturnStatement($2); }
-	|	IF BEGIN_BRACKET expression END_BRACKET statement { $$ = new IfStatement(IfStatementType::If, $3, $5); }
-	|	ELSEIF BEGIN_BRACKET expression END_BRACKET statement { $$ = new IfStatement(IfStatementType::ElseIf, $3, $5); }
-	|	ELSE statement { $$ = new IfStatement(IfStatementType::Else, nullptr, $2); }
-	|	FOR BEGIN_BRACKET expression_statement expression_statement END_BRACKET statement { $$ = new ForLoop($3, $4, nullptr, $6); }
-	|	FOR BEGIN_BRACKET expression_statement expression_statement expression END_BRACKET statement { $$ = new ForLoop($3, $4, $5, $7); }
-	|	compound_statement { $$ = $1; }
-	|	expression_statement { $$ = $1; }
 		;
 
 identifier: IDENTIFIER { $$ = new std::string(*$1); delete $1; }

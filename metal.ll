@@ -57,6 +57,9 @@ int lines = 1;
 "-="                                       { return token::ASSIGN_MINUS; }
 "*="                                       { return token::ASSIGN_MULTIPLY; }
 "/="                                       { return token::ASSIGN_DIVIDE; }
+"^="                                       { return token::ASSIGN_XOR; }
+"&="                                       { return token::ASSIGN_AND; }
+"|="                                       { return token::ASSIGN_OR; }
 "using namespace"                          { return token::USING_NAMESPACE; }
 ";"                                        { return token::SEMICOLON; }
 ":"                                        { return token::COLON; }

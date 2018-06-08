@@ -544,10 +544,13 @@ struct FunctionCall : public Expression
 
 enum class AssignOperator {
   Equal,
-    EqualPlus,
-    EqualMinus,
-    EqualDivide,
-    EqualMultiply,
+    Plus,
+    Minus,
+    Divide,
+    Multiply,
+    And,
+    XOr,
+    Or,
 };
 
 
