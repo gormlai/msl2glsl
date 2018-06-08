@@ -65,17 +65,25 @@ void PrettyPrinter::operateOn(struct BinaryExpression * desc)
 		"/",
 		".",
 		"->",
+		")",
+		"|",
+		"||",
+		"&",
+		"&&",
+		"<<",
+		">>",
+		"[",
 	};
 
-	//if(desc->_op != BinaryOperator::Dot)
-	//    _result = _result + "(";
+	if(desc->_op == BinaryOperator::Cast)
+	  _result = _result + "(";
 
 	desc->_left->visit(this);
 	_result = _result + ops[(int)desc->_op];
 	desc->_right->visit(this);
 
-	//  if(desc->_op != BinaryOperator::Dot)
-	//  _result = _result + ")";
+	if(desc->_op != BinaryOperator::Dot)
+	  _result = _result + "]";
 
 }
 
@@ -283,8 +291,8 @@ void PrettyPrinter::operateOn(struct UnaryExpression * desc)
 	switch (desc->_type)
 	{
 	case UnaryType::Parenthesis:
-		_result = _result + ")";
-		break;
+	  _result = _result + ")";
+	  break;
 	case UnaryType::PostFixMinusMinus:
 	  _result = _result + "--";
 	  break;

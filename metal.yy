@@ -331,6 +331,7 @@ constant:
 	|	FLOAT_VALUE { $$ = new ConstantExpression(ConstantType::Float, $1); }
 	|	DOUBLE_VALUE { $$ = new ConstantExpression(ConstantType::Double, $1); }
 	| 	identifier	{ $$ = new ConstantExpression(ConstantType::Identifier, *$1); }
+	| 	BEGIN_BRACKET expression END_BRACKET { $$ = new UnaryExpression(UnaryType::Parenthesis, $2); }
 		;
 
 pre_postfix_expression:
@@ -339,11 +340,11 @@ pre_postfix_expression:
 	|	PLUS_PLUS constant { $$ = new UnaryExpression(UnaryType::PreFixPlusPlus, $2); }
 	|       constant PLUS_PLUS { $$ = new UnaryExpression(UnaryType::PostFixPlusPlus, $1); }
 	|       constant MINUS_MINUS { $$ = new UnaryExpression(UnaryType::PostFixMinusMinus, $1); }
+	| 	pre_postfix_expression BEGIN_SINGLE_SQUARE_BRACKET expression END_SINGLE_SQUARE_BRACKET { $$ = new BinaryExpression($1,BinaryOperator::Index, $3); }
 	;
 
 expression1:
 		pre_postfix_expression        { $$ = $1; }
-	| 	BEGIN_BRACKET expression END_BRACKET { $$ = new UnaryExpression(UnaryType::Parenthesis, $2); }
 	| 	function_call { $$ = $1; }
 	| 	MINUS expression1 { $$ = new UnaryExpression(UnaryType::Minus, $2); }
 ;

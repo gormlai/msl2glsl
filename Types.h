@@ -237,13 +237,14 @@ public:
 
 enum class UnaryType
 {
-	Minus,
-	Parenthesis,
-	  PreFixPlusPlus,
-	  PostFixPlusPlus,
-	  PreFixMinusMinus,
-	  PostFixMinusMinus,
-};
+  Minus,
+    Parenthesis,
+    PreFixPlusPlus,
+    PostFixPlusPlus,
+    PreFixMinusMinus,
+    PostFixMinusMinus,
+    
+    };
 
 struct UnaryExpression : public Expression
 {
@@ -311,6 +312,7 @@ enum class BinaryOperator
     LogicalAnd,
     LeftShift,
     RightShift,
+    Index,
 };
 
 struct BinaryExpression : public Expression

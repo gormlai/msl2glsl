@@ -299,6 +299,12 @@ std::string Transpiler::operateOn(struct BinaryExpression * desc)
     result = result + ")";
     result = result + traverse(desc->_right);
     break;
+  case BinaryOperator::Index:
+    result = result + traverse(desc->_left);
+    result = result + "[";
+    result = result + traverse(desc->_right);
+    result = result + "]";
+    break;
   case BinaryOperator::Dot: 
   case BinaryOperator::Pointer: {
     // special attention needs to be to the dot operator
