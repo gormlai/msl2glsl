@@ -2,6 +2,7 @@ WHITESPACE [ \t\v\f]
 NEWLINE [\n]
 LETTER [_a-zA-Z]
 DIGIT [0-9]
+HEX [0-8a-fA-F]
 LETTER_OR_DIGIT ({LETTER}|{DIGIT})
 FORWARDSLASH [/]
 LETTER_OR_DIGIT_OR_FORWARDSLASH ({LETTER}|{DIGIT}|{FORWARDSLASH})
@@ -97,7 +98,8 @@ int lines = 1;
 {DIGIT}*"."{DIGIT}+"h"                     { std::string t(yytext,yyleng); _yyval->halfValue = atof(t.c_str()); return token::HALF_VALUE; }
 {DIGIT}*"."{DIGIT}+                        { std::string t(yytext,yyleng); _yyval->doubleValue = (double)atof(t.c_str()); return token::DOUBLE_VALUE; }
 {DIGIT}+                                   { std::string t(yytext,yyleng); _yyval->intValue = atoi(t.c_str()); return token::INT_VALUE; }
-"0x"{DIGIT}+                               { std::string t(yytext,yyleng); _yyval->string = new std::string(yytext,yyleng) ; return token::HEX_VALUE; }
+"0x"{HEX}+                                 { std::string t(yytext,yyleng); _yyval->string = new std::string(yytext,yyleng) ; return token::HEX_VALUE; }
+"0x"{HEX}+"u"                              { std::string t(yytext,yyleng); _yyval->string = new std::string(yytext,yyleng) ; return token::HEX_VALUE; }
 {DIGIT}+"u"                                { std::string t(yytext,yyleng); _yyval->intValue = atoi(t.c_str()); return token::INT_VALUE; /* TODO: does this need expansion with uints? */ }
 {LETTER}{LETTER_OR_DIGIT}*                 { _yyval->string = new std::string(yytext,yyleng) ; return token::IDENTIFIER; }
 {WHITESPACE}                               { /* skip */ }
