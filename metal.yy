@@ -69,6 +69,7 @@ class Scanner;
     FunctionCallArgumentList * functionCallArgumentList;
     std::vector<VariableNameDeclaration* > * variableNameList;
     AssignOperator assignOperator;
+    BinaryOperator binaryOperator;
 
 }
 			  
@@ -161,8 +162,10 @@ class Scanner;
 %type	<reservedToken>	 reserved_token
 %type	<bufferDescriptor> buffer_descriptor
 %type	<expression>   expression
-%type	<expression>   expression0
 %type	<expression>   expression1
+%type	<expression>   binary_expression
+%type	<expression>   assignment_expression
+%type	<expression>   conditional_expression
 %type	<expression>   cast_expression
 %type	<expression>   compare_expression
 %type	<expression>   constant
@@ -173,6 +176,7 @@ class Scanner;
 %type	<variableNameList> variable_name_list
 %type	<intValue>     array_declaration
 %type	<assignOperator> assign_operator
+%type	<binaryOperator> binary_operator
 %locations
 
 %%
@@ -325,26 +329,39 @@ cast_expression:
 	| 	BEGIN_BRACKET identifier END_BRACKET compare_expression { $$ = new CastExpression(*$2, $4); }		
 	;
 
-expression0:
-		expression0 PIPE cast_expression {  $$ = new BinaryExpression($1, BinaryOperator::BinaryOr, $3); }
-	|	expression0 DOUBLE_PIPE cast_expression {  $$ = new BinaryExpression($1, BinaryOperator::LogicalOr, $3); }
-	|	expression0 AMPERSAND cast_expression {  $$ = new BinaryExpression($1, BinaryOperator::BinaryAnd, $3); }
-	|	expression0 DOUBLE_AMPERSAND cast_expression {  $$ = new BinaryExpression($1, BinaryOperator::LogicalAnd, $3); }
-	|	expression0 LEFT_SHIFT cast_expression {  $$ = new BinaryExpression($1, BinaryOperator::LeftShift, $3); }
-	|	expression0 RIGHT_SHIFT cast_expression {  $$ = new BinaryExpression($1, BinaryOperator::RightShift, $3); }
-	|	expression0 STAR cast_expression {  $$ = new BinaryExpression($1, BinaryOperator::Multiply, $3); }
-	|	expression0 FORWARD_SLASH cast_expression {  $$ = new BinaryExpression($1, BinaryOperator::Divide, $3); }
-	| 	cast_expression { $$ = $1; }
-	| 	expression0 DOT cast_expression {  $$ = new BinaryExpression($1, BinaryOperator::Dot, $3); }
-	| 	expression0 POINTER cast_expression {  $$ = new BinaryExpression($1, BinaryOperator::Pointer, $3); }
+binary_operator:
+		PIPE { $$ = BinaryOperator::BinaryOr; }
+	|	DOUBLE_PIPE { $$ = BinaryOperator::LogicalOr; }
+	|	AMPERSAND { $$ = BinaryOperator::BinaryAnd; }
+	|	DOUBLE_AMPERSAND { $$ = BinaryOperator::LogicalAnd; }
+	|	LEFT_SHIFT { $$ = BinaryOperator::LeftShift; }
+	|	RIGHT_SHIFT { $$ = BinaryOperator::RightShift; }
+	|	STAR { $$ = BinaryOperator::Multiply; }
+	|	FORWARD_SLASH { $$ = BinaryOperator::Divide; }
+	|	DOT { $$ = BinaryOperator::Dot; }
+	|	POINTER { $$ = BinaryOperator::Pointer; }
+	|	PLUS { $$ = BinaryOperator::Plus; }
+	|	MINUS { $$ = BinaryOperator::Minus; }
+	;
+
+binary_expression:
+		cast_expression { $$ = $1; }
+	|	binary_expression binary_operator cast_expression {  $$ = new BinaryExpression($1, $2, $3); }
 		;
 
-expression:
-		expression PLUS expression0 {  $$ = new BinaryExpression($1, BinaryOperator::Plus, $3); }
-	| 	expression MINUS expression0 {  $$ = new BinaryExpression($1, BinaryOperator::Minus, $3); }
-	|	expression QUESTION_MARK expression0 COLON expression0 { $$ = new SelectExpression($1, $3, $5); }
-	| 	expression0 { $$ = $1; }
+conditional_expression:
+		binary_expression { $$ = $1; }
+	|	binary_expression QUESTION_MARK expression COLON conditional { $$ = new SelectExpression($1, $3, $5); }
 	;
+
+assignment_expression:
+		conditional_expression { $$ = $1; }
+	;
+
+expression:
+	 	assignment_expression { $$ = $1; }
+	;
+
 
 %%
 		
