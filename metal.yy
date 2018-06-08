@@ -351,7 +351,7 @@ binary_expression:
 
 conditional_expression:
 		binary_expression { $$ = $1; }
-	|	binary_expression QUESTION_MARK expression COLON conditional { $$ = new SelectExpression($1, $3, $5); }
+	|	binary_expression QUESTION_MARK expression COLON conditional_expression { $$ = new SelectExpression($1, $3, $5); }
 	;
 
 assignment_expression:
