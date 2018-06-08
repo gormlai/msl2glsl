@@ -732,6 +732,14 @@ std::string Transpiler::operateOn(struct UnaryExpression * desc)
     case UnaryType::Parenthesis:
       result = result + "(";
       break;
+    case UnaryType::PreFixPlusPlus:
+      result = result + "++";
+      break;
+    case UnaryType::PreFixMinusMinus:
+      result = result + "--";
+      break;
+    default:
+      break;
     }
   
   result = result + traverse(desc->_expression);
@@ -739,11 +747,16 @@ std::string Transpiler::operateOn(struct UnaryExpression * desc)
   // post expression
   switch (desc->_type)
     {
-    case UnaryType::Minus:
-      result = result + "-";
-      break;
     case UnaryType::Parenthesis:
       result = result + ")";
+      break;
+    case UnaryType::PostFixPlusPlus:
+      result = result + "++";
+      break;
+    case UnaryType::PostFixMinusMinus:
+      result = result + "--";
+      break;
+    default:
       break;
     }
 
