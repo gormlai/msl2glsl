@@ -160,11 +160,17 @@ std::string Transpiler::traverse(struct Node * node)
     case NodeType::BufferDescriptor:
       result = result + operateOn(static_cast<BufferDescriptor*>(node));
       break;
+    case NodeType::CompareExpression:
+      result = result + operateOn(static_cast<CompareExpression*>(node));
+      break;
     case NodeType::ConstantExpression:
       result = result + operateOn(static_cast<ConstantExpression*>(node));
       break;
     case NodeType::Expression:
       result = result + operateOn(static_cast<Expression*>(node));
+      break;
+    case NodeType::ForLoop:
+      result = result + operateOn(static_cast<ForLoop*>(node));
       break;
     case NodeType::FunctionCall:
       result = result + operateOn(static_cast<FunctionCall*>(node));
@@ -174,6 +180,9 @@ std::string Transpiler::traverse(struct Node * node)
       break;
     case NodeType::FunctionDeclaration:
       result = result + operateOn(static_cast<FunctionDeclaration*>(node));
+      break;
+    case NodeType::IfStatement:
+      result = result + operateOn(static_cast<IfStatement*>(node));
       break;
     case NodeType::Node:
       result = result + operateOn(static_cast<Node*>(node));
@@ -251,7 +260,7 @@ std::string Transpiler::operateOn(struct AssignStatement * desc)
 std::string Transpiler::operateOn(struct BinaryExpression * desc)
 {
   std::string result;
-  
+
   const static std::string ops[] =
     {
       "+",
@@ -260,6 +269,12 @@ std::string Transpiler::operateOn(struct BinaryExpression * desc)
       "/",
       ".",
       "->",
+      "|",
+      "||",
+      "&",
+      "&&",
+      "<<",
+      ">>",
     };
 
   switch(desc->_op){
@@ -267,6 +282,12 @@ std::string Transpiler::operateOn(struct BinaryExpression * desc)
   case BinaryOperator::Minus:
   case BinaryOperator::Multiply:
   case BinaryOperator::Divide:
+  case BinaryOperator::BinaryAnd:
+  case BinaryOperator::LogicalAnd:
+  case BinaryOperator::BinaryOr:
+  case BinaryOperator::LogicalOr:
+  case BinaryOperator::LeftShift:
+  case BinaryOperator::RightShift:
     result = result + traverse(desc->_left);
     result = result + ops[(int)desc->_op];
     result = result + traverse(desc->_right);
