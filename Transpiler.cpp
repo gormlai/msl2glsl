@@ -269,6 +269,7 @@ std::string Transpiler::operateOn(struct BinaryExpression * desc)
       "/",
       ".",
       "->",
+      "",
       "|",
       "||",
       "&",
@@ -290,6 +291,12 @@ std::string Transpiler::operateOn(struct BinaryExpression * desc)
   case BinaryOperator::RightShift:
     result = result + traverse(desc->_left);
     result = result + ops[(int)desc->_op];
+    result = result + traverse(desc->_right);
+    break;
+  case BinaryOperator::Cast:
+    result = result + "(";
+    result = result + traverse(desc->_left);
+    result = result + ")";
     result = result + traverse(desc->_right);
     break;
   case BinaryOperator::Dot: 
