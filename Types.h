@@ -554,7 +554,7 @@ enum class AssignOperator {
 };
 
 
-struct Assignment : public Statement
+struct Assignment : public Expression
 {
  Assignment(Node * left, AssignOperator op,  Node * right)
    :_left(left)

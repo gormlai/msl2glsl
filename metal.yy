@@ -157,6 +157,8 @@ class Scanner;
 %type	<statement>	 jump_statement
 %type	<statement>	 iteration_statement
 %type	<statement>	 selection_statement
+%type	<statement>	 init_statement
+%type	<statement>	 simple_initialisation
 %type	<functionDeclaration> function_declaration
 %type	<program> translation_unit
 %type	<string>	identifier
@@ -277,9 +279,20 @@ selection_statement:
 		
 	;
 
+simple_initialisation:
+	 	variable_declaration { $$ = $1; }
+	|	variable_declaration assign_operator expression { $$ = new Assignment($1, $2, $3); }
+	|	variable_declaration assign_operator BEGIN_CURLY_BRACKET function_argument_list END_CURLY_BRACKET { $$ = new Assignment($1, $2, $4); }	
+	;
+
+init_statement:
+		expression_statement { $$ = $1; }
+	|	simple_initialisation SEMICOLON { $$ = $1; }
+	;
+
 iteration_statement:
 		FOR BEGIN_BRACKET expression_statement expression_statement END_BRACKET statement { $$ = new ForLoop($3, $4, nullptr, $6); }
- 	|	FOR BEGIN_BRACKET expression_statement expression_statement expression END_BRACKET statement { $$ = new ForLoop($3, $4, $5, $7); }
+ 	|	FOR BEGIN_BRACKET init_statement expression_statement expression END_BRACKET statement { $$ = new ForLoop($3, $4, $5, $7); }
 		
 	;
 
@@ -290,17 +303,13 @@ jump_statement:
 
 statement:	
 		compound_statement { $$ = $1; }
-	|	expression_statement { $$ = $1; }
+	|	init_statement { $$ = $1; }
 	|	selection_statement { $$ = $1; }
 	|	iteration_statement { $$ = $1; }
 	|	jump_statement { $$ = $1; }
 	|	USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$2); }
 	| 	struct SEMICOLON { $$ = $1; }
 	|	function_declaration { $$ = $1; }
-	| 	variable_declaration SEMICOLON { $$ = $1; }
-	|	variable_declaration assign_operator expression SEMICOLON { $$ = new Assignment($1, $2, $3); }
-	|	variable_declaration assign_operator BEGIN_CURLY_BRACKET function_argument_list END_CURLY_BRACKET SEMICOLON { $$ = new Assignment($1, $2, $4); }
-	|	expression assign_operator expression SEMICOLON { $$ = new Assignment($1, $2, $3); }
 		;
 
 identifier: IDENTIFIER { $$ = new std::string(*$1); delete $1; }
@@ -381,6 +390,7 @@ conditional_expression:
 
 assignment_expression:
 		conditional_expression { $$ = $1; }
+	|	conditional_expression assign_operator assignment_expression { $$ = new Assignment($1, $2, $3); }
 	;
 
 expression:
