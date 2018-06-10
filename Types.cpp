@@ -89,7 +89,7 @@ void Program::visit(Visitor * v)
   v->operateOn(this);
 }
 
-void ReturnStatement::visit(Visitor * v)
+void JumpStatement::visit(Visitor * v)
 {
   v->operateOn(this);
 }

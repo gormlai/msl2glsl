@@ -245,7 +245,7 @@ void PrettyPrinter::operateOn(struct Program * program)
 		node->visit(this);
 }
 
-void PrettyPrinter::operateOn(struct ReturnStatement * statement)
+void PrettyPrinter::operateOn(struct JumpStatement * statement)
 {
 	indent();
 	_result = _result + "return ";

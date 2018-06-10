@@ -40,6 +40,7 @@ int lines = 1;
 "default"                                  { return token::DEFAULT; }
 "switch"                                   { return token::SWITCH; }
 "break"                                    { return token::BREAK; }
+"continue"                                 { return token::CONTINUE; }
 "case"                                     { return token::CASE; }
 "fragment"                                 { return token::FRAGMENT; }
 "vertex"                                   { return token::VERTEX; }

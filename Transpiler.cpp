@@ -193,8 +193,8 @@ std::string Transpiler::traverse(struct Node * node)
     case NodeType::Program:
       result = result + operateOn(static_cast<Program*>(node));
       break;
-    case NodeType::ReturnStatement:
-      result = result + operateOn(static_cast<ReturnStatement*>(node));
+    case NodeType::JumpStatement:
+      result = result + operateOn(static_cast<JumpStatement*>(node));
       break;
     case NodeType::Statement:
       result = result + operateOn(static_cast<Statement*>(node));
@@ -664,7 +664,7 @@ std::string Transpiler::operateOn(struct Program * program)
   return result;
 }
 
-std::string Transpiler::operateOn(struct ReturnStatement * statement)
+std::string Transpiler::operateOn(struct JumpStatement * statement)
 {
   std::string result;
 

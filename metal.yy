@@ -114,6 +114,7 @@ class Scanner;
 %token                SWITCH
 %token                CASE
 %token                BREAK
+%token                CONTINUE
 %token                DOUBLE_AMPERSAND
 %token                DOUBLE_PIPE
 %token                LEFT_SHIFT
@@ -305,8 +306,8 @@ iteration_statement:
 	;
 
 jump_statement:
-		RETURN SEMICOLON { $$ = new ReturnStatement(nullptr); }		
-	|	RETURN expression SEMICOLON { $$ = new ReturnStatement($2); }		
+		RETURN SEMICOLON { $$ = new JumpStatement(nullptr); }		
+	|	RETURN expression SEMICOLON { $$ = new JumpStatement($2); }		
 	;
 
 define:

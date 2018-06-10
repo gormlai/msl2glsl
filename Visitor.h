@@ -20,7 +20,7 @@ class Visitor
   virtual void operateOn(struct FunctionCallArgumentList * node)=0;
   virtual void operateOn(struct FunctionDeclaration * node)=0;
   virtual void operateOn(struct Program * program)=0;
-  virtual void operateOn(struct ReturnStatement * statement)=0;
+  virtual void operateOn(struct JumpStatement * statement)=0;
   virtual void operateOn(struct Statement * statement)=0;
   virtual void operateOn(struct Struct * strct)=0;
   virtual void operateOn(struct UnaryExpression * desc)=0;

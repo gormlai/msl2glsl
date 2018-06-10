@@ -24,7 +24,7 @@ enum class NodeType {
     SelectionStatement,
     Node,
     Program,
-    ReturnStatement,
+    JumpStatement,
     Statement,
     Struct,
     UnaryExpression,
@@ -623,18 +623,18 @@ struct Assignment : public Expression
 };
 
 
-struct ReturnStatement : public Statement
+struct JumpStatement : public Statement
 {
-  ReturnStatement(Expression * e)
+  JumpStatement(Expression * e)
     :_expression(e)
   {
 	  if(_expression!=nullptr)
 	  _expression->_parent = this;
   }
 
-  virtual ~ReturnStatement() {}
+  virtual ~JumpStatement() {}
   void visit(Visitor * v) override;
-  NodeType getNodeType() override { return NodeType::ReturnStatement; }
+  NodeType getNodeType() override { return NodeType::JumpStatement; }
 	
   Expression * _expression;
   std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(_expression); return nodes; }      
