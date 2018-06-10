@@ -184,8 +184,8 @@ std::string Transpiler::traverse(struct Node * node)
     case NodeType::FunctionDeclaration:
       result = result + operateOn(static_cast<FunctionDeclaration*>(node));
       break;
-    case NodeType::IfStatement:
-      result = result + operateOn(static_cast<IfStatement*>(node));
+    case NodeType::SelectionStatement:
+      result = result + operateOn(static_cast<SelectionStatement*>(node));
       break;
     case NodeType::Node:
       result = result + operateOn(static_cast<Node*>(node));

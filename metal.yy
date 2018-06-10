@@ -111,12 +111,16 @@ class Scanner;
 %token                AMPERSAND
 %token                PIPE
 %token                HAT
+%token                SWITCH
+%token                CASE
+%token                BREAK
 %token                DOUBLE_AMPERSAND
 %token                DOUBLE_PIPE
 %token                LEFT_SHIFT
 %token                RIGHT_SHIFT			
 %token		      FORWARD_SLASH
 %token		      RETURN
+%token		      DEFAULT
 %token		      PLUS_PLUS
 %token		      MINUS_MINUS
 %token	<qualifier>   CONSTANT
@@ -161,6 +165,7 @@ class Scanner;
 %type	<statement>	 init_statement
 %type	<statement>	 simple_initialisation
 %type	<statement>	 define
+%type	<statement>	 labeled_statement
 %type	<functionDeclaration> function_declaration
 %type	<program> translation_unit
 %type	<string>	identifier
@@ -275,9 +280,10 @@ expression_statement:
 	;
 
 selection_statement:
-		IF BEGIN_BRACKET expression END_BRACKET statement { $$ = new IfStatement(IfStatementType::If, $3, $5); }
-	|	ELSEIF BEGIN_BRACKET expression END_BRACKET statement { $$ = new IfStatement(IfStatementType::ElseIf, $3, $5); }
-	|	ELSE statement { $$ = new IfStatement(IfStatementType::Else, nullptr, $2); }
+		IF BEGIN_BRACKET expression END_BRACKET statement { $$ = new SelectionStatement(SelectionStatementType::If, $3, $5); }
+	|	ELSEIF BEGIN_BRACKET expression END_BRACKET statement { $$ = new SelectionStatement(SelectionStatementType::ElseIf, $3, $5); }
+	|	ELSE statement { $$ = new SelectionStatement(SelectionStatementType::Else, nullptr, $2); }
+	|	SWITCH BEGIN_BRACKET expression END_BRACKET statement { $$ = new SelectionStatement(SelectionStatementType::Switch, $3, $5); }
 		
 	;
 
@@ -307,12 +313,18 @@ define:
 		DEFINE { $$ = new Define(*$1); }
 		;
 
+labeled_statement:
+		CASE conditional_expression COLON statement { $$ = new LabeledStatement(LabeledStatementType::Case, $2, $4); }
+	|	DEFAULT COLON statement { $$ = new LabeledStatement(LabeledStatementType::Default, nullptr, $3); }
+	;
+
 statement:	
 		compound_statement { $$ = $1; }
 	|	init_statement { $$ = $1; }
 	|	selection_statement { $$ = $1; }
 	|	iteration_statement { $$ = $1; }
 	|	jump_statement { $$ = $1; }
+	|	labeled_statement { $$ = $1; }
 	|	USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$2); }
 	|	define { $$ = $1; }
 	| 	struct SEMICOLON { $$ = $1; }

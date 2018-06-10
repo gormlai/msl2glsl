@@ -37,6 +37,10 @@ int lines = 1;
   _yyval = lval;
 %}
 
+"default"                                  { return token::DEFAULT; }
+"switch"                                   { return token::SWITCH; }
+"break"                                    { return token::BREAK; }
+"case"                                     { return token::CASE; }
 "fragment"                                 { return token::FRAGMENT; }
 "vertex"                                   { return token::VERTEX; }
 "static"                                   { return token::STATIC; }

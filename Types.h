@@ -20,7 +20,8 @@ enum class NodeType {
     FunctionCall,
     FunctionCallArgumentList,
     FunctionDeclaration,
-    IfStatement,
+    LabeledStatement,
+    SelectionStatement,
     Node,
     Program,
     ReturnStatement,
@@ -431,17 +432,18 @@ struct VariableList : public Node
   std::vector<Node*> getChildren() override { std::vector<Node*> nodes; for(auto v : _variableDeclarations) nodes.push_back(v); return nodes;  }  
 };
 
-enum class IfStatementType
+enum class SelectionStatementType
 {
   If,
     Else,
     ElseIf,
+    Switch
 };
 
-struct IfStatement : public Statement
+struct SelectionStatement : public Statement
 {
  public:
-  IfStatement(IfStatementType ifType, Expression * conditional, Statement * statement)
+  SelectionStatement(SelectionStatementType ifType, Expression * conditional, Statement * statement)
     :_ifType(ifType)
     ,_conditional(conditional)
     ,_statement(statement)
@@ -453,12 +455,36 @@ struct IfStatement : public Statement
 	_statement->_parent = this;
     }
 
-  virtual ~IfStatement() {}
+  virtual ~SelectionStatement() {}
   void visit(Visitor * v) override;
-  NodeType getNodeType() override { return NodeType::IfStatement; }
+  NodeType getNodeType() override { return NodeType::SelectionStatement; }
 
-  IfStatementType _ifType;
+  SelectionStatementType _ifType;
   Expression * _conditional;
+  Statement * _statement;
+};
+
+enum class LabeledStatementType
+{
+  Case,
+    Default,
+};
+
+struct LabeledStatement : public Statement
+{
+  LabeledStatement(LabeledStatementType type, Expression * label, Statement * statement)
+    :_type(type)
+    ,_label(label)
+    ,_statement(statement)
+  {
+  }
+
+  virtual ~LabeledStatement() {}
+  void visit(Visitor * v) override;
+  NodeType getNodeType() override { return NodeType::LabeledStatement; }  
+
+  LabeledStatementType _type;
+  Expression *  _label;
   Statement * _statement;
 };
 

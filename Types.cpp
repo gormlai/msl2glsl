@@ -69,7 +69,12 @@ void FunctionDeclaration::visit(Visitor * v)
   v->operateOn(this);
 }
 
-void IfStatement::visit(Visitor * v)
+void LabeledStatement::visit(Visitor * v)
+{
+  v->operateOn(this);
+}
+
+void SelectionStatement::visit(Visitor * v)
 {
   v->operateOn(this);
 }
