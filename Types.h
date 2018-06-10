@@ -261,7 +261,8 @@ enum class UnaryType
     PostFixPlusPlus,
     PreFixMinusMinus,
     PostFixMinusMinus,
-    
+    Dereference,
+    TakeAddressOf,
     };
 
 struct UnaryExpression : public Expression
@@ -388,6 +389,7 @@ struct VariableDeclaration : public Statement
     None,
     Constant,
     Const,
+    Constexpr,
   };
     
  VariableDeclaration(Qualifier qualifier,

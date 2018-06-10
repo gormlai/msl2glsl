@@ -126,6 +126,7 @@ class Scanner;
 %token		      MINUS_MINUS
 %token	<qualifier>   CONSTANT
 %token	<qualifier>   CONST
+%token	<qualifier>   CONSTEXPR
 %token	<string>      HEX_VALUE
 %token	<string>      IDENTIFIER
 %token	<string>      DEFINE
@@ -226,6 +227,7 @@ buffer_descriptor:
 qualifier:
 		CONSTANT { $$ = VariableDeclaration::Qualifier::Constant; }
 	|	CONST { $$ = VariableDeclaration::Qualifier::Const; }
+	|	CONSTEXPR { $$ = VariableDeclaration::Qualifier::Constexpr; }
 	;
 
 reserved_token:
@@ -235,6 +237,7 @@ reserved_token:
 
 array_declaration:
 		BEGIN_SINGLE_SQUARE_BRACKET INT_VALUE END_SINGLE_SQUARE_BRACKET { $$ = $2; }
+	|	BEGIN_SINGLE_SQUARE_BRACKET END_SINGLE_SQUARE_BRACKET { $$ = -1; }
 	;
 
 variable_name_list: /* variable_name_list COMMA identifier { $$->push_back( new VariableNameDeclaration(*$3, 0)); }*/
@@ -369,6 +372,8 @@ expression1:
 		pre_postfix_expression        { $$ = $1; }
 	| 	function_call { $$ = $1; }
 	| 	MINUS expression1 { $$ = new UnaryExpression(UnaryType::Minus, $2); }
+	| 	AMPERSAND expression1 { $$ = new UnaryExpression(UnaryType::TakeAddressOf, $2); }
+	| 	STAR expression1 { $$ = new UnaryExpression(UnaryType::Dereference, $2); }
 ;
 
 compare_expression:

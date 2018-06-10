@@ -49,6 +49,7 @@ int lines = 1;
 "struct"                                   { return token::STRUCT;}
 "constant"                                 { return token::CONSTANT;}
 "const"                                    { return token::CONST;}
+"constexpr"                                { return token::CONSTEXPR;}
 "{"                                        { return token::BEGIN_CURLY_BRACKET; }
 "}"                                        { return token::END_CURLY_BRACKET; }
 "/"                                        { return token::FORWARD_SLASH; }
