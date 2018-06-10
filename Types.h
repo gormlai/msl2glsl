@@ -622,11 +622,18 @@ struct Assignment : public Expression
       
 };
 
+enum class JumpStatementType
+{
+  Return,
+    Break,
+    Continue,
+};
 
 struct JumpStatement : public Statement
 {
-  JumpStatement(Expression * e)
-    :_expression(e)
+ JumpStatement(JumpStatementType type, Expression * e)
+   :_type(type)
+   ,_expression(e)
   {
 	  if(_expression!=nullptr)
 	  _expression->_parent = this;
@@ -635,7 +642,8 @@ struct JumpStatement : public Statement
   virtual ~JumpStatement() {}
   void visit(Visitor * v) override;
   NodeType getNodeType() override { return NodeType::JumpStatement; }
-	
+
+  JumpStatementType _type;
   Expression * _expression;
   std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(_expression); return nodes; }      
 };

@@ -306,9 +306,11 @@ iteration_statement:
 	;
 
 jump_statement:
-		RETURN SEMICOLON { $$ = new JumpStatement(nullptr); }		
-	|	RETURN expression SEMICOLON { $$ = new JumpStatement($2); }		
-	;
+		RETURN SEMICOLON { $$ = new JumpStatement(JumpStatementType::Return, nullptr); }		
+	|	RETURN expression SEMICOLON { $$ = new JumpStatement(JumpStatementType::Return, $2); }		
+	|	CONTINUE SEMICOLON { $$ = new JumpStatement(JumpStatementType::Continue, nullptr); }
+	|	BREAK SEMICOLON { $$ = new JumpStatement(JumpStatementType::Break, nullptr); }
+		;
 
 define:
 		DEFINE { $$ = new Define(*$1); }
