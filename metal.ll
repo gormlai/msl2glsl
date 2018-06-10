@@ -43,6 +43,7 @@ int lines = 1;
 "continue"                                 { return token::CONTINUE; }
 "case"                                     { return token::CASE; }
 "fragment"                                 { return token::FRAGMENT; }
+"kernel"                                   { return token::KERNEL; }
 "vertex"                                   { return token::VERTEX; }
 "static"                                   { return token::STATIC; }
 "/*"                                       { Scanner::getInstance()->comment(lines); }

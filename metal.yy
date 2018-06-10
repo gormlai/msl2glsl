@@ -89,6 +89,7 @@ class Scanner;
 %token                STATIC
 %token                VERTEX
 %token                FRAGMENT
+%token                KERNEL
 %token 		      SKIP
 %token 		      STRUCT
 %token		      SEMICOLON
@@ -263,6 +264,7 @@ variable_list:  variable_list COMMA variable_declaration { $$->_variableDeclarat
 function_declaration : VERTEX identifier identifier BEGIN_BRACKET variable_list END_BRACKET compound_statement { $$ = new FunctionDeclaration(FunctionType::Vertex, *$2, *$3, $5, $7); }
 	| FRAGMENT identifier identifier BEGIN_BRACKET variable_list END_BRACKET compound_statement { $$ = new FunctionDeclaration(FunctionType::Fragment, *$2, *$3, $5, $7); }
 	| STATIC identifier identifier BEGIN_BRACKET variable_list END_BRACKET compound_statement { $$ = new FunctionDeclaration(FunctionType::Utility, *$2, *$3, $5, $7); }
+	| KERNEL identifier identifier BEGIN_BRACKET variable_list END_BRACKET compound_statement { $$ = new FunctionDeclaration(FunctionType::Kernel, *$2, *$3, $5, $7); }
 		| identifier identifier BEGIN_BRACKET variable_list END_BRACKET compound_statement { $$ = new FunctionDeclaration(FunctionType::Utility, *$1, *$2, $4, $6); }
 		;
 

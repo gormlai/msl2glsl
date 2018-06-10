@@ -39,6 +39,7 @@ enum class FunctionType {
     Vertex,
     Fragment,
     Compute,
+    Kernel,
 };
 
 
