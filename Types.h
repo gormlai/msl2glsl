@@ -334,6 +334,7 @@ enum class BinaryOperator
     RightShift,
     Index,
     XOr,
+    Modulo,
 };
 
 struct BinaryExpression : public Expression
@@ -600,6 +601,7 @@ enum class AssignOperator {
     And,
     XOr,
     Or,
+    Modulo,
 };
 
 

@@ -64,6 +64,7 @@ int lines = 1;
 "+="                                       { return token::ASSIGN_PLUS; }
 "-="                                       { return token::ASSIGN_MINUS; }
 "*="                                       { return token::ASSIGN_MULTIPLY; }
+"%="                                       { return token::ASSIGN_MODULO; }
 "/="                                       { return token::ASSIGN_DIVIDE; }
 "^="                                       { return token::ASSIGN_XOR; }
 "&="                                       { return token::ASSIGN_AND; }
@@ -76,6 +77,7 @@ int lines = 1;
 "+"                                        { return token::PLUS; }
 "-"                                        { return token::MINUS; }
 "*"                                        { return token::STAR; }
+"%"                                        { return token::PERCENT; }
 "|"                                        { return token::PIPE; }
 "^"                                        { return token::HAT; }
 "||"                                       { return token::DOUBLE_PIPE; }

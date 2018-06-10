@@ -102,6 +102,7 @@ class Scanner;
 %token                ASSIGN_PLUS
 %token                ASSIGN_MINUS
 %token                ASSIGN_MULTIPLY
+%token                ASSIGN_MODULO
 %token                ASSIGN_DIVIDE
 %token                ASSIGN_XOR
 %token                ASSIGN_OR
@@ -109,6 +110,7 @@ class Scanner;
 %token                PLUS
 %token                MINUS
 %token                STAR
+%token                PERCENT
 %token                AMPERSAND
 %token                PIPE
 %token                HAT
@@ -273,6 +275,7 @@ assign_operator:
 	|	ASSIGN_PLUS { $$ = AssignOperator::Plus; }
 	|	ASSIGN_MINUS { $$ = AssignOperator::Minus; }
 	|	ASSIGN_MULTIPLY { $$ = AssignOperator::Multiply; }
+	|	ASSIGN_MODULO { $$ = AssignOperator::Modulo; }
 	|	ASSIGN_DIVIDE { $$ = AssignOperator::Divide; }
 	|	ASSIGN_XOR { $$ = AssignOperator::XOr; }
 	|	ASSIGN_OR { $$ = AssignOperator::Or; }
@@ -401,6 +404,7 @@ binary_operator:
 	|	LEFT_SHIFT { $$ = BinaryOperator::LeftShift; }
 	|	RIGHT_SHIFT { $$ = BinaryOperator::RightShift; }
 	|	STAR { $$ = BinaryOperator::Multiply; }
+	|	PERCENT { $$ = BinaryOperator::Modulo; }
 	|	FORWARD_SLASH { $$ = BinaryOperator::Divide; }
 	|	DOT { $$ = BinaryOperator::Dot; }
 	|	POINTER { $$ = BinaryOperator::Pointer; }
