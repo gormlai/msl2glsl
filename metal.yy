@@ -308,7 +308,7 @@ init_statement:
 	;
 
 iteration_statement:
-		FOR BEGIN_BRACKET expression_statement expression_statement END_BRACKET statement { $$ = new ForLoop($3, $4, nullptr, $6); }
+		FOR BEGIN_BRACKET init_statement expression_statement END_BRACKET statement { $$ = new ForLoop($3, $4, nullptr, $6); }
  	|	FOR BEGIN_BRACKET init_statement expression_statement expression END_BRACKET statement { $$ = new ForLoop($3, $4, $5, $7); }
 		
 	;
