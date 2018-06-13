@@ -181,6 +181,7 @@ class Scanner;
 %type	<variableList> variable_list
 %type	<reservedToken>	 reserved_token
 %type	<bufferDescriptor> buffer_descriptor
+%type	<expression>   array_declaration
 %type	<expression>   expression
 %type	<expression>   expression1
 %type	<expression>   binary_expression
@@ -194,7 +195,6 @@ class Scanner;
 %type	<functionCall>   function_call
 %type	<functionCallArgumentList> function_argument_list
 %type	<variableNameList> variable_name_list
-%type	<intValue>     array_declaration
 %type	<assignOperator> assign_operator
 %type	<binaryOperator> binary_operator
 %locations
@@ -239,13 +239,13 @@ reserved_token:
 	;
 
 array_declaration:
-		BEGIN_SINGLE_SQUARE_BRACKET INT_VALUE END_SINGLE_SQUARE_BRACKET { $$ = $2; }
-	|	BEGIN_SINGLE_SQUARE_BRACKET END_SINGLE_SQUARE_BRACKET { $$ = -1; }
+		BEGIN_SINGLE_SQUARE_BRACKET expression END_SINGLE_SQUARE_BRACKET { $$ = $2; }
+|	BEGIN_SINGLE_SQUARE_BRACKET END_SINGLE_SQUARE_BRACKET { $$ = new ConstantExpression(ConstantType::Int, -1); }
 	;
 
 variable_name_list: /* variable_name_list COMMA identifier { $$->push_back( new VariableNameDeclaration(*$3, 0)); }*/
 		identifier array_declaration { $$ = new std::vector<VariableNameDeclaration * >(); $$->push_back(new VariableNameDeclaration(*$1, $2)); }
-|		identifier { $$ = new std::vector<VariableNameDeclaration * >(); $$->push_back(new VariableNameDeclaration(*$1, 0)); }
+|		identifier { $$ = new std::vector<VariableNameDeclaration * >(); $$->push_back(new VariableNameDeclaration(*$1, nullptr)); }
 		;
 
 variable_declaration:

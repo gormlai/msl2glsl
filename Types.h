@@ -680,13 +680,13 @@ struct SelectExpression : public Expression
 
 struct VariableNameDeclaration : public Node
 {
-  VariableNameDeclaration(const std::string & variableName, int arraySize)
+  VariableNameDeclaration(const std::string & variableName, Expression * expressionInBrackets)
     :_variableName(variableName)
-    ,_arraySize(arraySize) {
+    ,_expressionInBrackets(expressionInBrackets) {
   }
   
   std::string _variableName;
-  int _arraySize;
+  Expression * _expressionInBrackets;
 };
 
 

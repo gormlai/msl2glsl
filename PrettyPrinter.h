@@ -3,6 +3,7 @@
 
 #include "Visitor.h"
 #include <string>
+#include <vector>
 
 class PrettyPrinter : public Visitor
 {
@@ -34,6 +35,9 @@ class PrettyPrinter : public Visitor
   
  private:
   void indent();
+  void arrayNumToString(Expression * e);
+  void toCommaSeparatedList(const std::vector<struct VariableNameDeclaration *> & input);
+  
   
   std::string _result;
   int _indent;

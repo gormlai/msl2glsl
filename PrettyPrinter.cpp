@@ -4,25 +4,26 @@
 namespace
 {
 
-  std::string arrayNumToString(const int arraySize) {
-    if(arraySize == 0 )
-      return std::string("");
-    else
-      return std::string("[") + std::to_string(arraySize) + std::string("]");
-  }
+}
+
+void PrettyPrinter::arrayNumToString(Expression * e) {
+    _result = _result + std::string("[");
+    if(e != nullptr)
+      e->visit(this);
+    _result = _result + std::string("]");
+}
   
-  std::string toCommaSeparatedList(const std::vector<VariableNameDeclaration *> & input)
-  {
-    std::string result;
-    for(unsigned int i=0 ; i < (unsigned int)input.size() ; i++) {
-      VariableNameDeclaration * vDecl = input[i];
-      result = result + vDecl->_variableName + arrayNumToString(vDecl->_arraySize);
-      if(i != input.size()-1)
-	result = result + ", ";
-    }
-    return result;
+void PrettyPrinter::toCommaSeparatedList(const std::vector<VariableNameDeclaration *> & input)
+{
+  for(unsigned int i=0 ; i < (unsigned int)input.size() ; i++) {    
+    VariableNameDeclaration * vDecl = input[i];
+    _result = _result + vDecl->_variableName;
+    arrayNumToString(vDecl->_expressionInBrackets);
+    if(i != input.size()-1)
+      _result = _result + ", ";
   }
 }
+
 
 void PrettyPrinter::indent()
 {
@@ -373,7 +374,8 @@ void PrettyPrinter::operateOn(struct VariableDeclaration * node)
 		break;
 	}
 
-	_result = _result + sToken + " " + toCommaSeparatedList(node->_variableNames);
+	_result = _result + sToken + " ";
+	toCommaSeparatedList(node->_variableNames);
 
 	if (node->_attribute != nullptr)
 		node->_attribute->visit(this);
