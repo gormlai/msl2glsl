@@ -65,18 +65,19 @@ public:
 struct VariableAttribute : public Node
 {
  public:
-  VariableAttribute(const std::string & sAttribute, int iAttribute = -1 )
+  VariableAttribute(const std::string & sAttribute, struct Expression * eAttribute = nullptr )
     :_sAttribute(sAttribute)
-    ,_iAttribute(iAttribute)
+    ,_eAttribute(eAttribute)
     {
     }
 
   virtual ~VariableAttribute() {}
+  
   void visit(Visitor *v) override;
   NodeType getNodeType() override { return NodeType::VariableAttribute; }
 
   std::string _sAttribute;
-  int _iAttribute;
+  Expression * _eAttribute;
 };
 
 struct Statement : public Node

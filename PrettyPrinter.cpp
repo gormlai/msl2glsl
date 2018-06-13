@@ -326,18 +326,24 @@ void PrettyPrinter::operateOn(struct VariableAttribute * attribute)
 {
 	_result = _result + " [[";
 
+	auto innerAttribute = [&,this](const std::string & sAttribute) {
+	  _result = _result + sAttribute;
+	  attribute->_eAttribute->visit(this);
+	  _result = + ")";
+	};
+	
 	if (attribute->_sAttribute == std::string("attribute"))
-		_result = _result + "attribute(" + std::to_string(attribute->_iAttribute) + ")";
+	  innerAttribute(attribute->_sAttribute);	
 	else if (attribute->_sAttribute == std::string("position"))
-		_result = _result + "position";
+	  _result = _result + "position";
 	else if (attribute->_sAttribute == std::string("stage_in"))
-		_result = _result + "stage_in";
+	  _result = _result + "stage_in";
 	else if (attribute->_sAttribute == std::string("buffer"))
-		_result = _result + "buffer(" + std::to_string(attribute->_iAttribute) + ")";
+	  innerAttribute(attribute->_sAttribute);	
 	else if (attribute->_sAttribute == std::string("texture"))
-		_result = _result + "texture(" + std::to_string(attribute->_iAttribute) + ")";
+	  innerAttribute(attribute->_sAttribute);	
 	else if (attribute->_sAttribute == std::string("sampler"))
-		_result = _result + "sampler(" + std::to_string(attribute->_iAttribute) + ")";
+	  innerAttribute(attribute->_sAttribute);	
 
 	_result = _result + "]]";
 }

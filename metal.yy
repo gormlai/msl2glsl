@@ -219,7 +219,7 @@ compound_statement: 	BEGIN_CURLY_BRACKET END_CURLY_BRACKET { $$ = new Block(); }
 
 variable_attribute: /* empty */ { $$ = nullptr; }
 
-	|	BEGIN_DOUBLE_SQUARE_BRACKET identifier BEGIN_BRACKET INT_VALUE END_BRACKET END_DOUBLE_SQUARE_BRACKET { $$ = new VariableAttribute(*$2,$4); }
+	|	BEGIN_DOUBLE_SQUARE_BRACKET identifier BEGIN_BRACKET constant END_BRACKET END_DOUBLE_SQUARE_BRACKET { $$ = new VariableAttribute(*$2,$4); }
 	|	BEGIN_DOUBLE_SQUARE_BRACKET identifier END_DOUBLE_SQUARE_BRACKET { $$ = new VariableAttribute(*$2); }	
 	;
 
