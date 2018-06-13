@@ -225,7 +225,8 @@ variable_attribute: /* empty */ { $$ = nullptr; }
 	;
 
 buffer_descriptor:
-		      LESS_THAN identifier COMMA ACCESS DOUBLE_COLON identifier GREATER_THAN { $$ = new BufferDescriptor(*$2, *$6); }
+		LESS_THAN identifier COMMA ACCESS DOUBLE_COLON identifier GREATER_THAN { $$ = new BufferDescriptor(*$2, *$6); }
+	|	LESS_THAN identifier GREATER_THAN { $$ = new BufferDescriptor(*$2, ""); }
 	;
 
 qualifier:
