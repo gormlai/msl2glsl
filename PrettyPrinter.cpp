@@ -74,12 +74,14 @@ void PrettyPrinter::operateOn(struct BinaryExpression * desc)
 		">>",
 		"[",
 		"^",
+		"%",
 	};
 
 	if(desc->_op == BinaryOperator::Cast)
 	  _result = _result + "(";
 
 	desc->_left->visit(this);
+	printf("op = %d\n", (int)desc->_op);
 	_result = _result + ops[(int)desc->_op];
 	desc->_right->visit(this);
 
