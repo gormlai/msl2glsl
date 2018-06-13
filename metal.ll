@@ -51,6 +51,7 @@ int lines = 1;
 "constant"                                 { return token::CONSTANT;}
 "const"                                    { return token::CONST;}
 "constexpr"                                { return token::CONSTEXPR;}
+"device"                                   { return token::DEVICE;}
 "{"                                        { return token::BEGIN_CURLY_BRACKET; }
 "}"                                        { return token::END_CURLY_BRACKET; }
 "/"                                        { return token::FORWARD_SLASH; }

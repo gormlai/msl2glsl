@@ -390,9 +390,10 @@ struct VariableDeclaration : public Statement
   enum class Qualifier
   {
     None,
-    Constant,
-    Const,
-    Constexpr,
+      Constant,
+      Const,
+      Constexpr,
+      Device,
   };
     
  VariableDeclaration(Qualifier qualifier,

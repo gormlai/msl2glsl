@@ -130,6 +130,7 @@ class Scanner;
 %token	<qualifier>   CONSTANT
 %token	<qualifier>   CONST
 %token	<qualifier>   CONSTEXPR
+%token	<qualifier>   DEVICE
 %token	<string>      HEX_VALUE
 %token	<string>      IDENTIFIER
 %token	<string>      DEFINE
@@ -231,6 +232,7 @@ qualifier:
 		CONSTANT { $$ = VariableDeclaration::Qualifier::Constant; }
 	|	CONST { $$ = VariableDeclaration::Qualifier::Const; }
 	|	CONSTEXPR { $$ = VariableDeclaration::Qualifier::Constexpr; }
+	|	DEVICE { $$ = VariableDeclaration::Qualifier::Device; }
 	;
 
 reserved_token:
