@@ -14,6 +14,7 @@ enum class NodeType {
     BufferDescriptor,
     CompareExpression,
     ConstantExpression,
+    DeclarationSpecifier,
     Define,
     Expression,
     ForLoop,
@@ -27,6 +28,7 @@ enum class NodeType {
     JumpStatement,
     Statement,
     Struct,
+    TypeDeclaration,
     UnaryExpression,
     UsingDeclaration,
     VariableAttribute,
@@ -78,6 +80,46 @@ struct VariableAttribute : public Node
 
   std::string _sAttribute;
   Expression * _eAttribute;
+};
+
+struct DeclarationSpecifier : public Node
+{
+ public:
+ DeclarationSpecifier()
+   {
+   }
+  
+ virtual ~DeclarationSpecifier() {}
+ void visit(Visitor * v) override;
+ NodeType getNodeType() override { return NodeType::DeclarationSpecifier; }  
+};
+
+enum class ETypeDeclaration
+{
+  Int,
+    UnsignedInt,
+    Bool,
+    Float,
+    Double,
+    Half,
+    Custom,
+};
+
+struct TypeDeclaration : public DeclarationSpecifier
+{
+ public:
+ TypeDeclaration(ETypeDeclaration type, const std::string customName = "")
+   :_type(type)
+    ,_customName(customName)
+    {
+    }
+
+  virtual ~TypeDeclaration() {}
+  void visit(Visitor * v) override;
+  NodeType getNodeType() override { return NodeType::TypeDeclaration; }  
+
+    ETypeDeclaration _type;
+    std::string _customName;
 };
 
 struct Statement : public Node

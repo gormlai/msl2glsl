@@ -44,6 +44,11 @@ void Define::visit(Visitor * v)
   v->operateOn(this);
 }
 
+void DeclarationSpecifier::visit(Visitor * v)
+{
+  v->operateOn(this);
+}
+
 void Expression::visit(Visitor * v)
 {
   v->operateOn(this);
@@ -118,7 +123,10 @@ void Struct::visit(Visitor * v)
   v->operateOn(this);
 }
 
-
+void TypeDeclaration::visit(Visitor *v)
+{
+  v->operateOn(this);
+}
 
 void UnaryExpression::visit(Visitor * v)
 {

@@ -70,6 +70,9 @@ class Scanner;
     std::vector<VariableNameDeclaration* > * variableNameList;
     AssignOperator assignOperator;
     BinaryOperator binaryOperator;
+    TypeDeclaration * typeDeclaration;
+    Node * basic;
+    DeclarationSpecifier * declarationSpecifier;
 }
 			  
 %token		      TYPE_BOOL		      
@@ -198,6 +201,8 @@ class Scanner;
 %type	<variableNameList> variable_name_list
 %type	<assignOperator> assign_operator
 %type	<binaryOperator> binary_operator
+%type	<typeDeclaration> type_declaration
+%type	<declarationSpecifier> declaration_specifier
 %locations
 
 %%
@@ -250,6 +255,14 @@ variable_name_list: /* variable_name_list COMMA identifier { $$->push_back( new 
 		identifier array_declaration { $$ = new std::vector<VariableNameDeclaration * >(); $$->push_back(new VariableNameDeclaration(*$1, $2)); }
 |		identifier { $$ = new std::vector<VariableNameDeclaration * >(); $$->push_back(new VariableNameDeclaration(*$1, nullptr)); }
 		;
+
+
+type_declaration:
+		
+	;
+declaration_specifier:
+		type_declaration { $$ = $1; }
+	;
 
 variable_declaration:
 	qualifier identifier reserved_token variable_name_list variable_attribute { $$ = new VariableDeclaration($1, *$2, nullptr, $3, *$4, $5); }
