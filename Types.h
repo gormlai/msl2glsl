@@ -29,7 +29,7 @@ enum class NodeType {
     JumpStatement,
     Statement,
     Struct,
-    TypeDeclaration,
+    TypeSpecifier,
     UnaryExpression,
     UsingDeclaration,
     VariableAttribute,
@@ -57,7 +57,7 @@ public:
   
   virtual ~Node() {}
   virtual void visit(Visitor * v);
-  virtual NodeType getNodeType() { return NodeType::Node; }
+  virtual NodeType getNodeType() const { return NodeType::Node; }
   Node * getParent() { return _parent; }
   virtual std::vector<Node*> getChildren() { return std::vector<Node*>(); }
 
@@ -77,7 +77,7 @@ struct VariableAttribute : public Node
   virtual ~VariableAttribute() {}
   
   void visit(Visitor *v) override;
-  NodeType getNodeType() override { return NodeType::VariableAttribute; }
+  NodeType getNodeType() const override { return NodeType::VariableAttribute; }
 
   std::string _sAttribute;
   Expression * _eAttribute;
@@ -92,7 +92,7 @@ struct DeclarationSpecifier : public Node
   
  virtual ~DeclarationSpecifier() {}
  void visit(Visitor * v) override;
- NodeType getNodeType() override { return NodeType::DeclarationSpecifier; }  
+ NodeType getNodeType() const override { return NodeType::DeclarationSpecifier; }  
 };
 
 struct DeclarationSpecifierList : public Node
@@ -104,12 +104,12 @@ struct DeclarationSpecifierList : public Node
   
  virtual ~DeclarationSpecifierList() {}
  void visit(Visitor * v) override;
- NodeType getNodeType() override { return NodeType::DeclarationSpecifierList; }
+ NodeType getNodeType() const override { return NodeType::DeclarationSpecifierList; }
 
  std::vector<DeclarationSpecifier*> _specifiers;
 };
 
-enum class ETypeDeclaration
+enum class ETypeSpecifier
 {
   Int,
     UnsignedInt,
@@ -120,21 +120,21 @@ enum class ETypeDeclaration
     Custom,
 };
 
-struct TypeDeclaration : public DeclarationSpecifier
+struct TypeSpecifier : public DeclarationSpecifier
 {
  public:
- TypeDeclaration(ETypeDeclaration type, const std::string customName = "")
+ TypeSpecifier(ETypeSpecifier type, const std::string customTypeName = "")
    :_type(type)
-    ,_customName(customName)
+    ,_customTypeName(customTypeName)
     {
     }
 
-  virtual ~TypeDeclaration() {}
+  virtual ~TypeSpecifier() {}
   void visit(Visitor * v) override;
-  NodeType getNodeType() override { return NodeType::TypeDeclaration; }  
+  NodeType getNodeType() const override { return NodeType::TypeSpecifier; }  
 
-    ETypeDeclaration _type;
-    std::string _customName;
+  ETypeSpecifier _type;
+  std::string _customTypeName;
 };
 
 struct Statement : public Node
@@ -142,7 +142,7 @@ struct Statement : public Node
  public:
   virtual ~Statement() {}
   void visit(Visitor * v) override;
-  NodeType getNodeType() override { return NodeType::Statement; }
+  NodeType getNodeType() const override { return NodeType::Statement; }
 };
 
 struct Block : public Statement
@@ -150,7 +150,7 @@ struct Block : public Statement
  public:
   virtual ~Block() {}
   void visit(Visitor * v) override;
-  NodeType getNodeType() override { return NodeType::Block; }
+  NodeType getNodeType() const override { return NodeType::Block; }
   std::vector<Node*> getChildren() override { return _nodes; }
 
   std::vector<Node *> _nodes;
@@ -165,7 +165,7 @@ struct Program : public Block
   }
   
   void visit(Visitor * v) override;
-  NodeType getNodeType() override { return NodeType::Program; }
+  NodeType getNodeType() const override { return NodeType::Program; }
 };
 
 struct Define : public Statement
@@ -179,7 +179,7 @@ struct Define : public Statement
   virtual ~Define() {}
 
   void visit(Visitor * v) override;
-  NodeType getNodeType() override { return NodeType::Define; }
+  NodeType getNodeType() const override { return NodeType::Define; }
 
   std::string _definition;  
 };
@@ -195,7 +195,7 @@ struct UsingDeclaration : public Statement
   
   virtual ~UsingDeclaration() {}
   void visit(Visitor * v) override;
-  NodeType getNodeType() override { return NodeType::UsingDeclaration; }
+  NodeType getNodeType() const override { return NodeType::UsingDeclaration; }
 
   std::string _nmspace;
 };
@@ -210,7 +210,7 @@ struct Struct : public Statement
 
   virtual ~Struct() {}
   void visit(Visitor * v) override;
-  NodeType getNodeType() override { return NodeType::Struct; }
+  NodeType getNodeType() const override { return NodeType::Struct; }
   std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(&_block); return nodes; }
 
   std::vector<struct VariableDeclaration*> getVariables() const;
@@ -229,7 +229,7 @@ public:
 
   virtual ~BufferDescriptor() {}
   void visit(Visitor * v) override;
-  NodeType getNodeType() override { return NodeType::BufferDescriptor; }
+  NodeType getNodeType() const override { return NodeType::BufferDescriptor; }
   
   std::string _type;
   std::string _accessor;
@@ -242,7 +242,7 @@ struct Expression : public Statement
   Expression() {}
   virtual ~Expression() {}
   void visit(Visitor * v) override;
-  NodeType getNodeType() override { return NodeType::Expression; }
+  NodeType getNodeType() const override { return NodeType::Expression; }
 
 };
 
@@ -297,7 +297,7 @@ public:
 	ConstantExpression() {}
 	virtual ~ConstantExpression() {}
 	void visit(Visitor * v) override;
-	NodeType getNodeType() override { return NodeType::ConstantExpression; }
+	NodeType getNodeType() const override { return NodeType::ConstantExpression; }
 
 	ConstantType _type;
 
@@ -336,7 +336,7 @@ public:
 
 	virtual ~UnaryExpression() {}
 	void visit(Visitor * v) override;
-	NodeType getNodeType() override { return NodeType::UnaryExpression; }
+	NodeType getNodeType() const override { return NodeType::UnaryExpression; }
 
 	UnaryType _type;
 	Expression * _expression;
@@ -367,7 +367,7 @@ struct CompareExpression : public Expression
 
   virtual ~CompareExpression() {}
   void visit(Visitor * v) override;
-  NodeType getNodeType() override { return NodeType::CompareExpression; }
+  NodeType getNodeType() const override { return NodeType::CompareExpression; }
   std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(_left); nodes.push_back(_right);  return nodes; }
   Expression * _left;
   Expression * _right;
@@ -409,7 +409,7 @@ struct BinaryExpression : public Expression
 
   virtual ~BinaryExpression() {}
   void visit(Visitor * v) override;
-  NodeType getNodeType() override { return NodeType::BinaryExpression; }
+  NodeType getNodeType() const override { return NodeType::BinaryExpression; }
   std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(_left); nodes.push_back(_right);  return nodes; }
   Expression * _left;
   Expression * _right;
@@ -454,12 +454,12 @@ struct VariableDeclaration : public Statement
   };
     
  VariableDeclaration(Qualifier qualifier,
-		     const std::string & type,
+		     DeclarationSpecifierList * declarationSpecifiers,
 		     BufferDescriptor * bufferDescriptor,
 		     const ReservedToken reservedToken,
 		     const std::vector<struct VariableNameDeclaration*> & variableNames,
 		     VariableAttribute * attribute = nullptr)
-    :_type(type)
+   :_declarationSpecifiers(declarationSpecifiers)
     ,_variableNames(variableNames)
     ,_attribute(attribute)
     ,_qualifier(qualifier)
@@ -467,16 +467,19 @@ struct VariableDeclaration : public Statement
     ,_bufferDescriptor(bufferDescriptor)
   {
 	 if (attribute != nullptr)
-		 attribute->_parent = this;
+	   attribute->_parent = this;
 
 	 if (bufferDescriptor != nullptr)
-		 bufferDescriptor->_parent = this;
+	   bufferDescriptor->_parent = this;
+
+	 if (declarationSpecifiers != nullptr)
+	   declarationSpecifiers->_parent = this;
   }
   
   void visit(Visitor * v) override;
-  NodeType getNodeType() override { return NodeType::VariableDeclaration; }
-  
-  std::string _type;
+  NodeType getNodeType() const override { return NodeType::VariableDeclaration; }
+
+  DeclarationSpecifierList * _declarationSpecifiers;
   std::vector<VariableNameDeclaration*> _variableNames;
   VariableAttribute * _attribute;
   Qualifier _qualifier;
@@ -489,7 +492,7 @@ struct VariableList : public Node
  public:
   virtual ~VariableList() {}
   void visit(Visitor * v) override;
-  NodeType getNodeType() override { return NodeType::VariableList; }
+  NodeType getNodeType() const override { return NodeType::VariableList; }
   
   std::vector<VariableDeclaration *> _variableDeclarations;
   std::vector<Node*> getChildren() override { std::vector<Node*> nodes; for(auto v : _variableDeclarations) nodes.push_back(v); return nodes;  }  
@@ -520,7 +523,7 @@ struct SelectionStatement : public Statement
 
   virtual ~SelectionStatement() {}
   void visit(Visitor * v) override;
-  NodeType getNodeType() override { return NodeType::SelectionStatement; }
+  NodeType getNodeType() const override { return NodeType::SelectionStatement; }
 
   SelectionStatementType _ifType;
   Expression * _conditional;
@@ -544,7 +547,7 @@ struct LabeledStatement : public Statement
 
   virtual ~LabeledStatement() {}
   void visit(Visitor * v) override;
-  NodeType getNodeType() override { return NodeType::LabeledStatement; }  
+  NodeType getNodeType() const override { return NodeType::LabeledStatement; }  
 
   LabeledStatementType _type;
   Expression *  _label;
@@ -575,7 +578,7 @@ struct ForLoop : public Statement
 
   virtual ~ForLoop() {}
   void visit(Visitor * v) override;
-  NodeType getNodeType() override { return NodeType::ForLoop; }
+  NodeType getNodeType() const override { return NodeType::ForLoop; }
   
   Node * _variableDeclarations;
   Node * _conditionals;
@@ -603,7 +606,7 @@ struct FunctionDeclaration : public Statement
 		      
   virtual ~FunctionDeclaration() {}
   void visit(Visitor * v) override;
-  NodeType getNodeType() override { return NodeType::FunctionDeclaration; }
+  NodeType getNodeType() const override { return NodeType::FunctionDeclaration; }
   std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(_block); return nodes; }  
 
   FunctionType _functionType;
@@ -624,7 +627,7 @@ public:
 
 	virtual ~FunctionCallArgumentList() {}
 	void visit(Visitor * v) override;
-	NodeType getNodeType() override { return NodeType::FunctionCallArgumentList; }
+	NodeType getNodeType() const override { return NodeType::FunctionCallArgumentList; }
 
 	std::vector<Expression *> _expressions;
 	std::vector<Node*> getChildren() override { std::vector<Node*> nodes; for(auto v : _expressions) nodes.push_back(v); return nodes; }
@@ -643,7 +646,7 @@ struct FunctionCall : public Expression
 
 	virtual ~FunctionCall() {}
 	void visit(Visitor * v) override;
-	NodeType getNodeType() override { return NodeType::FunctionCall; }
+	NodeType getNodeType() const override { return NodeType::FunctionCall; }
 
 	std::string _name;
 	FunctionCallArgumentList * _arguments;
@@ -677,7 +680,7 @@ struct Assignment : public Expression
 
   virtual ~Assignment() {}
   void visit(Visitor * v) override;
-  NodeType getNodeType() override { return NodeType::Assignment; }
+  NodeType getNodeType() const override { return NodeType::Assignment; }
   std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(_left); nodes.push_back(_right); return nodes; }
   
   Node * _left;
@@ -705,7 +708,7 @@ struct JumpStatement : public Statement
 
   virtual ~JumpStatement() {}
   void visit(Visitor * v) override;
-  NodeType getNodeType() override { return NodeType::JumpStatement; }
+  NodeType getNodeType() const override { return NodeType::JumpStatement; }
 
   JumpStatementType _type;
   Expression * _expression;

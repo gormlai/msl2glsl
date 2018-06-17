@@ -70,7 +70,7 @@ class Scanner;
     std::vector<VariableNameDeclaration* > * variableNameList;
     AssignOperator assignOperator;
     BinaryOperator binaryOperator;
-    TypeDeclaration * typeDeclaration;
+    TypeSpecifier * typeSpecifier;
     Node * basic;
     DeclarationSpecifier * declarationSpecifier;
     DeclarationSpecifierList * declarationSpecifierList;
@@ -203,7 +203,7 @@ class Scanner;
 %type	<variableNameList> variable_name_list
 %type	<assignOperator> assign_operator
 %type	<binaryOperator> binary_operator
-%type	<typeDeclaration> type_declaration
+%type	<typeSpecifier> type_specifier
 %type	<declarationSpecifier> declaration_specifier
 %type	<declarationSpecifierList> declaration_specifier_list
 %locations
@@ -260,30 +260,30 @@ variable_name_list: /* variable_name_list COMMA identifier { $$->push_back( new 
 		;
 
 
-type_declaration:
+type_specifier:
 		TYPE_INT { $$ = new TypeSpecifier(ETypeSpecifier::Int); }
 	|	IDENTIFIER { $$ = new TypeSpecifier(ETypeSpecifier::Custom, *$1); }
 		
 	;
 
 declaration_specifier:
-		type_declaration { $$ = $1; }
+		type_specifier { $$ = $1; }
 	;
 
-declaration_specifier_list:  declaration_specifier_list declaration_specifier { $$->_variableDeclarations.push_back($2); $2->_parent = $$; }
-	|	declaration_specifier { $$ = new DeclarationSpecifierList() ;  $$->_variableDeclarations.push_back($1); $1->_parent = $$; }
+declaration_specifier_list:  declaration_specifier_list declaration_specifier { $$->_specifiers.push_back($2); $2->_parent = $$; }
+	|	declaration_specifier { $$ = new DeclarationSpecifierList() ;  $$->_specifiers.push_back($1); $1->_parent = $$; }
 		;
 
 
 variable_declaration:
-	qualifier identifier reserved_token variable_name_list variable_attribute { $$ = new VariableDeclaration($1, *$2, nullptr, $3, *$4, $5); }
-|	identifier variable_name_list variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, nullptr, ReservedToken::None, *$2, $3); }
-|	qualifier identifier variable_name_list variable_attribute { $$ = new VariableDeclaration($1, *$2, nullptr, ReservedToken::None, *$3, $4); }
-|	identifier reserved_token variable_name_list variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, nullptr, $2, *$3, $4); }
-|	qualifier identifier buffer_descriptor reserved_token variable_name_list variable_attribute { $$ = new VariableDeclaration($1, *$2, $3, $4, *$5, $6); }
-|	identifier buffer_descriptor variable_name_list variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, $2, ReservedToken::None, *$3, $4); }
-|	qualifier identifier buffer_descriptor variable_name_list variable_attribute { $$ = new VariableDeclaration($1, *$2, $3, ReservedToken::None, *$4, $5); }
-|	identifier buffer_descriptor reserved_token variable_name_list variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, *$1, $2, $3, *$4, $5); }
+	qualifier declaration_specifier_list reserved_token variable_name_list variable_attribute { $$ = new VariableDeclaration($1, $2, nullptr, $3, *$4, $5); }
+|	declaration_specifier_list variable_name_list variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, $1, nullptr, ReservedToken::None, *$2, $3); }
+|	qualifier declaration_specifier_list variable_name_list variable_attribute { $$ = new VariableDeclaration($1, $2, nullptr, ReservedToken::None, *$3, $4); }
+|	declaration_specifier_list reserved_token variable_name_list variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, $1, nullptr, $2, *$3, $4); }
+|	qualifier declaration_specifier_list buffer_descriptor reserved_token variable_name_list variable_attribute { $$ = new VariableDeclaration($1, $2, $3, $4, *$5, $6); }
+|	declaration_specifier_list buffer_descriptor variable_name_list variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, $1, $2, ReservedToken::None, *$3, $4); }
+|	qualifier declaration_specifier_list buffer_descriptor variable_name_list variable_attribute { $$ = new VariableDeclaration($1, $2, $3, ReservedToken::None, *$4, $5); }
+|	declaration_specifier_list buffer_descriptor reserved_token variable_name_list variable_attribute { $$ = new VariableDeclaration(VariableDeclaration::Qualifier::None, $1, $2, $3, *$4, $5); }
 		;
 
 variable_list:  variable_list COMMA variable_declaration { $$->_variableDeclarations.push_back($3); $3->_parent = $$; }

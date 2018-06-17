@@ -361,7 +361,8 @@ void PrettyPrinter::operateOn(struct VariableDeclaration * node)
 		break;
 	}
 
-	_result = _result + node->_type;
+	if(node->_declarationSpecifiers != nullptr)
+	  node->_declarationSpecifiers->visit(this);
 
 	if (node->_bufferDescriptor != nullptr)
 		node->_bufferDescriptor->visit(this);

@@ -72,19 +72,73 @@ std::string Transpiler::mapStructMember(const std::string & possibleStructMember
   return it->second;
 }
 
-std::string Transpiler::mapToGLType(VariableDeclaration * vDecl) const
+std::string Transpiler::mapToGLType(const VariableDeclaration * vDecl) const
 {
+  DeclarationSpecifierList * declList = vDecl->_declarationSpecifiers;
   std::string result;
 
-  std::string type = vDecl->_type;
-  const BufferDescriptor * bufDesc = vDecl->_bufferDescriptor;
+  if(declList != nullptr)
+    result = result + mapToGLType(declList, vDecl->_bufferDescriptor);
+
+  return result;
+}
+
+std::string Transpiler::mapToGLType(const DeclarationSpecifierList * declSpecList, const BufferDescriptor * bufDesc) const
+{
+  std::string result;
+  if(declSpecList != nullptr) {
+    
+    for(const DeclarationSpecifier * declSpec : declSpecList->_specifiers)
+      result = result + mapToGLType(declSpec, bufDesc);
+
+  }
+
+  return result;
+}
+
+std::string Transpiler::mapToGLType(const DeclarationSpecifier * declSpec, const BufferDescriptor * bufDesc) const
+{
+  std::string result = "Unknown DeclarationSpecifier";
+  switch(declSpec->getNodeType())
+    {
+    case NodeType::TypeSpecifier:
+      result = mapToGLType(static_cast<const TypeSpecifier*>(declSpec), bufDesc);
+      break;
+    default:
+      break;
+  }
+
+  return result;
+
+}
+
+std::string Transpiler::mapToGLType(const TypeSpecifier * typeSpec, const BufferDescriptor * bufDesc) const
+{
+  std::string result = "unknown type";
+  if(typeSpec != nullptr) {
+    switch(typeSpec->_type)
+      {
+      case ETypeSpecifier::Int:
+	result = "int";
+	break;
+      case ETypeSpecifier::Custom:
+	result = typeSpec->_customTypeName;
+	break;
+      default:
+	break;
+      } 
+    
+  }
+  
   if(bufDesc != nullptr) {
-    if(type == "texture2d" && bufDesc->_accessor == "sample") {
+    if(result == "texture2d" && bufDesc->_accessor == "sample") {
       if(bufDesc->_type == "float")
-	type = "sampler2D";
+	result = "sampler2D";
     }
   }
-  return mapIdentifier(type);
+
+  return mapIdentifier(result);
+
 }
 
 
@@ -464,7 +518,6 @@ void Transpiler::categoriseVariableDeclaration(VariableDeclaration * vDecl)
 
 bool Transpiler::isSimpleGLType(VariableDeclaration * vDecl) const
 {
-  std::string type = vDecl->_type;
   const std::string mappedType = mapToGLType(vDecl);
   return isSimpleGLType(mappedType);
 }
@@ -499,20 +552,18 @@ std::string Transpiler::outputIn()
   
   // handle in
   if(_inDecl != nullptr) {
-    const std::string type = _inDecl->_type;
-    const std::string mappedType = mapIdentifier(type);
+    const std::string mappedType = mapToGLType(_inDecl);
     for(const VariableNameDeclaration * variableName : _inDecl->_variableNames) {
       const std::string mappedName = mapIdentifier(variableName->_variableName);
       if(isSimpleGLType(mappedType))
 	result += "in " + mappedType + " " + mappedName + ";\n";
       else { // else search for struct
-	auto it = _topLevelStructs.find(type);
+	auto it = _topLevelStructs.find(mappedType);
 	if(it != _topLevelStructs.end()) {
 	  Struct * strct = it->second;
 	  std::vector<VariableDeclaration*> variables = strct->getVariables();
 	  for(VariableDeclaration * variable : variables) {
-	      const std::string & memberType = variable->_type;
-	      const std::string mappedMemberType = mapIdentifier(memberType);	  
+	      const std::string mappedMemberType = mapToGLType(variable);	  
 	      for(const VariableNameDeclaration * mappedVariableName : variable->_variableNames) {
 		const std::string mappedMemberName = mapIdentifier(mappedVariableName->_variableName);
 		const std::string srcMappedStructVariableName = mappedName + "." + mappedMemberName;
@@ -555,7 +606,7 @@ std::string Transpiler::outputOut()
       Struct * strct = it->second;
       std::vector<VariableDeclaration*> variables = strct->getVariables();
       for(VariableDeclaration * variable : variables) {
-	const std::string & memberType = variable->_type;
+	const std::string & memberType = mapToGLType(variable);
 	const std::string mappedMemberType = mapIdentifier(memberType);	  
 	for(const VariableNameDeclaration * mappedVariableName : variable->_variableNames) {
 	  const std::string mappedMemberName = mapIdentifier(mappedVariableName->_variableName);

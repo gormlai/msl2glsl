@@ -56,7 +56,10 @@ private:
 	
 	std::string indent();
 	std::string mapIdentifier(const std::string & src) const;
-	std::string mapToGLType(VariableDeclaration * vDecl) const;
+	std::string mapToGLType(const struct VariableDeclaration * vDecl) const;
+	std::string mapToGLType(const struct DeclarationSpecifierList * declSpecList, const BufferDescriptor * bufDesc) const;
+	std::string mapToGLType(const struct DeclarationSpecifier * declSpec, const BufferDescriptor * bufDesc) const;
+	std::string mapToGLType(const struct TypeSpecifier * typeSpec, const BufferDescriptor * bufDesc) const;
 	std::string outputMain();
 	std::string outputInOutUniforms();
 	std::string outputIn();

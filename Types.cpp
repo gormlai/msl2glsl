@@ -128,7 +128,7 @@ void Struct::visit(Visitor * v)
   v->operateOn(this);
 }
 
-void TypeDeclaration::visit(Visitor *v)
+void TypeSpecifier::visit(Visitor *v)
 {
   v->operateOn(this);
 }
