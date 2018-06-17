@@ -15,6 +15,7 @@ enum class NodeType {
     CompareExpression,
     ConstantExpression,
     DeclarationSpecifier,
+    DeclarationSpecifierList,
     Define,
     Expression,
     ForLoop,
@@ -92,6 +93,20 @@ struct DeclarationSpecifier : public Node
  virtual ~DeclarationSpecifier() {}
  void visit(Visitor * v) override;
  NodeType getNodeType() override { return NodeType::DeclarationSpecifier; }  
+};
+
+struct DeclarationSpecifierList : public Node
+{
+ public:
+ DeclarationSpecifierList()
+   {
+   }
+  
+ virtual ~DeclarationSpecifierList() {}
+ void visit(Visitor * v) override;
+ NodeType getNodeType() override { return NodeType::DeclarationSpecifierList; }
+
+ std::vector<DeclarationSpecifier*> _specifiers;
 };
 
 enum class ETypeDeclaration

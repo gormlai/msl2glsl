@@ -49,6 +49,11 @@ void DeclarationSpecifier::visit(Visitor * v)
   v->operateOn(this);
 }
 
+void DeclarationSpecifierList::visit(Visitor * v)
+{
+  v->operateOn(this);
+}
+
 void Expression::visit(Visitor * v)
 {
   v->operateOn(this);

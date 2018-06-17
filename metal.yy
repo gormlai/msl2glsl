@@ -73,6 +73,7 @@ class Scanner;
     TypeDeclaration * typeDeclaration;
     Node * basic;
     DeclarationSpecifier * declarationSpecifier;
+    DeclarationSpecifierList * declarationSpecifierList;
 }
 			  
 %token		      TYPE_BOOL		      
@@ -89,6 +90,7 @@ class Scanner;
 %token		      TYPE_INT	
 %token		      TYPE_HEX	
 %token		      TYPE_STRING
+%token                TYPE_CUSTOM
 %token                STATIC
 %token                VERTEX
 %token                FRAGMENT
@@ -203,6 +205,7 @@ class Scanner;
 %type	<binaryOperator> binary_operator
 %type	<typeDeclaration> type_declaration
 %type	<declarationSpecifier> declaration_specifier
+%type	<declarationSpecifierList> declaration_specifier_list
 %locations
 
 %%
@@ -258,11 +261,19 @@ variable_name_list: /* variable_name_list COMMA identifier { $$->push_back( new 
 
 
 type_declaration:
+		TYPE_INT { $$ = new TypeSpecifier(ETypeSpecifier::Int); }
+	|	IDENTIFIER { $$ = new TypeSpecifier(ETypeSpecifier::Custom, *$1); }
 		
 	;
+
 declaration_specifier:
 		type_declaration { $$ = $1; }
 	;
+
+declaration_specifier_list:  declaration_specifier_list declaration_specifier { $$->_variableDeclarations.push_back($2); $2->_parent = $$; }
+	|	declaration_specifier { $$ = new DeclarationSpecifierList() ;  $$->_variableDeclarations.push_back($1); $1->_parent = $$; }
+		;
+
 
 variable_declaration:
 	qualifier identifier reserved_token variable_name_list variable_attribute { $$ = new VariableDeclaration($1, *$2, nullptr, $3, *$4, $5); }
