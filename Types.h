@@ -12,6 +12,7 @@ enum class NodeType {
     BinaryExpression,
     Block,
     BufferDescriptor,
+    CastExpression,
     CompareExpression,
     ConstantExpression,
     DeclarationSpecifier,
@@ -26,6 +27,7 @@ enum class NodeType {
     SelectionStatement,
     Node,
     Program,
+    Qualifier,
     JumpStatement,
     Statement,
     Struct,
@@ -435,10 +437,36 @@ struct CastExpression : public Expression
 
   virtual ~CastExpression() {}
   void visit(Visitor * v) override;
+  NodeType getNodeType() const override { return NodeType::CastExpression; }
 
   std::string _castTo;
   Expression * _right;
   
+};
+
+enum class QualifierType
+{
+  Constant,
+    Const,
+    Constexpr,
+    Device,
+    Signed,
+    Unsigned,
+};
+
+struct Qualifier : public DeclarationSpecifier
+{
+ public:
+  Qualifier(QualifierType type)
+    :_type(type)
+  {
+  }
+
+  virtual ~Qualifier() {}
+  void visit(Visitor * v) override;
+  NodeType getNodeType() const override { return NodeType::Qualifier; }
+  
+  QualifierType _type;
 };
 
 struct VariableDeclaration : public Statement
@@ -446,15 +474,9 @@ struct VariableDeclaration : public Statement
  public:
   enum class Qualifier
   {
-    None,
-      Constant,
-      Const,
-      Constexpr,
-      Device,
   };
     
- VariableDeclaration(Qualifier qualifier,
-		     DeclarationSpecifierList * declarationSpecifiers,
+ VariableDeclaration(DeclarationSpecifierList * declarationSpecifiers,
 		     BufferDescriptor * bufferDescriptor,
 		     const ReservedToken reservedToken,
 		     const std::vector<struct VariableNameDeclaration*> & variableNames,
@@ -462,7 +484,6 @@ struct VariableDeclaration : public Statement
    :_declarationSpecifiers(declarationSpecifiers)
     ,_variableNames(variableNames)
     ,_attribute(attribute)
-    ,_qualifier(qualifier)
     ,_reservedToken(reservedToken)
     ,_bufferDescriptor(bufferDescriptor)
   {
@@ -482,7 +503,6 @@ struct VariableDeclaration : public Statement
   DeclarationSpecifierList * _declarationSpecifiers;
   std::vector<VariableNameDeclaration*> _variableNames;
   VariableAttribute * _attribute;
-  Qualifier _qualifier;
   ReservedToken _reservedToken;
   BufferDescriptor * _bufferDescriptor;
 };

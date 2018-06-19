@@ -99,6 +99,11 @@ void Program::visit(Visitor * v)
   v->operateOn(this);
 }
 
+void Qualifier::visit(Visitor * v)
+{
+  v->operateOn(this);
+}
+
 void JumpStatement::visit(Visitor * v)
 {
   v->operateOn(this);

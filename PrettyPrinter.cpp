@@ -248,6 +248,19 @@ void PrettyPrinter::operateOn(struct Program * program)
 		node->visit(this);
 }
 
+void PrettyPrinter::operateOn(struct Qualifier * qualifier)
+{
+  switch (qualifier->_type)
+    {
+    case QualifierType::Constant:
+      _result = _result + "constant ";
+      break;
+    default:
+      break;
+    }
+}
+
+
 void PrettyPrinter::operateOn(struct JumpStatement * statement)
 {
 	indent();
@@ -348,18 +361,11 @@ void PrettyPrinter::operateOn(struct VariableAttribute * attribute)
 	_result = _result + "]]";
 }
 
+
+
 void PrettyPrinter::operateOn(struct VariableDeclaration * node)
 {
 	indent();
-
-	switch (node->_qualifier)
-	{
-	case VariableDeclaration::Qualifier::Constant:
-		_result = _result + "constant ";
-		break;
-	default:
-		break;
-	}
 
 	if(node->_declarationSpecifiers != nullptr)
 	  node->_declarationSpecifiers->visit(this);

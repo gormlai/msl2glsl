@@ -52,6 +52,8 @@ int lines = 1;
 "const"                                    { return token::CONST;}
 "constexpr"                                { return token::CONSTEXPR;}
 "device"                                   { return token::DEVICE;}
+"signed"                                   { return token::SIGNED;}
+"unsigned"                                 { return token::UNSIGNED;}
 "{"                                        { return token::BEGIN_CURLY_BRACKET; }
 "}"                                        { return token::END_CURLY_BRACKET; }
 "/"                                        { return token::FORWARD_SLASH; }
