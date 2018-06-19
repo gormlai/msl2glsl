@@ -117,7 +117,12 @@ int lines = 1;
 {LETTER}{LETTER_OR_DIGIT}*                 { _yyval->string = new std::string(yytext,yyleng) ; return token::IDENTIFIER; }
 {WHITESPACE}                               { /* skip */ }
 {NEWLINE}                                  { lines++; }
-"#define"[^\n]*{NEWLINE}                   { lines++; _yyval->string = new std::string(yytext,yyleng) ; return token::DEFINE; }
+"#define"[^\n]*{NEWLINE}                   { lines++; _yyval->string = new std::string(yytext,yyleng) ; return token::PREPROCESSOR; }
+"#if"[^\n]*{NEWLINE}                       { lines++; _yyval->string = new std::string(yytext,yyleng) ; return token::PREPROCESSOR; }
+"#ifdef"[^\n]*{NEWLINE}                    { lines++; _yyval->string = new std::string(yytext,yyleng) ; return token::PREPROCESSOR; }
+"#else"[^\n]*{NEWLINE}                     { lines++; _yyval->string = new std::string(yytext,yyleng) ; return token::PREPROCESSOR; }
+"#elif"[^\n]*{NEWLINE}                     { lines++; _yyval->string = new std::string(yytext,yyleng) ; return token::PREPROCESSOR; }
+"#endif"[^\n]*{NEWLINE}                    { lines++; _yyval->string = new std::string(yytext,yyleng) ; return token::PREPROCESSOR; }
 "#include"{WHITESPACE}"<"[^\n]*">" { /* skip */ }
 "#include"{WHITESPACE}"\""[^\n]*"\"" { /* add file to include path */ }
 "//"[^\n]*                                 {/* skip */ }

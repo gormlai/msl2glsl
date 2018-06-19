@@ -144,7 +144,7 @@ void PrettyPrinter::operateOn(struct ConstantExpression * desc)
 
 }
 
-void PrettyPrinter::operateOn(struct Define * def)
+void PrettyPrinter::operateOn(struct Preprocessor * def)
 {
   _result = _result + def->_definition;
 }

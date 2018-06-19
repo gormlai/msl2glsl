@@ -39,7 +39,7 @@ void ConstantExpression::visit(Visitor * v)
   v->operateOn(this);
 }
 
-void Define::visit(Visitor * v)
+void Preprocessor::visit(Visitor * v)
 {
   v->operateOn(this);
 }

@@ -74,6 +74,7 @@ class Scanner;
     Node * basic;
     DeclarationSpecifier * declarationSpecifier;
     DeclarationSpecifierList * declarationSpecifierList;
+    FunctionType functionType;
 }
 			  
 %token		      TYPE_BOOL		      
@@ -140,7 +141,7 @@ class Scanner;
 %token		      DEVICE
 %token	<string>      HEX_VALUE
 %token	<string>      IDENTIFIER
-%token	<string>      DEFINE
+%token	<string>      PREPROCESSOR
 %token	<intValue>    INT_VALUE
 %token	<halfValue>   HALF_VALUE
 %token	<floatValue>  FLOAT_VALUE
@@ -177,7 +178,7 @@ class Scanner;
 %type	<statement>	 selection_statement
 %type	<statement>	 init_statement
 %type	<statement>	 simple_initialisation
-%type	<statement>	 define
+%type	<statement>	 preprocessor
 %type	<statement>	 labeled_statement
 %type	<functionDeclaration> function_declaration
 %type	<program> translation_unit
@@ -208,6 +209,7 @@ class Scanner;
 %type	<typeSpecifier> type_specifier
 %type	<declarationSpecifier> declaration_specifier
 %type	<declarationSpecifierList> declaration_specifier_list
+%type	<functionType> function_type
 %locations
 
 %%
@@ -242,6 +244,7 @@ buffer_descriptor:
 qualifier:
 		CONSTANT { $$ = new Qualifier(QualifierType::Constant); }
 	|	CONST { $$ = new Qualifier(QualifierType::Const); }
+	|	STATIC { $$ = new Qualifier(QualifierType::Static); }
 	|	CONSTEXPR { $$ = new Qualifier(QualifierType::Constexpr); }
 	|	DEVICE { $$ = new Qualifier(QualifierType::Device); }
 	|	SIGNED { $$ = new Qualifier(QualifierType::Signed); }
@@ -291,11 +294,14 @@ variable_list:  variable_list COMMA variable_declaration { $$->_variableDeclarat
 	|	variable_declaration { $$ = new VariableList() ;  $$->_variableDeclarations.push_back($1); $1->_parent = $$; }
 		;
 
-function_declaration : VERTEX identifier identifier BEGIN_BRACKET variable_list END_BRACKET compound_statement { $$ = new FunctionDeclaration(FunctionType::Vertex, *$2, *$3, $5, $7); }
-	| FRAGMENT identifier identifier BEGIN_BRACKET variable_list END_BRACKET compound_statement { $$ = new FunctionDeclaration(FunctionType::Fragment, *$2, *$3, $5, $7); }
-	| STATIC identifier identifier BEGIN_BRACKET variable_list END_BRACKET compound_statement { $$ = new FunctionDeclaration(FunctionType::Utility, *$2, *$3, $5, $7); }
-	| KERNEL identifier identifier BEGIN_BRACKET variable_list END_BRACKET compound_statement { $$ = new FunctionDeclaration(FunctionType::Kernel, *$2, *$3, $5, $7); }
-		| identifier identifier BEGIN_BRACKET variable_list END_BRACKET compound_statement { $$ = new FunctionDeclaration(FunctionType::Utility, *$1, *$2, $4, $6); }
+function_type: 
+		VERTEX { $$ = FunctionType::Vertex; }
+	|	FRAGMENT { $$ = FunctionType::Fragment; }
+	|	KERNEL { $$ = FunctionType::Kernel; }
+
+function_declaration :
+		function_type identifier identifier BEGIN_BRACKET variable_list END_BRACKET compound_statement { $$ = new FunctionDeclaration($1, *$2, *$3, $5, $7); }
+	|	identifier identifier BEGIN_BRACKET variable_list END_BRACKET compound_statement { $$ = new FunctionDeclaration(FunctionType::Utility, *$1, *$2, $4, $6); }
 		;
 
 assign_operator:
@@ -348,8 +354,8 @@ jump_statement:
 	|	BREAK SEMICOLON { $$ = new JumpStatement(JumpStatementType::Break, nullptr); }
 		;
 
-define:
-		DEFINE { $$ = new Define(*$1); }
+preprocessor:
+		PREPROCESSOR { $$ = new Preprocessor(*$1); }
 		;
 
 labeled_statement:
@@ -365,7 +371,7 @@ statement:
 	|	jump_statement { $$ = $1; }
 	|	labeled_statement { $$ = $1; }
 	|	USING_NAMESPACE identifier SEMICOLON {  $$ = new UsingDeclaration(*$2); }
-	|	define { $$ = $1; }
+	|	preprocessor { $$ = $1; }
 	| 	struct SEMICOLON { $$ = $1; }
 	|	function_declaration { $$ = $1; }
 		;

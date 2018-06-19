@@ -17,7 +17,7 @@ enum class NodeType {
     ConstantExpression,
     DeclarationSpecifier,
     DeclarationSpecifierList,
-    Define,
+    Preprocessor,
     Expression,
     ForLoop,
     FunctionCall,
@@ -170,18 +170,18 @@ struct Program : public Block
   NodeType getNodeType() const override { return NodeType::Program; }
 };
 
-struct Define : public Statement
+struct Preprocessor : public Statement
 {
  public:
-  Define(const std::string & definition)
+  Preprocessor(const std::string & definition)
     :_definition(definition)
   {
   }
 
-  virtual ~Define() {}
+  virtual ~Preprocessor() {}
 
   void visit(Visitor * v) override;
-  NodeType getNodeType() const override { return NodeType::Define; }
+  NodeType getNodeType() const override { return NodeType::Preprocessor; }
 
   std::string _definition;  
 };
@@ -452,6 +452,7 @@ enum class QualifierType
     Device,
     Signed,
     Unsigned,
+    Static,
 };
 
 struct Qualifier : public DeclarationSpecifier

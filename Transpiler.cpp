@@ -223,8 +223,8 @@ std::string Transpiler::traverse(struct Node * node)
     case NodeType::Expression:
       result = result + operateOn(static_cast<Expression*>(node));
       break;
-    case NodeType::Define:
-      result = result + operateOn(static_cast<Define*>(node));
+    case NodeType::Preprocessor:
+      result = result + operateOn(static_cast<Preprocessor*>(node));
       break;
     case NodeType::ForLoop:
       result = result + operateOn(static_cast<ForLoop*>(node));
