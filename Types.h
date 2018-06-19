@@ -395,6 +395,7 @@ enum class BinaryOperator
     Index,
     XOr,
     Modulo,
+    DoubleColon,
 };
 
 struct BinaryExpression : public Expression

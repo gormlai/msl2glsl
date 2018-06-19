@@ -445,6 +445,7 @@ binary_operator:
 	|	PLUS { $$ = BinaryOperator::Plus; }
 	|	MINUS { $$ = BinaryOperator::Minus; }
 	|	HAT { $$ = BinaryOperator::XOr; }
+	|	DOUBLE_COLON { $$ = BinaryOperator::DoubleColon; }
 	;
 
 binary_expression:
