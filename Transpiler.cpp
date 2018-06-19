@@ -593,7 +593,7 @@ std::string Transpiler::outputOut()
 {
   std::string result;
   
-  std::string type = _shader->_returnType;
+  std::string type = mapToGLType(_shader->_declarationSpecifiers, nullptr);
   std::string mappedType = mapIdentifier(type);
 
   std::string mappedName = baseOutVariableName();
@@ -680,8 +680,8 @@ std::string Transpiler::operateOn(struct FunctionDeclaration * node)
   // all other functions should be ignored
   if (node->_functionType == FunctionType::Utility)
     {
-      if (!node->_returnType.empty())
-	result = result + node->_returnType + " ";
+      if (node->_declarationSpecifiers != nullptr)
+	result = result + mapToGLType(node->_declarationSpecifiers, nullptr) + " ";
       
       result = result + node->_name + "(";
       
@@ -732,7 +732,7 @@ std::string Transpiler::operateOn(struct JumpStatement * statement)
   }
   else if(_state == TranspilerState::OutputMain) {
     // rewrite code to assign to an out variable
-    const std::string type = _shader->_returnType;
+    const std::string type =  mapToGLType(_shader->_declarationSpecifiers, nullptr);
     const std::string mappedType = mapIdentifier(type);
     if(isSimpleGLType(mappedType)) {
       result = indent() + result + baseOutVariableName() + " = " + rightSide + ";\n"; 

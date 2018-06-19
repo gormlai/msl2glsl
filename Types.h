@@ -611,18 +611,19 @@ struct FunctionDeclaration : public Statement
 {
  public:
  FunctionDeclaration(const FunctionType functionType,
-		      const std::string & returnType,
+		     DeclarationSpecifierList * declarationSpecifiers,
 		      const std::string & name,
 		      VariableList * variables,
 		      Block * block)
    :_functionType(functionType)
-    ,_returnType(returnType)
+    ,_declarationSpecifiers(declarationSpecifiers)
     ,_name(name)
     ,_variables(variables)
     ,_block(block)
   {
     variables->_parent = this;
     block->_parent = this;
+    declarationSpecifiers->_parent = this;
   }
 		      
   virtual ~FunctionDeclaration() {}
@@ -631,7 +632,7 @@ struct FunctionDeclaration : public Statement
   std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(_block); return nodes; }  
 
   FunctionType _functionType;
-  std::string _returnType;
+  DeclarationSpecifierList * _declarationSpecifiers;
   std::string _name;
   VariableList * _variables;
   Block * _block;

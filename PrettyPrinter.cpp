@@ -226,8 +226,8 @@ void PrettyPrinter::operateOn(struct FunctionDeclaration * node)
 
 	_result = _result + functionType + " ";
 
-	if (!node->_returnType.empty())
-		_result = _result + node->_returnType + " ";
+	if(node->_declarationSpecifiers != nullptr)
+	  node->_declarationSpecifiers->visit(this);
 
 	_result = _result + node->_name + "(";
 

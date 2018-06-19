@@ -300,8 +300,8 @@ function_type:
 	|	KERNEL { $$ = FunctionType::Kernel; }
 
 function_declaration :
-		function_type identifier identifier BEGIN_BRACKET variable_list END_BRACKET compound_statement { $$ = new FunctionDeclaration($1, *$2, *$3, $5, $7); }
-	|	identifier identifier BEGIN_BRACKET variable_list END_BRACKET compound_statement { $$ = new FunctionDeclaration(FunctionType::Utility, *$1, *$2, $4, $6); }
+		function_type declaration_specifier_list identifier BEGIN_BRACKET variable_list END_BRACKET compound_statement { $$ = new FunctionDeclaration($1, $2, *$3, $5, $7); }
+	|	declaration_specifier_list identifier BEGIN_BRACKET variable_list END_BRACKET compound_statement { $$ = new FunctionDeclaration(FunctionType::Utility, $1, *$2, $4, $6); }
 		;
 
 assign_operator:

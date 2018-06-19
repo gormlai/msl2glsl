@@ -8,7 +8,7 @@ namespace
 {
   std::string simplifiedFunctionSignature(FunctionDeclaration * fDecl)
   {
-    std::string output = fDecl->_returnType + " " + fDecl->_name + "(...)";
+    std::string output = fDecl->_name + "(...)";
     switch(fDecl->_functionType)
     {
     case FunctionType::Vertex:
