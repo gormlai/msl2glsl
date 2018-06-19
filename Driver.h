@@ -13,7 +13,7 @@ class Driver
  public:
   Driver();
 
-  void convert(const std::string & filename);
+  void convert(const std::string & filename, const std::string & prettyPrintedCompareFile);
 
  private:
   std::shared_ptr<Scanner> _scanner;
