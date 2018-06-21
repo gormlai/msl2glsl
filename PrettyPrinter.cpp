@@ -3,10 +3,13 @@
 #include <iostream>
 
 void PrettyPrinter::arrayNumToString(Expression * e) {
-    _result = _result + std::string("[");
-    if(e != nullptr)
-      e->visit(this);
-    _result = _result + std::string("]");
+  if(e == nullptr)
+    return;
+  
+  _result = _result + std::string("[");
+  if(e != nullptr)
+    e->visit(this);
+  _result = _result + std::string("]");
 }
   
 void PrettyPrinter::toCommaSeparatedList(const std::vector<VariableNameDeclaration *> & input)
@@ -278,7 +281,6 @@ void PrettyPrinter::operateOn(struct JumpStatement * statement)
 void PrettyPrinter::operateOn(struct LabeledStatement * statement)
 {
   indent();
-  _result = _result;
 
   switch(statement->_type)
     {
@@ -454,7 +456,7 @@ void PrettyPrinter::operateOn(struct VariableAttribute * attribute)
 	auto innerAttribute = [&,this](const std::string & sAttribute) {
 	  _result = _result + sAttribute;
 	  attribute->_eAttribute->visit(this);
-	  _result = + ")";
+	  _result = _result + ")";
 	};
 	
 	if (attribute->_sAttribute == std::string("attribute"))
