@@ -17,18 +17,18 @@ enum class NodeType {
     ConstantExpression,
     DeclarationSpecifier,
     DeclarationSpecifierList,
-    Preprocessor,
     Expression,
     ForLoop,
     FunctionCall,
     FunctionCallArgumentList,
     FunctionDeclaration,
+    JumpStatement,
     LabeledStatement,
-    SelectionStatement,
     Node,
+    Preprocessor,
     Program,
     Qualifier,
-    JumpStatement,
+    SelectionStatement,
     Statement,
     Struct,
     TypeSpecifier,
@@ -347,13 +347,13 @@ public:
 
 enum class CompareOperator
   {
-    LessThan,
+    EqualTo,
       GreaterThan,
-      LessThanOrEqualTo,
       GreaterThanOrEqualTo,
-      EqualTo,
+      LessThan,
+      LessThanOrEqualTo,
       NotEqualTo,
-  };
+      };
 
 struct CompareExpression : public Expression
 {

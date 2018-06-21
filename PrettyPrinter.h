@@ -12,27 +12,34 @@ class PrettyPrinter : public Visitor
   
   const std::string  print(struct Block * block);
 
-  void operateOn(struct Assignment * desc) override; 
-  void operateOn(struct BinaryExpression * desc) override;
+  void operateOn(struct Assignment * desc) override;  
+  void operateOn(struct BinaryExpression * desc) override;  
   void operateOn(struct Block * block) override;
   void operateOn(struct BufferDescriptor * desc) override;
-  void operateOn(struct ConstantExpression * desc) override;  
-  void operateOn(struct Preprocessor * def) override;  
+  void operateOn(struct CastExpression * desc) override;
+  void operateOn(struct CompareExpression * desc) override;
+  void operateOn(struct ConstantExpression * desc) override;
+  void operateOn(struct DeclarationSpecifier * desc) override;
+  void operateOn(struct DeclarationSpecifierList * desc) override;
   void operateOn(struct Expression * desc) override;  
   void operateOn(struct ForLoop * node) override;
   void operateOn(struct FunctionCall * node) override;
   void operateOn(struct FunctionCallArgumentList * node) override;
   void operateOn(struct FunctionDeclaration * node) override;
+  void operateOn(struct JumpStatement * statement) override;
+  void operateOn(struct LabeledStatement * node) override;
+  void operateOn(struct Preprocessor * def) override;  
   void operateOn(struct Program * program) override;
   void operateOn(struct Qualifier * qualifier) override;
-  void operateOn(struct JumpStatement * statement) override;
+  void operateOn(struct SelectionStatement * statement) override;
   void operateOn(struct Statement * statement) override;
   void operateOn(struct Struct * strct) override;
-  void operateOn(struct UnaryExpression * desc) override;  
+  void operateOn(struct TypeSpecifier * node) override;
+  void operateOn(struct UnaryExpression * desc) override;
   void operateOn(struct UsingDeclaration * usingDecl) override;
   void operateOn(struct VariableAttribute * node) override;
-  void operateOn(struct VariableDeclaration * node) override;  
-  void operateOn(struct VariableList * node) override;  
+  void operateOn(struct VariableDeclaration * node) override;
+  void operateOn(struct VariableList * node) override;
   
  private:
   void indent();

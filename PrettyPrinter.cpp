@@ -1,10 +1,6 @@
 #include "PrettyPrinter.h"
 #include "Types.h"
-
-namespace
-{
-
-}
+#include <iostream>
 
 void PrettyPrinter::arrayNumToString(Expression * e) {
     _result = _result + std::string("[");
@@ -47,6 +43,9 @@ const std::string PrettyPrinter::print(struct Block * block)
 	return _result;
 }
 
+
+
+
 void PrettyPrinter::operateOn(struct Assignment * desc)
 {
 	indent();
@@ -82,7 +81,6 @@ void PrettyPrinter::operateOn(struct BinaryExpression * desc)
 	  _result = _result + "(";
 
 	desc->_left->visit(this);
-	printf("op = %d\n", (int)desc->_op);
 	_result = _result + ops[(int)desc->_op];
 	desc->_right->visit(this);
 
@@ -118,6 +116,28 @@ void PrettyPrinter::operateOn(struct BufferDescriptor * desc)
 	_result = _result + "<" + desc->_type + ",access::" + desc->_accessor + ">";
 }
 
+void PrettyPrinter::operateOn(struct CastExpression * desc)
+{
+  _result = _result + "(" + desc->_castTo + "):";
+  desc->_right->visit(this);
+}
+
+void PrettyPrinter::operateOn(struct CompareExpression * exp)
+{
+  const char * opMapping [] = {
+    "==",
+    ">"
+    ">="
+    "<",
+    "<=",
+    "!=",
+  };
+
+  exp->_left->visit(this);
+  _result = _result + " " + opMapping[(int)exp->_op] + " ";
+  exp->_right->visit(this);
+}
+
 void PrettyPrinter::operateOn(struct ConstantExpression * desc)
 {
 	switch (desc->_type)
@@ -144,15 +164,20 @@ void PrettyPrinter::operateOn(struct ConstantExpression * desc)
 
 }
 
-void PrettyPrinter::operateOn(struct Preprocessor * def)
+void PrettyPrinter::operateOn(struct DeclarationSpecifier * desc)
 {
-  _result = _result + def->_definition;
+  std::cerr << "DeclarationSpecifier should have been inherited" << std::endl;
 }
 
+void PrettyPrinter::operateOn(struct DeclarationSpecifierList * list)
+{
+  for(DeclarationSpecifier * spec : list->_specifiers)
+    spec->visit(this);
+}
 
 void PrettyPrinter::operateOn(struct Expression * desc)
 {
-	// Expression is a Base class. Don't do anything here
+  std::cerr << "Expression should have been inherited" << std::endl;
 }
 
 void PrettyPrinter::operateOn(struct ForLoop * node)
@@ -242,6 +267,46 @@ void PrettyPrinter::operateOn(struct FunctionDeclaration * node)
 	_result = _result + "\n";
 }
 
+void PrettyPrinter::operateOn(struct JumpStatement * statement)
+{
+	indent();
+	_result = _result + "return ";
+	statement->_expression->visit(this);
+	_result = _result + ";\n";
+}
+
+void PrettyPrinter::operateOn(struct LabeledStatement * statement)
+{
+  indent();
+  _result = _result;
+
+  switch(statement->_type)
+    {
+    case LabeledStatementType::Case:
+    _result = _result + "case ";
+    statement->_label->visit(this);
+    _result = _result + ":\n";
+    indent();
+    statement->_statement->visit(this);    
+    break;
+    case LabeledStatementType::Default:
+    _result = _result + "default:\n";
+    indent();
+    statement->_statement->visit(this);    
+    break;    
+  }
+
+  indent();
+  _result = _result + "break;\n";
+  
+}
+
+void PrettyPrinter::operateOn(struct Preprocessor * def)
+{
+  _result = _result + def->_definition;
+}
+
+
 void PrettyPrinter::operateOn(struct Program * program)
 {
 	for (auto node : program->_nodes)
@@ -260,14 +325,34 @@ void PrettyPrinter::operateOn(struct Qualifier * qualifier)
     }
 }
 
-
-void PrettyPrinter::operateOn(struct JumpStatement * statement)
+void PrettyPrinter::operateOn(struct SelectionStatement * statement)
 {
-	indent();
-	_result = _result + "return ";
-	statement->_expression->visit(this);
-	_result = _result + ";\n";
+  switch(statement->_ifType)
+    {
+    case SelectionStatementType::If:
+      _result = _result + "if( ";
+      statement->_conditional->visit(this);
+      _result = _result + " )\n";
+      break;
+    case SelectionStatementType::Else:
+      _result = _result + "else\n";
+      break;
+    case SelectionStatementType::ElseIf:
+      _result = _result + "else if( ";
+      statement->_conditional->visit(this);
+      _result = _result + " )\n";
+      break;
+    case SelectionStatementType::Switch:
+      _result = _result + "switch( ";
+      statement->_conditional->visit(this);
+      _result = _result + " )\n";
+      break;
+    }  
+  statement->_statement->visit(this);
 }
+
+
+
 
 void PrettyPrinter::operateOn(struct Statement * statement)
 {
@@ -284,7 +369,34 @@ void PrettyPrinter::operateOn(struct Struct * strct)
 
 	indent();
 	_result = _result + ";\n";
+}
 
+void PrettyPrinter::operateOn(struct TypeSpecifier * spec)
+{
+  switch(spec->_type)
+    {
+    case ETypeSpecifier::Int:
+      _result = _result + "int";
+      break;
+    case ETypeSpecifier::UnsignedInt:
+      _result = _result + "unsigned int";
+      break;
+    case ETypeSpecifier::Bool:
+      _result = _result + "bool";
+      break;
+    case ETypeSpecifier::Float:
+      _result = _result + "float";
+      break;
+    case ETypeSpecifier::Double:
+      _result = _result + "double";
+      break;
+    case ETypeSpecifier::Half:
+      _result = _result + "half";
+      break;
+    case ETypeSpecifier::Custom:
+      _result = _result + spec->_customTypeName;
+      break;
+    }
 }
 
 void PrettyPrinter::operateOn(struct UnaryExpression * desc)
