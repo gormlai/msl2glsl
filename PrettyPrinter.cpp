@@ -87,8 +87,8 @@ void PrettyPrinter::operateOn(struct BinaryExpression * desc)
 	_result = _result + ops[(int)desc->_op];
 	desc->_right->visit(this);
 
-	if(desc->_op != BinaryOperator::Dot)
-	  _result = _result + "]";
+	//	if(desc->_op != BinaryOperator::Dot)
+	//  _result = _result + "]";
 
 }
 
@@ -257,7 +257,7 @@ void PrettyPrinter::operateOn(struct FunctionDeclaration * node)
 	if(node->_declarationSpecifiers != nullptr)
 	  node->_declarationSpecifiers->visit(this);
 
-	_result = _result + node->_name + "(";
+	_result = _result + " " + node->_name + "(";
 
 	if (node->_variables != nullptr)
 		node->_variables->visit(this);
@@ -455,6 +455,7 @@ void PrettyPrinter::operateOn(struct VariableAttribute * attribute)
 
 	auto innerAttribute = [&,this](const std::string & sAttribute) {
 	  _result = _result + sAttribute;
+	  _result = _result + "(";
 	  attribute->_eAttribute->visit(this);
 	  _result = _result + ")";
 	};
