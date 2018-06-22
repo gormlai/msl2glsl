@@ -69,35 +69,55 @@ void PrettyPrinter::operateOn(struct Assignment * desc)
 
 void PrettyPrinter::operateOn(struct BinaryExpression * desc)
 {
-	const static std::string ops[] =
-	{
-		"+",
-		"-",
-		"*",
-		"/",
-		".",
-		"->",
-		")",
-		"|",
-		"||",
-		"&",
-		"&&",
-		"<<",
-		">>",
-		"[",
-		"^",
-		"%",
-	};
 
-	if(desc->_op == BinaryOperator::Cast)
-	  _result = _result + "(";
+  const static std::string pre_ops[] =
+    {
+      " + ",
+      " - ",
+      " * ",
+      " / ",
+      ".",
+      "->",
+      "(",
+      " | ",
+      " || ",
+      " & ",
+      " && ",
+      " << ",
+      " >> ",
+      "[",
+      " ^ ",
+      " % ",
+      "::",
+    };
 
-	desc->_left->visit(this);
-	_result = _result + ops[(int)desc->_op];
-	desc->_right->visit(this);
+  const static std::string post_ops[] =
+    {
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ")",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "]",
+      "",
+      "",
+      "",
+    };
+  
+  
+  desc->_left->visit(this);
+  _result = _result + pre_ops[(int)desc->_op];
+  desc->_right->visit(this);
+  _result = _result + post_ops[(int)desc->_op];
 
-	//	if(desc->_op != BinaryOperator::Dot)
-	//  _result = _result + "]";
 
 }
 
