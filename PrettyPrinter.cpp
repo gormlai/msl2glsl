@@ -46,15 +46,24 @@ const std::string PrettyPrinter::print(struct Block * block)
 	return _result;
 }
 
-
-
-
 void PrettyPrinter::operateOn(struct Assignment * desc)
 {
-	indent();
-	desc->_left->visit(this);
-	_result = _result + " = ";
-	desc->_right->visit(this);
+  const char * ops[] = {
+    " = ",
+    " += ",
+    " -= ",
+    " /= ",
+    " *= ",
+    " &= ",
+    " ^= ",
+    " |= ",
+    " %= ",
+  };
+
+  indent();
+  desc->_left->visit(this);
+  _result = _result + ops[(int)desc->_op];
+  desc->_right->visit(this);
 }
 
 
