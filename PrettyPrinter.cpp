@@ -213,7 +213,7 @@ void PrettyPrinter::operateOn(struct DeclarationSpecifierList * list)
 void PrettyPrinter::operateOn(struct Expression * desc)
 {
   // expression is basically an empty statement, so just return a semicolon
-  _result = _result + ";";
+  //  _result = _result + ";";
 }
 
 void PrettyPrinter::operateOn(struct ForLoop * node)
@@ -306,14 +306,25 @@ void PrettyPrinter::operateOn(struct FunctionDeclaration * node)
 void PrettyPrinter::operateOn(struct JumpStatement * statement)
 {
 	indent();
-	_result = _result + "return";
+	switch(statement->_type) {
+	case JumpStatementType::Return:
+	  _result = _result + "return";
+	  break;
+	case JumpStatementType::Break:
+	  _result = _result + "break";
+	  break;
+	case JumpStatementType::Continue:
+	  _result = _result + "continue";
+	  break;
+	}
+	
 
 	Expression * e = statement->_expression;
 	if(e!=nullptr) {
 	  _result = _result + " ";
 	  e->visit(this);
 	}
-	_result = _result + ";\n";
+	//	_result = _result + ";\n";
 }
 
 void PrettyPrinter::operateOn(struct LabeledStatement * statement)
@@ -336,8 +347,7 @@ void PrettyPrinter::operateOn(struct LabeledStatement * statement)
     break;    
   }
 
-  indent();
-  _result = _result + "break;\n";
+  _result = _result + ";\n";
   
 }
 
