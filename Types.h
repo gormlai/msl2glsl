@@ -29,6 +29,7 @@ enum class NodeType {
     Program,
     Qualifier,
     SelectionStatement,
+    SelectExpression,
     Statement,
     Struct,
     TypeSpecifier,
@@ -36,6 +37,7 @@ enum class NodeType {
     UsingDeclaration,
     VariableAttribute,
     VariableDeclaration,
+    VariableNameDeclaration,
     VariableList,
     };
 
@@ -757,6 +759,8 @@ struct SelectExpression : public Expression
   }
 
   virtual ~SelectExpression() {}
+  void visit(Visitor * v) override;
+  NodeType getNodeType() const override { return NodeType::SelectExpression; }
 
   Node * _left;
   Node * _middle;
@@ -769,7 +773,10 @@ struct VariableNameDeclaration : public Node
     :_variableName(variableName)
     ,_expressionInBrackets(expressionInBrackets) {
   }
-  
+
+  void visit(Visitor * v) override;
+  NodeType getNodeType() const override { return NodeType::VariableNameDeclaration; }
+    
   std::string _variableName;
   Expression * _expressionInBrackets;
 };

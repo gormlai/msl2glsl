@@ -335,6 +335,18 @@ void PrettyPrinter::operateOn(struct Qualifier * qualifier)
    
 }
 
+void PrettyPrinter::operateOn(struct SelectExpression * exp)
+{
+  _result = _result + "(";
+  exp->_left->visit(this);
+  _result = _result + ")";
+  _result = _result + " ? ";
+  exp->_middle->visit(this);
+  _result = _result + " : ";
+  exp->_right->visit(this);  
+}
+
+
 void PrettyPrinter::operateOn(struct SelectionStatement * statement)
 {
   switch(statement->_ifType)
@@ -484,6 +496,17 @@ void PrettyPrinter::operateOn(struct VariableAttribute * attribute)
 	_result = _result + "]]";
 }
 
+void PrettyPrinter::operateOn(struct VariableNameDeclaration * node)
+{
+  _result = _result + node->_variableName;
+
+  Expression * e = node->_expressionInBrackets;
+  if(e!=nullptr) {
+    _result = _result + "[";
+    e->visit(this);
+    _result = _result + "]";
+  }
+}
 
 
 void PrettyPrinter::operateOn(struct VariableDeclaration * node)
