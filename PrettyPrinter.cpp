@@ -149,13 +149,13 @@ void PrettyPrinter::operateOn(struct ConstantExpression * desc)
 		_result = _result + std::to_string(desc->_int);
 		break;
 	case ConstantType::Float:
-		_result = _result + std::to_string(desc->_float);
+		_result = _result + std::to_string(desc->_float) + "f";
 		break;
 	case ConstantType::Double:
 		_result = _result + std::to_string(desc->_double);
 		break;
 	case ConstantType::Half:
-		_result = _result + std::to_string(desc->_half);
+		_result = _result + std::to_string(desc->_half) + "h";
 		break;
 	case ConstantType::Hex:
 		_result = _result + desc->_identifier;
@@ -180,7 +180,7 @@ void PrettyPrinter::operateOn(struct DeclarationSpecifierList * list)
 
 void PrettyPrinter::operateOn(struct Expression * desc)
 {
-  std::cerr << "Expression should have been inherited" << std::endl;
+  std::cerr << "Expression should have been inherited. Type = " << std::to_string((int)desc->getNodeType()) << std::endl;
 }
 
 void PrettyPrinter::operateOn(struct ForLoop * node)
