@@ -175,7 +175,10 @@ void PrettyPrinter::operateOn(struct DeclarationSpecifier * desc)
 void PrettyPrinter::operateOn(struct DeclarationSpecifierList * list)
 {
   for(DeclarationSpecifier * spec : list->_specifiers)
-    spec->visit(this);
+    {
+      spec->visit(this);
+      _result = _result + " ";
+    }
 }
 
 void PrettyPrinter::operateOn(struct Expression * desc)
@@ -318,14 +321,18 @@ void PrettyPrinter::operateOn(struct Program * program)
 
 void PrettyPrinter::operateOn(struct Qualifier * qualifier)
 {
-  switch (qualifier->_type)
-    {
-    case QualifierType::Constant:
-      _result = _result + "constant ";
-      break;
-    default:
-      break;
-    }
+  const char * ops[] = {
+    "constant",
+    "const",
+    "constexpr",
+    "device",
+    "signed",
+    "unsigned",
+    "static",
+  };
+
+  _result = _result + ops[(int)qualifier->_type];
+   
 }
 
 void PrettyPrinter::operateOn(struct SelectionStatement * statement)
