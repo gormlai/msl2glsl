@@ -180,7 +180,8 @@ void PrettyPrinter::operateOn(struct DeclarationSpecifierList * list)
 
 void PrettyPrinter::operateOn(struct Expression * desc)
 {
-  std::cerr << "Expression should have been inherited. Type = " << std::to_string((int)desc->getNodeType()) << std::endl;
+  // expression is basically an empty statement, so just return a semicolon
+  _result = _result + ";";
 }
 
 void PrettyPrinter::operateOn(struct ForLoop * node)
