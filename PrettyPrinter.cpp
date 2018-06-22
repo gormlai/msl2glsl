@@ -306,8 +306,13 @@ void PrettyPrinter::operateOn(struct FunctionDeclaration * node)
 void PrettyPrinter::operateOn(struct JumpStatement * statement)
 {
 	indent();
-	_result = _result + "return ";
-	statement->_expression->visit(this);
+	_result = _result + "return";
+
+	Expression * e = statement->_expression;
+	if(e!=nullptr) {
+	  _result = _result + " ";
+	  e->visit(this);
+	}
 	_result = _result + ";\n";
 }
 
