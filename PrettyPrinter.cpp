@@ -281,6 +281,9 @@ void PrettyPrinter::operateOn(struct FunctionDeclaration * node)
 	case FunctionType::Fragment:
 		functionType = "fragment";
 		break;
+	case FunctionType::Kernel:
+		functionType = "kernel";
+		break;
 	default:
 		break;
 	}
