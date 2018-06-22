@@ -138,8 +138,8 @@ void PrettyPrinter::operateOn(struct CompareExpression * exp)
 {
   const char * opMapping [] = {
     "==",
-    ">"
-    ">="
+    ">",
+    ">=",
     "<",
     "<=",
     "!=",
@@ -346,9 +346,7 @@ void PrettyPrinter::operateOn(struct Qualifier * qualifier)
 
 void PrettyPrinter::operateOn(struct SelectExpression * exp)
 {
-  _result = _result + "(";
   exp->_left->visit(this);
-  _result = _result + ")";
   _result = _result + " ? ";
   exp->_middle->visit(this);
   _result = _result + " : ";
