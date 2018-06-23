@@ -60,6 +60,7 @@ private:
 	std::string mapToGLType(const struct DeclarationSpecifierList * declSpecList, const BufferDescriptor * bufDesc) const;
 	std::string mapToGLType(const struct DeclarationSpecifier * declSpec, const BufferDescriptor * bufDesc) const;
 	std::string mapToGLType(const struct TypeSpecifier * typeSpec, const BufferDescriptor * bufDesc) const;
+	std::string mapToGLType(const struct Qualifier * qualifier, const BufferDescriptor * bufDesc) const;
 	std::string outputMain();
 	std::string outputInOutUniforms();
 	std::string outputIn();

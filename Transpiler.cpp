@@ -104,6 +104,8 @@ std::string Transpiler::mapToGLType(const DeclarationSpecifier * declSpec, const
     case NodeType::TypeSpecifier:
       result = mapToGLType(static_cast<const TypeSpecifier*>(declSpec), bufDesc);
       break;
+    case NodeType::Qualifier:
+      result = mapToGLType(static_cast<const Qualifier*>(declSpec), bufDesc);
     default:
       break;
   }
@@ -111,6 +113,36 @@ std::string Transpiler::mapToGLType(const DeclarationSpecifier * declSpec, const
   return result;
 
 }
+
+std::string Transpiler::mapToGLType(const Qualifier * qualifier, const BufferDescriptor * bufDesc) const
+{
+  switch(qualifier->_type) {
+  case QualifierType::Constant:
+    return "";
+    break;
+  case QualifierType::Const:
+    return "";
+    break;
+  case QualifierType::Constexpr:
+    return "";
+    break;
+  case QualifierType::Device:
+    return "";
+    break;
+  case QualifierType::Signed:
+    return "";
+    break;
+  case QualifierType::Unsigned:
+    return "unsigned";
+    break;
+  case QualifierType::Static:
+    return "";
+    break;
+  }
+
+  return std::string("Unknown Qualifier\n");
+}
+
 
 std::string Transpiler::mapToGLType(const TypeSpecifier * typeSpec, const BufferDescriptor * bufDesc) const
 {
@@ -536,6 +568,7 @@ std::string Transpiler::outputUniforms()
   for(VariableDeclaration * decl : _uniformVariables) {
     for(const VariableNameDeclaration * variableName : decl->_variableNames) {
       std::string glType = mapToGLType(decl);
+      std::cout << "outputUniforms: " << glType << std::endl;
       if(isSimpleGLType(glType))
 	result = "uniform " + glType + " " + variableName->_variableName + ";\n";
       else {
