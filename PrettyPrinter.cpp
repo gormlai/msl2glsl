@@ -46,49 +46,78 @@ const std::string PrettyPrinter::print(struct Block * block)
 	return _result;
 }
 
-
-
-
 void PrettyPrinter::operateOn(struct Assignment * desc)
 {
-	indent();
-	desc->_left->visit(this);
-	_result = _result + " = ";
-	desc->_right->visit(this);
+  const char * ops[] = {
+    " = ",
+    " += ",
+    " -= ",
+    " /= ",
+    " *= ",
+    " &= ",
+    " ^= ",
+    " |= ",
+    " %= ",
+  };
+
+  indent();
+  desc->_left->visit(this);
+  _result = _result + ops[(int)desc->_op];
+  desc->_right->visit(this);
 }
 
 
 void PrettyPrinter::operateOn(struct BinaryExpression * desc)
 {
-	const static std::string ops[] =
-	{
-		"+",
-		"-",
-		"*",
-		"/",
-		".",
-		"->",
-		")",
-		"|",
-		"||",
-		"&",
-		"&&",
-		"<<",
-		">>",
-		"[",
-		"^",
-		"%",
-	};
 
-	if(desc->_op == BinaryOperator::Cast)
-	  _result = _result + "(";
+  const static std::string pre_ops[] =
+    {
+      " + ",
+      " - ",
+      " * ",
+      " / ",
+      ".",
+      "->",
+      "(",
+      " | ",
+      " || ",
+      " & ",
+      " && ",
+      " << ",
+      " >> ",
+      "[",
+      " ^ ",
+      " % ",
+      "::",
+    };
 
-	desc->_left->visit(this);
-	_result = _result + ops[(int)desc->_op];
-	desc->_right->visit(this);
+  const static std::string post_ops[] =
+    {
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ")",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "]",
+      "",
+      "",
+      "",
+    };
+  
+  
+  desc->_left->visit(this);
+  _result = _result + pre_ops[(int)desc->_op];
+  desc->_right->visit(this);
+  _result = _result + post_ops[(int)desc->_op];
 
-	//	if(desc->_op != BinaryOperator::Dot)
-	//  _result = _result + "]";
 
 }
 
@@ -129,8 +158,8 @@ void PrettyPrinter::operateOn(struct CompareExpression * exp)
 {
   const char * opMapping [] = {
     "==",
-    ">"
-    ">="
+    ">",
+    ">=",
     "<",
     "<=",
     "!=",
@@ -149,13 +178,13 @@ void PrettyPrinter::operateOn(struct ConstantExpression * desc)
 		_result = _result + std::to_string(desc->_int);
 		break;
 	case ConstantType::Float:
-		_result = _result + std::to_string(desc->_float);
+		_result = _result + std::to_string(desc->_float) + "f";
 		break;
 	case ConstantType::Double:
 		_result = _result + std::to_string(desc->_double);
 		break;
 	case ConstantType::Half:
-		_result = _result + std::to_string(desc->_half);
+		_result = _result + std::to_string(desc->_half) + "h";
 		break;
 	case ConstantType::Hex:
 		_result = _result + desc->_identifier;
@@ -175,12 +204,16 @@ void PrettyPrinter::operateOn(struct DeclarationSpecifier * desc)
 void PrettyPrinter::operateOn(struct DeclarationSpecifierList * list)
 {
   for(DeclarationSpecifier * spec : list->_specifiers)
-    spec->visit(this);
+    {
+      spec->visit(this);
+      _result = _result + " ";
+    }
 }
 
 void PrettyPrinter::operateOn(struct Expression * desc)
 {
-  std::cerr << "Expression should have been inherited" << std::endl;
+  // expression is basically an empty statement, so just return a semicolon
+  //  _result = _result + ";";
 }
 
 void PrettyPrinter::operateOn(struct ForLoop * node)
@@ -248,6 +281,9 @@ void PrettyPrinter::operateOn(struct FunctionDeclaration * node)
 	case FunctionType::Fragment:
 		functionType = "fragment";
 		break;
+	case FunctionType::Kernel:
+		functionType = "kernel";
+		break;
 	default:
 		break;
 	}
@@ -273,9 +309,25 @@ void PrettyPrinter::operateOn(struct FunctionDeclaration * node)
 void PrettyPrinter::operateOn(struct JumpStatement * statement)
 {
 	indent();
-	_result = _result + "return ";
-	statement->_expression->visit(this);
-	_result = _result + ";\n";
+	switch(statement->_type) {
+	case JumpStatementType::Return:
+	  _result = _result + "return";
+	  break;
+	case JumpStatementType::Break:
+	  _result = _result + "break";
+	  break;
+	case JumpStatementType::Continue:
+	  _result = _result + "continue";
+	  break;
+	}
+	
+
+	Expression * e = statement->_expression;
+	if(e!=nullptr) {
+	  _result = _result + " ";
+	  e->visit(this);
+	}
+	//	_result = _result + ";\n";
 }
 
 void PrettyPrinter::operateOn(struct LabeledStatement * statement)
@@ -298,8 +350,7 @@ void PrettyPrinter::operateOn(struct LabeledStatement * statement)
     break;    
   }
 
-  indent();
-  _result = _result + "break;\n";
+  _result = _result + ";\n";
   
 }
 
@@ -317,15 +368,29 @@ void PrettyPrinter::operateOn(struct Program * program)
 
 void PrettyPrinter::operateOn(struct Qualifier * qualifier)
 {
-  switch (qualifier->_type)
-    {
-    case QualifierType::Constant:
-      _result = _result + "constant ";
-      break;
-    default:
-      break;
-    }
+  const char * ops[] = {
+    "constant",
+    "const",
+    "constexpr",
+    "device",
+    "signed",
+    "unsigned",
+    "static",
+  };
+
+  _result = _result + ops[(int)qualifier->_type];
+   
 }
+
+void PrettyPrinter::operateOn(struct SelectExpression * exp)
+{
+  exp->_left->visit(this);
+  _result = _result + " ? ";
+  exp->_middle->visit(this);
+  _result = _result + " : ";
+  exp->_right->visit(this);  
+}
+
 
 void PrettyPrinter::operateOn(struct SelectionStatement * statement)
 {
@@ -476,6 +541,17 @@ void PrettyPrinter::operateOn(struct VariableAttribute * attribute)
 	_result = _result + "]]";
 }
 
+void PrettyPrinter::operateOn(struct VariableNameDeclaration * node)
+{
+  _result = _result + node->_variableName;
+
+  Expression * e = node->_expressionInBrackets;
+  if(e!=nullptr) {
+    _result = _result + "[";
+    e->visit(this);
+    _result = _result + "]";
+  }
+}
 
 
 void PrettyPrinter::operateOn(struct VariableDeclaration * node)

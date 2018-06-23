@@ -27,6 +27,7 @@ class Visitor
   virtual void operateOn(struct Preprocessor * def) =0;  
   virtual void operateOn(struct Program * program)=0;
   virtual void operateOn(struct Qualifier * qualifier)=0;
+  virtual void operateOn(struct SelectExpression * exp)=0;
   virtual void operateOn(struct SelectionStatement * statement)=0;
   virtual void operateOn(struct Statement * statement)=0;
   virtual void operateOn(struct Struct * strct)=0;
@@ -35,6 +36,7 @@ class Visitor
   virtual void operateOn(struct UsingDeclaration * usingDecl)=0;
   virtual void operateOn(struct VariableAttribute * node)=0;
   virtual void operateOn(struct VariableDeclaration * node)=0;
+  virtual void operateOn(struct VariableNameDeclaration * node)=0;
   virtual void operateOn(struct VariableList * node)=0;
     
 };

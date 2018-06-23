@@ -31,6 +31,7 @@ class PrettyPrinter : public Visitor
   void operateOn(struct Preprocessor * def) override;  
   void operateOn(struct Program * program) override;
   void operateOn(struct Qualifier * qualifier) override;
+  void operateOn(struct SelectExpression * exp) override;
   void operateOn(struct SelectionStatement * statement) override;
   void operateOn(struct Statement * statement) override;
   void operateOn(struct Struct * strct) override;
@@ -39,6 +40,7 @@ class PrettyPrinter : public Visitor
   void operateOn(struct UsingDeclaration * usingDecl) override;
   void operateOn(struct VariableAttribute * node) override;
   void operateOn(struct VariableDeclaration * node) override;
+  void operateOn(struct VariableNameDeclaration * node) override;
   void operateOn(struct VariableList * node) override;
   
  private:

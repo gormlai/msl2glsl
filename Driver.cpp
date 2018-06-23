@@ -16,7 +16,7 @@ void Metal::Driver::convert(const std::string & filename, const std::string & pr
 
   std::ifstream stream(filename.c_str());
   
-  _scanner = std::shared_ptr<Scanner>(new Scanner(&stream));
+  _scanner = std::shared_ptr<Scanner>(new Scanner(filename));
   _parser = std::shared_ptr<Parser>(new Parser(*_scanner.get(), *this));
 
   int parseResult = -1;

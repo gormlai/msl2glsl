@@ -39,11 +39,6 @@ void ConstantExpression::visit(Visitor * v)
   v->operateOn(this);
 }
 
-void Preprocessor::visit(Visitor * v)
-{
-  v->operateOn(this);
-}
-
 void DeclarationSpecifier::visit(Visitor * v)
 {
   v->operateOn(this);
@@ -84,12 +79,12 @@ void LabeledStatement::visit(Visitor * v)
   v->operateOn(this);
 }
 
-void SelectionStatement::visit(Visitor * v)
+void Node::visit(Visitor * v)
 {
   v->operateOn(this);
 }
 
-void Node::visit(Visitor * v)
+void Preprocessor::visit(Visitor * v)
 {
   v->operateOn(this);
 }
@@ -105,6 +100,16 @@ void Qualifier::visit(Visitor * v)
 }
 
 void JumpStatement::visit(Visitor * v)
+{
+  v->operateOn(this);
+}
+
+void SelectExpression::visit(Visitor * v)
+{
+  v->operateOn(this);
+}
+
+void SelectionStatement::visit(Visitor * v)
 {
   v->operateOn(this);
 }
@@ -154,6 +159,11 @@ void VariableAttribute::visit(Visitor * v)
 }
 
 void VariableDeclaration::visit(Visitor * v)
+{
+  v->operateOn(this);
+}
+
+void VariableNameDeclaration::visit(Visitor * v)
 {
   v->operateOn(this);
 }

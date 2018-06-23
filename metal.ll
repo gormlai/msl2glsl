@@ -30,7 +30,8 @@ int lines = 1;
 %option yyclass = "Metal::Parser"
 %option c++
 %option verbose
-%option noyywrap			
+%option noyywrap
+%x inclstate			
 %%
 
 %{
@@ -123,10 +124,13 @@ int lines = 1;
 "#else"[^\n]*{NEWLINE}                     { lines++; _yyval->string = new std::string(yytext,yyleng) ; return token::PREPROCESSOR; }
 "#elif"[^\n]*{NEWLINE}                     { lines++; _yyval->string = new std::string(yytext,yyleng) ; return token::PREPROCESSOR; }
 "#endif"[^\n]*{NEWLINE}                    { lines++; _yyval->string = new std::string(yytext,yyleng) ; return token::PREPROCESSOR; }
-"#include"{WHITESPACE}"<"[^\n]*">" { /* skip */ }
-"#include"{WHITESPACE}"\""[^\n]*"\"" { /* add file to include path */ }
 "//"[^\n]*                                 {/* skip */ }
-	       
+"#include"                                 BEGIN(inclstate);
+<inclstate>{WHITESPACE}"<"[^\n]*">" { /* skip for now */;  BEGIN(0); }
+<inclstate>{WHITESPACE}"\""[^\n]*"\"" { std::string t(yytext) ; auto startPos = t.find("\""); auto endPos = t.find_last_of("\""); t = t.substr(startPos+1, endPos - startPos-1);  Scanner::getInstance()->pushFile(t);  ; BEGIN(0); }
+
+
+<<EOF>>                                    {  Scanner::getInstance()->popFile(); if(!YY_CURRENT_BUFFER) yyterminate(); }
 
 %%
 
