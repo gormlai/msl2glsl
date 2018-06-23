@@ -43,7 +43,8 @@ public:
 	std::string mapStructMember(const std::string & possibleStructMember) const;
 
 private:
-	int _location;
+	unsigned int _outLocation, _inLocation, _uniformLocation;
+	
 	int _indent;
 	FunctionDeclaration * _shader;
 	VariableDeclaration * _inDecl; // what are the in variables?
@@ -68,12 +69,14 @@ private:
 	std::string outputOut();
 	std::string outputUniforms();
 	void categoriseVariableDeclaration(VariableDeclaration * vDecl);
+	bool isSamplerGLType(const std::string & glType) const;
 	bool isSimpleGLType(const std::string & glType) const;
 	bool isSimpleGLType(VariableDeclaration * vDecl) const;
+	std::string extractAttributeIndex(VariableDeclaration * vDecl);
 	
 	std::string baseOutVariableName() const;
 	std::string toCommaSeparatedList(const std::vector<VariableNameDeclaration *> & input, bool mapInput);
-	std::string addLocation();
+	std::string addLocation(unsigned int & location);
 
 };
 

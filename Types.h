@@ -476,10 +476,6 @@ struct Qualifier : public DeclarationSpecifier
 struct VariableDeclaration : public Statement
 {
  public:
-  enum class Qualifier
-  {
-  };
-    
  VariableDeclaration(DeclarationSpecifierList * declarationSpecifiers,
 		     BufferDescriptor * bufferDescriptor,
 		     const ReservedToken reservedToken,

@@ -30,6 +30,16 @@ namespace
       "isampler2D",
       "isampler3D",
     };
+  
+  const std::set<std::string> g_samplerGLTypes = 
+    {
+      "sampler2D",
+      "sampler3D",
+      "usampler2D",
+      "usampler3D",
+      "isampler2D",
+      "isampler3D",
+    };
 
   std::map<std::string, Struct*> gatherStructs(Block * block)
   {
@@ -312,7 +322,9 @@ std::string Transpiler::convert(struct Block * program, struct FunctionDeclarati
 {
   std::string shaderString = std::string("");
 
-  _location = 0;
+  _inLocation = 0;
+  _outLocation = 0;
+  _uniformLocation = 0;
   _indent = 0;
   _shader = shader;
   _inDecl = nullptr;
@@ -549,6 +561,26 @@ void Transpiler::categoriseVariableDeclaration(VariableDeclaration * vDecl)
   }
 }
 
+std::string  Transpiler::extractAttributeIndex(VariableDeclaration * vDecl)
+{
+  std::string result;
+  if(vDecl!=nullptr && vDecl->_attribute!=nullptr) {
+    VariableAttribute * attribute = vDecl->_attribute;
+    Expression * e = attribute->_eAttribute;
+    if(e!=nullptr) {
+      result = traverse(e);
+    }
+  }
+  return result;
+
+}
+
+bool Transpiler::isSamplerGLType(const std::string & glType) const
+{
+  auto it = g_samplerGLTypes.find(glType);
+  return it != g_samplerGLTypes.end();
+}
+
 bool Transpiler::isSimpleGLType(VariableDeclaration * vDecl) const
 {
   const std::string mappedType = mapToGLType(vDecl);
@@ -564,26 +596,43 @@ bool Transpiler::isSimpleGLType(const std::string & glType) const
 
 std::string Transpiler::outputUniforms()
 {
-  std::string result;
+  std::string insideBlock;
+  std::string outsideBlock;
+  bool hasInside = false;
+
+  insideBlock = insideBlock + std::string("layout(std140) uniform ShaderBlock\n{\n");
 
   for(VariableDeclaration * decl : _uniformVariables) {
+    const std::string attributeIndex = extractAttributeIndex(decl);    
     for(const VariableNameDeclaration * variableName : decl->_variableNames) {
       std::string glType = mapToGLType(decl);
-      std::cout << "outputUniforms: " << glType << std::endl;
-      if(isSimpleGLType(glType))
-	result = "uniform " + glType + " " + variableName->_variableName + ";\n";
+      if(isSimpleGLType(glType)) {
+	if(isSamplerGLType(glType)) {
+	  if(!attributeIndex.empty())
+	    outsideBlock = outsideBlock + std::string("layout(binding = ") + attributeIndex + ") ";
+	  outsideBlock = outsideBlock + "uniform " + glType + " " + variableName->_variableName + ";\n";
+	}
+	else {
+	  hasInside = true;
+	  insideBlock = insideBlock + "  " + glType + " " + variableName->_variableName + ";\n";
+	}
+      }
       else {
       }
     }
   }
-  
+  insideBlock = insideBlock + std::string("};\n");
+
+  std::string result = outsideBlock;
+  if(hasInside)
+    result = result + insideBlock;
   return result;
 }
 
-std::string Transpiler::addLocation()
+std::string Transpiler::addLocation(unsigned int & location)
 {
-  std::string result = std::string("layout(location = ") + std::to_string(_location) + ")";
-  _location++;
+  std::string result = std::string("layout(location = ") + std::to_string(location) + ")";
+  location++;
   return result;
 }
 
@@ -597,7 +646,7 @@ std::string Transpiler::outputIn()
     for(const VariableNameDeclaration * variableName : _inDecl->_variableNames) {
       const std::string mappedName = mapIdentifier(variableName->_variableName);
       if(isSimpleGLType(mappedType))
-	result += "in " + mappedType + " " + mappedName + ";\n";
+	result += addLocation(_outLocation) + " in " + mappedType + " " + mappedName + ";\n";
       else { // else search for struct
 	auto it = _topLevelStructs.find(mappedType);
 	if(it != _topLevelStructs.end()) {
@@ -611,7 +660,7 @@ std::string Transpiler::outputIn()
 		const std::string dstMappedStructVariableName = mappedName + "_" + mappedMemberName;
 		_structMemberMap[srcMappedStructVariableName] = dstMappedStructVariableName;	  
 		
-		result += addLocation() + " in " + mappedMemberType + " " + dstMappedStructVariableName + ";\n";
+		result += addLocation(_outLocation) + " in " + mappedMemberType + " " + dstMappedStructVariableName + ";\n";
 	      }
 	    }
 	    
@@ -640,7 +689,7 @@ std::string Transpiler::outputOut()
   std::string mappedName = baseOutVariableName();
 
   if(isSimpleGLType(mappedType))
-    result += "out " + mappedType + " " + mappedName + ";\n";
+    result += addLocation(_inLocation) +  " out " + mappedType + " " + mappedName + ";\n";
   else { // else search for struct
     auto it = _topLevelStructs.find(type);
     if(it != _topLevelStructs.end()) {
@@ -655,7 +704,7 @@ std::string Transpiler::outputOut()
 	  const std::string dstMappedStructVariableName = mappedName + "_" + mappedMemberName;
 	  _structMemberMap[srcMappedStructVariableName] = dstMappedStructVariableName;	  
 	
-	  result += addLocation() + " out " + mappedMemberType + " " + dstMappedStructVariableName + ";\n";
+	  result += addLocation(_inLocation) + " out " + mappedMemberType + " " + dstMappedStructVariableName + ";\n";
 	}
       }
     }
@@ -682,13 +731,13 @@ std::string Transpiler::outputInOutUniforms()
     
   }
 
-  std::string uniformVars = outputUniforms();
   std::string inVars = outputIn();
   std::string outVars = outputOut();
+  std::string uniformVars = outputUniforms();
   
-  result = result + uniformVars;
-  result = result + inVars;
-  result = result + outVars;
+  result = result + "\n" + inVars;
+  result = result + "\n" + outVars;
+  result = result + "\n" + uniformVars;
   
   return result;
 }
