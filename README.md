@@ -24,3 +24,11 @@ To build the following programs are needed in your path:
 
 *Background*
 
+
+
+*Improvements*
+
+* Make fully compliant with Metal syntax (Metal is based on C++14, while this is more based on a C85 standard)
+* Argument parsing
+* Make location keyword on in/out optional
+* Make uniform blocks optional
