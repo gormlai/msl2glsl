@@ -311,7 +311,8 @@ std::string Transpiler::traverse(struct Node * node)
 std::string Transpiler::convert(struct Block * program, struct FunctionDeclaration * shader)
 {
   std::string shaderString = std::string("");
-  
+
+  _location = 0;
   _indent = 0;
   _shader = shader;
   _inDecl = nullptr;
@@ -579,6 +580,13 @@ std::string Transpiler::outputUniforms()
   return result;
 }
 
+std::string Transpiler::addLocation()
+{
+  std::string result = std::string("layout(location = ") + std::to_string(_location) + ")";
+  _location++;
+  return result;
+}
+
 std::string Transpiler::outputIn()
 {
   std::string result;
@@ -603,7 +611,7 @@ std::string Transpiler::outputIn()
 		const std::string dstMappedStructVariableName = mappedName + "_" + mappedMemberName;
 		_structMemberMap[srcMappedStructVariableName] = dstMappedStructVariableName;	  
 		
-		result += "in " + mappedMemberType + " " + dstMappedStructVariableName + ";\n";
+		result += addLocation() + " in " + mappedMemberType + " " + dstMappedStructVariableName + ";\n";
 	      }
 	    }
 	    
@@ -647,7 +655,7 @@ std::string Transpiler::outputOut()
 	  const std::string dstMappedStructVariableName = mappedName + "_" + mappedMemberName;
 	  _structMemberMap[srcMappedStructVariableName] = dstMappedStructVariableName;	  
 	
-	  result += "out " + mappedMemberType + " " + dstMappedStructVariableName + ";\n";
+	  result += addLocation() + " out " + mappedMemberType + " " + dstMappedStructVariableName + ";\n";
 	}
       }
     }
