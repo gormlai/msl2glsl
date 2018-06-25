@@ -4,13 +4,16 @@ Parses MSL and spits out GLSL
 *Contributors*
 Gorm Lai <lai.gorm@gmail.com>
 
-*Building*
+*Dependencies*
 
 To build the following programs are needed in your path:
 * Bison (v 3+)
 * Flex
 * Meson
 * A C++14 capable compiler
+
+*Building*
+
 
 
 *Inspirational sources*
