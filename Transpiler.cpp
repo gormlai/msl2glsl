@@ -881,7 +881,7 @@ std::string Transpiler::operateOn(struct Statement * statement)
 
 std::string Transpiler::createStructInitializer(struct Struct * strct, const std::string & initializations)
 {
-  std::string result = std::string("init_") +  strct->_name + "()\n{\n";
+  std::string result = strct->_name + " " + std::string("init_") +  strct->_name + "()\n{\n";
   _indent++;
 
   const std::string vName("init");
@@ -918,7 +918,7 @@ std::string Transpiler::createStructInitializer(struct Struct * strct, const std
 
   result += indent() + "return " + vName + ";\n";
   _indent--;
-  result += indent() + std::string("};\n\n");
+  result += indent() + std::string("}\n\n");
   return result;
 }
 
@@ -939,7 +939,13 @@ std::string Transpiler::operateOn(struct Struct * strct)
     // check if we can find an assignment
     std::size_t subPos = sub.find("=");
     if(subPos != std::string::npos) {
-      declsWithoutAssignment = declsWithoutAssignment + sub.substr(0,subPos);
+      std::string leftHand = sub.substr(0,subPos);
+      while(leftHand.find_last_of(" ") == (leftHand.length()-1))
+	leftHand = leftHand.substr(0, leftHand.length()-1);
+      
+      declsWithoutAssignment = declsWithoutAssignment + leftHand + ";";
+      // remove
+      
     }
     else {
       declsWithoutAssignment = declsWithoutAssignment + sub;
