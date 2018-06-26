@@ -264,6 +264,9 @@ std::string Transpiler::traverse(struct Node * node)
     case NodeType::BufferDescriptor:
       result = result + operateOn(static_cast<BufferDescriptor*>(node));
       break;
+    case NodeType::CastExpression:
+      result = result + operateOn(static_cast<CastExpression*>(node));
+      break;
     case NodeType::CompareExpression:
       result = result + operateOn(static_cast<CompareExpression*>(node));
       break;
@@ -487,6 +490,22 @@ std::string Transpiler::operateOn(struct Block * block)
 std::string Transpiler::operateOn(struct BufferDescriptor * desc)
 {
   return std::string("");
+}
+
+std::string Transpiler::operateOn(struct CastExpression * desc)
+{
+  // glsl doesn't support casts so we have to reformat it as a constructor
+  std::string result;
+  
+  if(desc != nullptr) {
+    result += desc->_castTo + "(";
+    
+    if(desc->_right!=nullptr)
+      result += traverse(desc->_right);
+
+    result += ")";
+  }
+  return result;
 }
 
 std::string Transpiler::operateOn(struct ConstantExpression * desc)

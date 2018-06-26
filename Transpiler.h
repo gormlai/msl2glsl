@@ -22,6 +22,7 @@ public:
 	std::string operateOn(struct BinaryExpression * desc);
 	std::string operateOn(struct Block * block);
 	std::string operateOn(struct BufferDescriptor * desc);
+	std::string operateOn(struct CastExpression * desc);
 	std::string operateOn(struct ConstantExpression * desc);
 	std::string operateOn(struct Expression * desc);
 	std::string operateOn(struct FunctionCall * node);
