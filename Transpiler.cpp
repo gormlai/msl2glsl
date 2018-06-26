@@ -879,15 +879,80 @@ std::string Transpiler::operateOn(struct Statement * statement)
   return result;
 }
 
+std::string Transpiler::createStructInitializer(struct Struct * strct, const std::string & initializations)
+{
+  std::string result = std::string("init_") +  strct->_name + "()\n{\n";
+  _indent++;
+
+  const std::string vName("init");
+  result += indent() + strct->_name + " " + vName + ";\n";
+
+  std::string rightHand = initializations;
+  while(true) {
+    std::size_t pos = rightHand.find(";");
+    if(pos == std::string::npos)
+      break;
+
+    std::string sub = rightHand.substr(0, pos+1);
+    // check if we can find an assignment
+    std::size_t subPos = sub.find("=");
+    if(subPos != std::string::npos) {
+      std::string assignment = sub.substr(subPos+1);
+      std::string leftHand = sub.substr(0, subPos);
+      
+      std::size_t lastSpace = leftHand.length() - 1;
+      while(lastSpace == leftHand.length()-1) {
+	leftHand = leftHand.substr(0, leftHand.length()-1);
+	lastSpace = leftHand.find_last_of(" ");
+      }
+
+      std::string variableName = leftHand.substr(lastSpace+1);
+      std::string codeLine = vName + "." + variableName + " =" + assignment;
+      result += indent() + codeLine + "\n";
+      
+    }
+             
+    rightHand = rightHand.substr(pos+1);
+  }
+  
+
+  result += indent() + "return " + vName + ";\n";
+  _indent--;
+  result += indent() + std::string("};\n\n");
+  return result;
+}
+
 std::string Transpiler::operateOn(struct Struct * strct)
 {
   std::string result = indent();
   result = result + "struct " + strct->_name + "\n";
 
-  result += traverse(&strct->_block);
+  std::string variables = traverse(&strct->_block);
+  std::string decls = variables;
+  std::string declsWithoutAssignment;
+  while(true) {
+    std::size_t pos = decls.find(";");
+    if(pos == std::string::npos)
+      break;
 
-  result += indent();
-  result = result + ";\n\n";
+    std::string sub = decls.substr(0, pos+1);
+    // check if we can find an assignment
+    std::size_t subPos = sub.find("=");
+    if(subPos != std::string::npos) {
+      declsWithoutAssignment = declsWithoutAssignment + sub.substr(0,subPos);
+    }
+    else {
+      declsWithoutAssignment = declsWithoutAssignment + sub;
+    }
+    
+    decls = decls.substr(pos+1);
+  }
+  
+
+  result += declsWithoutAssignment;
+  result = result + indent() + "\n};\n\n";
+
+  result = result + createStructInitializer(strct, variables);
 
   return result;
 }
