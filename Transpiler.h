@@ -73,7 +73,7 @@ private:
 	bool isSimpleGLType(const std::string & glType) const;
 	bool isSimpleGLType(VariableDeclaration * vDecl) const;
 	std::string extractAttributeIndex(VariableDeclaration * vDecl);
-	
+	std::string createStructInitializer(struct Struct * strct, const std::string & initializations);	
 	std::string baseOutVariableName() const;
 	std::string toCommaSeparatedList(const std::vector<VariableNameDeclaration *> & input, bool mapInput);
 	std::string addLocation(unsigned int & location);
