@@ -282,6 +282,9 @@ std::string Transpiler::traverse(struct Node * node)
     case NodeType::Expression:
       result = result + operateOn(static_cast<Expression*>(node));
       break;
+    case NodeType::JumpStatement:
+      result = result + operateOn(static_cast<JumpStatement*>(node));
+      break;
     case NodeType::Preprocessor:
       result = result + operateOn(static_cast<Preprocessor*>(node));
       break;
@@ -297,8 +300,8 @@ std::string Transpiler::traverse(struct Node * node)
     case NodeType::FunctionDeclaration:
       result = result + operateOn(static_cast<FunctionDeclaration*>(node));
       break;
-    case NodeType::SelectionStatement:
-      result = result + operateOn(static_cast<SelectionStatement*>(node));
+    case NodeType::LabeledStatement:
+      result = result + operateOn(static_cast<LabeledStatement*>(node));
       break;
     case NodeType::Node:
       result = result + operateOn(static_cast<Node*>(node));
@@ -306,8 +309,8 @@ std::string Transpiler::traverse(struct Node * node)
     case NodeType::Program:
       result = result + operateOn(static_cast<Program*>(node));
       break;
-    case NodeType::JumpStatement:
-      result = result + operateOn(static_cast<JumpStatement*>(node));
+    case NodeType::SelectionStatement:
+      result = result + operateOn(static_cast<SelectionStatement*>(node));
       break;
     case NodeType::Statement:
       result = result + operateOn(static_cast<Statement*>(node));
@@ -596,6 +599,32 @@ std::string Transpiler::operateOn(struct FunctionCallArgumentList * node)
       result = result + ",";
   }
 
+  return result;
+}
+
+std::string Transpiler::operateOn(struct LabeledStatement * statement)
+{
+  std::string result;
+
+  switch(statement->_type) {
+  case LabeledStatementType::Case:
+    result = result + indent();
+    result = result + "case ";
+    result = result + traverse(statement->_label);
+    result = result + ":\n";
+    result = result + indent();
+    result = result + traverse(statement->_statement);
+    result = result + "\n";
+    break;
+  case LabeledStatementType::Default:
+    result = result + indent();
+    result = result + "default:\n";
+    result = result + indent();
+    result = result + traverse(statement->_statement);
+    result = result + "\n";
+    break;
+  }
+  
   return result;
 }
 

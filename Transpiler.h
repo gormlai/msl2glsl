@@ -30,6 +30,7 @@ public:
 	std::string operateOn(struct FunctionCall * node);
 	std::string operateOn(struct FunctionCallArgumentList * node);
 	std::string operateOn(struct FunctionDeclaration * node);
+	std::string operateOn(struct LabeledStatement * statement);
 	std::string operateOn(struct Node * node);
 	std::string operateOn(struct Program * program);
 	std::string operateOn(struct JumpStatement * statement);
