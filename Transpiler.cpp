@@ -315,6 +315,9 @@ std::string Transpiler::traverse(struct Node * node)
     case NodeType::SelectExpression:
       result = result + operateOn(static_cast<SelectExpression*>(node));
       break;
+    case NodeType::SelectionStatement:
+      result = result + operateOn(static_cast<SelectionStatement*>(node));
+      break;
     case NodeType::Statement:
       result = result + operateOn(static_cast<Statement*>(node));
       break;
@@ -930,7 +933,40 @@ std::string Transpiler::operateOn(struct SelectExpression * exp)
   return result;
 }
 
+std::string Transpiler::operateOn(struct SelectionStatement * stmnt)
+{
+  std::string result;
+
+  switch(stmnt->_ifType) {
+  case SelectionStatementType::If:
+    result = result + "if(";
+    result = result + traverse(stmnt->_conditional);
+    result = result + ")\n";
+    result = result + traverse(stmnt->_statement);
+    break;
+  case SelectionStatementType::Else:
+    result = result + "else\n";
+    result = result + traverse(stmnt->_statement);
+    break;
+  case SelectionStatementType::ElseIf:
+    result = result + "else if(";
+    result = result + traverse(stmnt->_conditional);
+    result = result + ")\n";
+    result = result + traverse(stmnt->_statement);
+    break;
+  case SelectionStatementType::Switch:
+    result = result + "switch(";
+    result = result + traverse(stmnt->_conditional);
+    result = result + ")\n";
+    result = result + traverse(stmnt->_statement);
+    break;
+  }
   
+
+
+  return result;
+}
+
 std::string Transpiler::operateOn(struct JumpStatement * statement)
 {
   std::string result;

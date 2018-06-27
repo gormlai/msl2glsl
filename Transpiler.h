@@ -36,6 +36,7 @@ public:
 	std::string operateOn(struct Program * program);
 	std::string operateOn(struct Qualifier * qualifier);
 	std::string operateOn(struct SelectExpression * exp);
+	std::string operateOn(struct SelectionStatement * stmnt);
 	std::string operateOn(struct Statement * statement);
 	std::string operateOn(struct Struct * strct);
 	std::string operateOn(struct UnaryExpression * desc);
