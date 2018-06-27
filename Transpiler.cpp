@@ -285,9 +285,6 @@ std::string Transpiler::traverse(struct Node * node)
     case NodeType::JumpStatement:
       result = result + operateOn(static_cast<JumpStatement*>(node));
       break;
-    case NodeType::Preprocessor:
-      result = result + operateOn(static_cast<Preprocessor*>(node));
-      break;
     case NodeType::ForLoop:
       result = result + operateOn(static_cast<ForLoop*>(node));
       break;
@@ -306,11 +303,17 @@ std::string Transpiler::traverse(struct Node * node)
     case NodeType::Node:
       result = result + operateOn(static_cast<Node*>(node));
       break;
+    case NodeType::Preprocessor:
+      result = result + operateOn(static_cast<Preprocessor*>(node));
+      break;
     case NodeType::Program:
       result = result + operateOn(static_cast<Program*>(node));
       break;
-    case NodeType::SelectionStatement:
-      result = result + operateOn(static_cast<SelectionStatement*>(node));
+    case NodeType::Qualifier:
+      result = result + operateOn(static_cast<Qualifier*>(node));
+      break;
+    case NodeType::SelectExpression:
+      result = result + operateOn(static_cast<SelectExpression*>(node));
       break;
     case NodeType::Statement:
       result = result + operateOn(static_cast<Statement*>(node));
@@ -887,6 +890,47 @@ std::string Transpiler::operateOn(struct Program * program)
   return result;
 }
 
+std::string Transpiler::operateOn(struct Qualifier * qualifier)
+{
+  std::string result;
+  switch(qualifier->_type) {
+  case QualifierType::Constant:
+    break;
+  case QualifierType::Const:
+    break;
+  case QualifierType::Constexpr:
+    break;
+  case QualifierType::Device:
+    break;
+  case QualifierType::Signed:
+    result = "signed";
+    break;    
+  case QualifierType::Unsigned:
+    result = "unsigned";
+    break;
+  case QualifierType::Static:
+    break;
+    }
+  
+
+  return result;
+}
+
+std::string Transpiler::operateOn(struct SelectExpression * exp)
+{
+  std::string result;
+
+  result = result + indent();
+  result = result + traverse(exp->_left);
+  result = result + " ? ";
+  result = result + traverse(exp->_middle);
+  result = result + " : ";
+  result = result + traverse(exp->_right);  
+
+  return result;
+}
+
+  
 std::string Transpiler::operateOn(struct JumpStatement * statement)
 {
   std::string result;
