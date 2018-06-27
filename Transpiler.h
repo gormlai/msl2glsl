@@ -45,6 +45,7 @@ public:
 	std::string operateOn(struct VariableAttribute * node);
 	std::string operateOn(struct VariableDeclaration * node);
 	std::string operateOn(struct VariableList * node);
+	std::string operateOn(struct VariableNameDeclaration * node);
 
 	std::string traverse(struct Node * node);
 

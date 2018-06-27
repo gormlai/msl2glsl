@@ -342,6 +342,9 @@ std::string Transpiler::traverse(struct Node * node)
     case NodeType::VariableList:
       result = result + operateOn(static_cast<VariableList*>(node));
       break;      
+    case NodeType::VariableNameDeclaration:
+      result = result + operateOn(static_cast<VariableNameDeclaration*>(node));
+      break;      
     }
   
   return result;
@@ -1228,6 +1231,21 @@ std::string Transpiler::operateOn(struct VariableList * node)
   }
   return result;
 
+}
+
+std::string Transpiler::operateOn(struct VariableNameDeclaration * node)
+{
+  std::string result;
+
+  result = result + node->_variableName;
+  Expression * e = node->_expressionInBrackets;
+  if(e != nullptr) {
+    result = result + "[";
+    result = result + traverse(e);
+    result = result + "]";    
+  }
+  
+  return result;
 }
 
 std::string Transpiler::baseOutVariableName() const
