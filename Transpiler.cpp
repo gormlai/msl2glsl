@@ -63,8 +63,8 @@ std::string Transpiler::toCommaSeparatedList(const std::vector<VariableNameDecla
   std::string result;
   
   for(unsigned int i=0 ; i < (unsigned int)input.size() ; i++) {
-    const VariableNameDeclaration * vDecl = input[i];
-    const std::string val = mapIdentifiers ? mapIdentifier(vDecl->_variableName) : vDecl->_variableName;
+    VariableNameDeclaration * vDecl = input[i];
+    const std::string val = traverse(vDecl);
     result = result + val;
     if(i != input.size()-1)
       result = result + ", ";
