@@ -273,6 +273,12 @@ std::string Transpiler::traverse(struct Node * node)
     case NodeType::ConstantExpression:
       result = result + operateOn(static_cast<ConstantExpression*>(node));
       break;
+    case NodeType::DeclarationSpecifier:
+      result = result + operateOn(static_cast<DeclarationSpecifier*>(node));
+      break;
+    case NodeType::DeclarationSpecifierList:
+      result = result + operateOn(static_cast<DeclarationSpecifierList*>(node));
+      break;
     case NodeType::Expression:
       result = result + operateOn(static_cast<Expression*>(node));
       break;
@@ -536,6 +542,24 @@ std::string Transpiler::operateOn(struct ConstantExpression * desc)
 
   return result;
 }
+
+std::string Transpiler::operateOn(struct DeclarationSpecifier * desc)
+{
+  // DeclarationSpecifier is a Base class. Don't do anything here
+  std::string result;
+  return result;
+}
+
+std::string Transpiler::operateOn(struct DeclarationSpecifierList * descList)
+{
+  std::string result;
+  std::vector<DeclarationSpecifier*> specifiers = descList->_specifiers;
+  for(DeclarationSpecifier * spec : specifiers)
+    result = result + traverse(spec);
+
+  return result;
+}
+
 
 std::string Transpiler::operateOn(struct Expression * desc)
 {
