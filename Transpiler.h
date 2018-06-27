@@ -39,6 +39,7 @@ public:
 	std::string operateOn(struct SelectionStatement * stmnt);
 	std::string operateOn(struct Statement * statement);
 	std::string operateOn(struct Struct * strct);
+	std::string operateOn(struct TypeSpecifier * spec);
 	std::string operateOn(struct UnaryExpression * desc);
 	std::string operateOn(struct UsingDeclaration * usingDecl);
 	std::string operateOn(struct VariableAttribute * node);

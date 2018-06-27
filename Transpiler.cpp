@@ -324,6 +324,9 @@ std::string Transpiler::traverse(struct Node * node)
     case NodeType::Struct:
       result = result + operateOn(static_cast<Struct*>(node));
       break;
+    case NodeType::TypeSpecifier:
+      result = result + operateOn(static_cast<TypeSpecifier*>(node));
+      break;
     case NodeType::UnaryExpression:
       result = result + operateOn(static_cast<UnaryExpression*>(node));
       break;
@@ -1111,6 +1114,36 @@ std::string Transpiler::operateOn(struct Struct * strct)
   result = result + indent() + "\n};\n\n";
 
   result = result + createStructInitializer(strct, variables);
+
+  return result;
+}
+
+std::string Transpiler::operateOn(struct TypeSpecifier * spec)
+{
+  std::string result;
+  switch(spec->_type) {
+  case ETypeSpecifier::Int:
+    result = "int";
+    break;
+  case ETypeSpecifier::UnsignedInt:
+    result = "unsigned int";
+    break;
+  case ETypeSpecifier::Bool:
+    result = "bool";
+    break;
+  case ETypeSpecifier::Float:
+    result = "float";
+    break;
+  case ETypeSpecifier::Double:
+    result = "double";
+    break;
+  case ETypeSpecifier::Half:
+    result = "float";
+    break;
+  case ETypeSpecifier::Custom:
+    result = spec->_customTypeName;
+    break;
+  }
 
   return result;
 }
