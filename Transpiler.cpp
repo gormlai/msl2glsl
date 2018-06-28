@@ -207,6 +207,10 @@ std::string Transpiler::mapToGLType(const TypeSpecifier * typeSpec, const Buffer
       if(bufDesc->_type == "float")
 	result = "sampler2D";
     }
+    else if(result == "texture3d" && bufDesc->_accessor == "sample") {
+      if(bufDesc->_type == "float")
+	result = "sampler3D";
+    }
   }
 
   return mapIdentifier(result);
