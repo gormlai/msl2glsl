@@ -28,6 +28,7 @@ public:
 	std::string operateOn(struct DeclarationSpecifier * desc);
 	std::string operateOn(struct DeclarationSpecifierList * descList);
 	std::string operateOn(struct Expression * desc);
+	std::string operateOn(struct ForLoop * node);
 	std::string operateOn(struct FunctionCall * node);
 	std::string operateOn(struct FunctionCallArgumentList * node);
 	std::string operateOn(struct FunctionDeclaration * node);

@@ -694,6 +694,23 @@ std::string Transpiler::operateOn(struct Expression * desc)
   return result;
 }
 
+std::string Transpiler::operateOn(struct ForLoop * node)
+{
+  std::string result;
+
+  result += indent() + "for (";
+  result += traverse(node->_variableDeclarations);
+  result += " ; ";
+  result += traverse(node->_conditionals);
+  result += " ; ";
+  result += traverse(node->_increment);
+  result += ")\n";
+  result += indent() + traverse(node->_loop);
+
+  return result;
+}
+
+
 std::string Transpiler::operateOn(struct FunctionCall * node)
 {
   std::string result;
