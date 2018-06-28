@@ -220,6 +220,7 @@ std::string Transpiler::mapIdentifier(const std::string & src) const
 	{
 		{ "in", "in_" },
 		{ "out", "out_"},
+		{ "filter", "filter_"},
 		{ "float2", "vec2" },
 		{ "float3", "vec3" },
 		{ "float4", "vec4" },
@@ -1297,7 +1298,7 @@ std::string Transpiler::operateOn(struct VariableNameDeclaration * node)
 {
   std::string result;
 
-  result = result + node->_variableName;
+  result = result + mapIdentifier(node->_variableName);
   Expression * e = node->_expressionInBrackets;
   if(e != nullptr) {
     result = result + "[";
