@@ -408,9 +408,9 @@ std::string Transpiler::convert(struct Block * program, struct FunctionDeclarati
   const std::string mainProgram = traverse(program);
 
   _state = TranspilerState::CleaningUp;
-  shaderString = shaderString + "\n" + inOutUniforms + "\n";  
   shaderString += mainProgram;
-  shaderString = shaderString + "\n" + mainString + "\n";
+  shaderString += inOutUniforms + "\n";
+  shaderString += mainString + "\n";
   return shaderString;
 }
 
@@ -1031,13 +1031,14 @@ std::string Transpiler::operateOn(struct JumpStatement * statement)
   std::string result;
 
   std::string rightSide = traverse(statement->_expression);
-  
+
+  //  std::cout << "State = " << std::to_string((int)_state) << std::endl;
   if(_state == TranspilerState::OutputRestOfProgram) {
     // keep code as is
-    std::string result =  indent();
-    result = result + "return ";
+    result += indent();
+    result += "return ";
     result += rightSide;
-    result = result + ";\n";
+    result += ";\n";
   }
   else if(_state == TranspilerState::OutputMain) {
     // rewrite code to assign to an out variable
@@ -1079,7 +1080,6 @@ std::string Transpiler::operateOn(struct JumpStatement * statement)
     // todo - handle error
   }
   
-
   return result;
 }
 

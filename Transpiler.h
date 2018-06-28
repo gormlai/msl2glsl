@@ -4,11 +4,11 @@
 #include <string>
 
 enum class TranspilerState {
-  Init,
-    OutputGlobals,
-    OutputMain,
-    OutputRestOfProgram,
-    CleaningUp,
+  Init = 0,
+    OutputGlobals = 1,
+    OutputMain = 2,
+    OutputRestOfProgram = 3 ,
+    CleaningUp = 4,
     };
 
 class Transpiler
