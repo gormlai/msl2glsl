@@ -70,6 +70,11 @@ namespace
       "isampler3D",
     };
 
+  const std::set<std::string> g_metalTypesToRemove =
+    {
+      "sampler",
+    };
+
   std::map<std::string, Struct*> gatherStructs(Block * block)
   {
     std::map<std::string, Struct*> result;
@@ -85,6 +90,72 @@ namespace
     return result;
     
   }
+
+  bool isSupportedType(const std::string & variableDeclaration) {
+    std::vector<std::string> tokens = tokenize(variableDeclaration, " ");
+    std::string matchingElement = findMatchingElement(tokens, g_metalTypesToRemove);
+    return matchingElement.empty();
+  }
+
+  std::string rearrangeSampleCalls(const std::string & orgCode) {
+
+    constexpr int lowestLegalCharacter = 48;
+    constexpr int highestLegalCharacter = 122;
+
+    std::string workString = orgCode;
+    const std::string sample = "sample";
+    while(true) {
+      
+      std::size_t pos = workString.find(sample);
+      if(pos != std::string::npos) {
+	std::string leftSide = workString.substr(0, pos);
+	std::size_t leftDot = leftSide.find_last_of(".");
+	if(leftDot==std::string::npos)
+	  break;  // shouldn't happen with syntaxically correct code
+
+	leftSide = leftSide.substr(0,leftDot); // cut out the dot
+	
+	std::string rightSide = workString.substr(pos + sample.length());
+
+	// leftSide - start at the 
+	int identifierIndex = int(leftSide.length())-1;
+	for( ; identifierIndex>=0 ; identifierIndex--) {
+	  int asciiValue = leftSide[identifierIndex];
+	  if(asciiValue < lowestLegalCharacter || asciiValue > highestLegalCharacter) {
+	    identifierIndex++;
+	    break;
+	  }
+	}
+
+	const std::string textureName = leftSide.substr(identifierIndex);
+	// cut left side again
+	leftSide = leftSide.substr(0, identifierIndex);
+
+	// work on the right hand side.
+	// find everything between the first ( and ,
+	std::size_t leftMarker = rightSide.find("(");
+	std::size_t rightMarker = rightSide.find(",");
+	if(leftMarker==std::string::npos || rightMarker==std::string::npos)
+	  break; // shouldn't happen with syntaxically correct code
+
+	// take out the sampler name - it will be replaced with the texture name
+	const std::string right0 = rightSide.substr(0,leftMarker+1);
+	const std::string right1 = rightSide.substr(rightMarker);
+
+	// build the new string
+	workString = leftSide + "texture" + right0 + textureName + right1;
+	
+	
+      }
+      else
+	break;
+      
+    }
+
+    return workString;
+    
+  }
+  
 }
 
 std::string Transpiler::toCommaSeparatedList(const std::vector<VariableNameDeclaration*> & input, bool mapIdentifiers)
@@ -599,6 +670,8 @@ std::string Transpiler::operateOn(struct Block * block)
 
   result = result + indent();
   result = result + "}";
+
+  
   return result;
 }
 
@@ -1004,13 +1077,17 @@ std::string Transpiler::operateOn(struct FunctionDeclaration * node)
       
       result = result + ")\n";
 
-      if (node->_block != nullptr)
-	result += traverse(node->_block);
-      
+      if (node->_block != nullptr) {
+	std::string blockCode = traverse(node->_block);
+	// convert function code
+	result += rearrangeSampleCalls(blockCode);
+      }
+
       result = result + "\n\n";
       
     }
 
+  
   return result;
 }
 
@@ -1363,10 +1440,13 @@ std::string Transpiler::operateOn(struct VariableList * node)
   std::string result;
   const int count = (int)node->_variableDeclarations.size();
   for (int i = 0; i < count; i++) {
-    result += traverse(node->_variableDeclarations[i]);
+    std::string variableDecl = traverse(node->_variableDeclarations[i]);
+    if(isSupportedType(variableDecl)) {
+      result += variableDecl;
+      if (i != count - 1)
+	result = result + ", ";
+    }
     
-    if (i != count - 1)
-      result = result + ", ";
   }
   return result;
 
