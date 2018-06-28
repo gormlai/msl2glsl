@@ -1038,7 +1038,6 @@ std::string Transpiler::operateOn(struct JumpStatement * statement)
     result += indent();
     result += "return ";
     result += rightSide;
-    result += ";\n";
   }
   else if(_state == TranspilerState::OutputMain) {
     // rewrite code to assign to an out variable
