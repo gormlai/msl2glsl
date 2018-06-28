@@ -35,3 +35,4 @@ To build the following programs are needed in your path:
 * Argument parsing
 * Make location keyword on in/out optional
 * Make uniform blocks optional
+* Fix how initializers are handled as they only work with certain constructs
