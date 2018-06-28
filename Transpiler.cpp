@@ -1117,6 +1117,13 @@ std::string Transpiler::createStructInitializer(struct Struct * strct, const std
       }
 
       std::string variableName = leftHand.substr(lastSpace+1);
+      // remove brackets if they exist
+      std::size_t leftSquareBracketPos = variableName.find_last_of("[");
+      std::size_t rightSquareBracketPos = variableName.find_last_of("]");
+      if(leftSquareBracketPos!=std::string::npos && rightSquareBracketPos!=std::string::npos && leftSquareBracketPos < rightSquareBracketPos) {
+	variableName = variableName.substr(0, leftSquareBracketPos);
+      }
+      
       std::string codeLine = vName + "." + variableName + " =" + assignment;
       result += indent() + codeLine + "\n";
       
