@@ -382,6 +382,40 @@ std::string Transpiler::traverse(struct Node * node)
   return result;
 }
 
+
+std::string Transpiler::outputToolbox()
+{
+  return "\n"
+"#define saturate(x) clamp(x, 0.0f, 1.0f)\n"
+"\n"
+"vec3 uvec3ToVec3(uvec3 v)\n"
+"{\n"
+"  vec3 result;\n"
+"  result.x = uintBitsToFloat(v.x);\n"
+"  result.y = uintBitsToFloat(v.y);\n"
+"  result.z = uintBitsToFloat(v.z);\n"
+"  return result;\n"
+"}\n"
+"\n"
+"vec3 ivec3ToVec3(ivec3 v)\n"
+"{\n"
+"  vec3 result;\n"
+"  result.x = intBitsToFloat(v.x);\n"
+"  result.y = intBitsToFloat(v.y);\n"
+"  result.z = intBitsToFloat(v.z);\n"
+"  return result;\n"
+"}\n"
+"\n"
+"uvec3 vec3ToUvec3(vec3 v)\n"
+"{\n"
+"  uvec3 result;\n"
+"  result.x = floatBitsToUint(v.x);\n"
+"  result.y = floatBitsToUint(v.y);\n"
+"  result.z = floatBitsToUint(v.z);\n"
+"  return result;\n"
+"}\n";
+}
+
 std::string Transpiler::convert(struct Block * program, struct FunctionDeclaration * shader)
 {
   std::string shaderString = std::string("");
@@ -408,6 +442,8 @@ std::string Transpiler::convert(struct Block * program, struct FunctionDeclarati
   const std::string mainProgram = traverse(program);
 
   _state = TranspilerState::CleaningUp;
+
+  shaderString += outputToolbox();
   shaderString += mainProgram;
   shaderString += inOutUniforms + "\n";
   shaderString += mainString + "\n";

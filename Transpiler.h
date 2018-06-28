@@ -77,6 +77,7 @@ private:
 	std::string outputIn();
 	std::string outputOut();
 	std::string outputUniforms();
+	std::string outputToolbox();
 	void categoriseVariableDeclaration(VariableDeclaration * vDecl);
 	bool isSamplerGLType(const std::string & glType) const;
 	bool isSimpleGLType(const std::string & glType) const;
