@@ -332,8 +332,8 @@ selection_statement:
 
 simple_initialisation:
 	 	variable_declaration { $$ = $1; }
-	|	variable_declaration assign_operator expression { $$ = new Assignment($1, $2, $3); }
-	|	variable_declaration assign_operator BEGIN_CURLY_BRACKET function_argument_list END_CURLY_BRACKET { $$ = new Assignment($1, $2, $4); }	
+	|	variable_declaration assign_operator expression { $$ = new Assignment($1, $2, $3, false); }
+	|	variable_declaration assign_operator BEGIN_CURLY_BRACKET function_argument_list END_CURLY_BRACKET { $$ = new Assignment($1, $2, $4, true); }	
 	;
 
 init_statement:
@@ -460,7 +460,7 @@ conditional_expression:
 
 assignment_expression:
 		conditional_expression { $$ = $1; }
-	|	conditional_expression assign_operator assignment_expression { $$ = new Assignment($1, $2, $3); }
+	|	conditional_expression assign_operator assignment_expression { $$ = new Assignment($1, $2, $3, false); }
 	;
 
 expression:

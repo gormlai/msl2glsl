@@ -690,10 +690,11 @@ enum class AssignOperator {
 
 struct Assignment : public Expression
 {
- Assignment(Node * left, AssignOperator op,  Node * right)
+ Assignment(Node * left, AssignOperator op,  Node * right, bool isInitializer)
    :_left(left)
     ,_op(op)
     ,_right(right)
+    ,_isInitializer(isInitializer)
   {
 	 left->_parent = this;
 	 right->_parent = this;
@@ -707,6 +708,7 @@ struct Assignment : public Expression
   Node * _left;
   AssignOperator _op;
   Node * _right;
+  bool _isInitializer;
       
 };
 
@@ -768,6 +770,9 @@ struct VariableNameDeclaration : public Node
   VariableNameDeclaration(const std::string & variableName, Expression * expressionInBrackets)
     :_variableName(variableName)
     ,_expressionInBrackets(expressionInBrackets) {
+    
+    if(_expressionInBrackets != nullptr)
+      _expressionInBrackets->_parent = this;
   }
 
   void visit(Visitor * v) override;

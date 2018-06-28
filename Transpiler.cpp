@@ -4,9 +4,38 @@
 #include <map>
 #include <set>
 #include <iostream>
+#include <stdio.h>
+#include <string>
 
 namespace
 {
+  std::vector<std::string> tokenize(const std::string & str, const std::string & token)
+  {
+    std::vector<std::string> tokens;
+
+    std::size_t beginPos = str.find_first_not_of(token);
+    int maxLoops = str.length();
+    int i=0;
+    while(beginPos != std::string::npos && i < maxLoops) {
+      std::size_t endPos = str.find_first_of(token, beginPos);
+      const std::string sub = str.substr(beginPos, endPos - beginPos);
+      tokens.push_back(sub);
+      beginPos = str.find_first_not_of(token, endPos);      
+      i++;
+    }
+
+    return tokens;
+  }
+
+  std::string findMatchingElement(const std::vector<std::string> & first, const std::set<std::string> & second)
+  {
+    for(const std::string f : first) {
+      if(second.find(f) != second.end())
+	return f;
+    }
+    return "";
+  }
+
   
   const std::set<std::string> g_simpleGLTypes = 
     {
@@ -61,6 +90,7 @@ namespace
 std::string Transpiler::toCommaSeparatedList(const std::vector<VariableNameDeclaration*> & input, bool mapIdentifiers)
 {
   std::string result;
+
   
   for(unsigned int i=0 ; i < (unsigned int)input.size() ; i++) {
     VariableNameDeclaration * vDecl = input[i];
@@ -205,6 +235,7 @@ std::string Transpiler::mapIdentifier(const std::string & src) const
 		{ "uint2", "uvec2" },
 		{ "uint3", "uvec3" },
 		{ "uint4", "uvec4" },
+		{ "short", "int" },
 	};
 
 	std::string output = src;
@@ -382,12 +413,33 @@ std::string Transpiler::convert(struct Block * program, struct FunctionDeclarati
   return shaderString;
 }
 
+// TODO: handle operator type
 std::string Transpiler::operateOn(struct Assignment * desc)
 {
   std::string result =  indent();
-  result = result + traverse(desc->_left);
+  std::string left = traverse(desc->_left);
+  std::string right = traverse(desc->_right);
+
+  if(desc->_isInitializer) {
+    std::vector<std::string> tokens = tokenize(left, " ");
+    const std::string matchingElement = findMatchingElement(tokens, g_simpleGLTypes);
+    if(!matchingElement.empty()) {
+      // search for brackets
+      std::string brackets;
+      std::size_t leftSquareBracketPos = left.find_last_of("[");
+      std::size_t rightSquareBracketPos = left.find_last_of("]");
+      if(leftSquareBracketPos!=std::string::npos && rightSquareBracketPos!=std::string::npos && leftSquareBracketPos < rightSquareBracketPos) {
+	brackets = left.substr(leftSquareBracketPos, rightSquareBracketPos - leftSquareBracketPos + 1);
+	//	left = left.substr(0, leftSquareBracketPos);
+      }
+      
+      right = matchingElement + brackets + "(" + right + ")";
+    }
+  }
+  
+  result = result + left;
   result = result + " = ";
-  result = result + traverse(desc->_right);
+  result = result + right;
   return result;
 }
 
@@ -1039,10 +1091,10 @@ std::string Transpiler::operateOn(struct Statement * statement)
 
 std::string Transpiler::createStructInitializer(struct Struct * strct, const std::string & initializations)
 {
-  std::string result = strct->_name + " " + std::string("init_") +  strct->_name + "()\n{\n";
+  const std::string vName("init");
+  std::string result = strct->_name + " " + vName + std::string("_") +  strct->_name + "()\n{\n";
   _indent++;
 
-  const std::string vName("init");
   result += indent() + strct->_name + " " + vName + ";\n";
 
   std::string rightHand = initializations;
@@ -1086,6 +1138,7 @@ std::string Transpiler::operateOn(struct Struct * strct)
   result = result + "struct " + strct->_name + "\n";
 
   std::string variables = traverse(&strct->_block);
+  
   std::string decls = variables;
   std::string declsWithoutAssignment;
   while(true) {
