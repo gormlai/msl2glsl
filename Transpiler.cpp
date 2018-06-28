@@ -455,7 +455,7 @@ std::string Transpiler::operateOn(struct BinaryExpression * desc)
       "*",
       "/",
       ".",
-      "->",
+      ".", // -> is mapped into .
       "",
       "|",
       "||",
