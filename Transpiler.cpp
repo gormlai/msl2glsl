@@ -237,6 +237,7 @@ std::string Transpiler::mapIdentifier(const std::string & src) const
 		{ "uint3", "uvec3" },
 		{ "uint4", "uvec4" },
 		{ "short", "int" },
+		{ "fmod", "mod" },
 	};
 
 	std::string output = src;
@@ -617,6 +618,27 @@ std::string Transpiler::operateOn(struct CastExpression * desc)
   }
   return result;
 }
+
+std::string Transpiler::operateOn(struct CompareExpression * exp)
+{
+  std::string result;
+
+  const char * ops[] = {
+    "==",
+    ">",
+    ">=",
+    "<",
+    "<=",
+    "!=",
+  };
+
+  const std::string left = traverse(exp->_left);
+  const std::string right = traverse(exp->_right);
+
+  result = left + ops[(int)exp->_op] + right;
+  return result;
+}
+
 
 std::string Transpiler::operateOn(struct ConstantExpression * desc)
 {
