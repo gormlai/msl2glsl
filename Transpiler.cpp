@@ -103,19 +103,28 @@ namespace
     constexpr int highestLegalCharacter = 122;
 
     std::string workString = orgCode;
-    const std::string sample = "sample";
-    while(true) {
+    const std::map<std::string, std::string> wordMappings =
+      {
+	{ "sample", "texture" },
+	{ "read", "imageLoad" },
+      };
+
+    auto it = wordMappings.begin();
+    
+    while(it != wordMappings.end()) {
       
-      std::size_t pos = workString.find(sample);
+      std::size_t pos = workString.find(it->first);
       if(pos != std::string::npos) {
 	std::string leftSide = workString.substr(0, pos);
 	std::size_t leftDot = leftSide.find_last_of(".");
-	if(leftDot==std::string::npos)
-	  break;  // shouldn't happen with syntaxically correct code
+	if(leftDot==std::string::npos) {
+	  it++;
+	  continue;  // shouldn't happen with syntaxically correct code
+	}
 
 	leftSide = leftSide.substr(0,leftDot); // cut out the dot
 	
-	std::string rightSide = workString.substr(pos + sample.length());
+	std::string rightSide = workString.substr(pos + it->first.length());
 
 	// leftSide - start at the 
 	int identifierIndex = int(leftSide.length())-1;
@@ -135,20 +144,21 @@ namespace
 	// find everything between the first ( and ,
 	std::size_t leftMarker = rightSide.find("(");
 	std::size_t rightMarker = rightSide.find(",");
-	if(leftMarker==std::string::npos || rightMarker==std::string::npos)
-	  break; // shouldn't happen with syntaxically correct code
+	if(leftMarker==std::string::npos || rightMarker==std::string::npos) {
+	  it++;
+	  continue; // shouldn't happen with syntaxically correct code
+	}
 
 	// take out the sampler name - it will be replaced with the texture name
 	const std::string right0 = rightSide.substr(0,leftMarker+1);
 	const std::string right1 = rightSide.substr(rightMarker);
 
 	// build the new string
-	workString = leftSide + "texture" + right0 + textureName + right1;
-	
-	
+	const std::string substitute = leftSide + it->second + right0 + textureName + right1;
+	workString = substitute;
       }
       else
-	break;
+	it++;
       
     }
 
@@ -281,6 +291,14 @@ std::string Transpiler::mapToGLType(const TypeSpecifier * typeSpec, const Buffer
     else if(result == "texture3d" && bufDesc->_accessor == "sample") {
       if(bufDesc->_type == "float")
 	result = "sampler3D";
+    }
+    else if(result == "texture2d" && bufDesc->_accessor == "read") {
+      if(bufDesc->_type == "float")
+	result = "image2D";
+    }
+    else if(result == "texture3d" && bufDesc->_accessor == "read") {
+      if(bufDesc->_type == "float")
+	result = "image3D";
     }
   }
 
