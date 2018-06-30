@@ -1465,8 +1465,9 @@ std::string Transpiler::operateOn(struct VariableList * node)
       if (i != count - 1)
 	result = result + ", ";
     }
-    else
-      node->_unsupportedVariables.push_back(vDecl);
+    else {
+      node->insertUnsupported(vDecl);
+    }
     
   }
   return result;

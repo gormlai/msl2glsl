@@ -518,7 +518,11 @@ struct VariableList : public Node
   std::vector<Node*> getChildren() override { std::vector<Node*> nodes; for(auto v : _variableDeclarations) nodes.push_back(v); return nodes;  }
 
   // work data
-  std::vector<VariableDeclaration *> _unsupportedVariables;
+  void insertUnsupported(VariableDeclaration * vDecl) {
+    if(_unsupportedVariables.find(vDecl) == _unsupportedVariables.end())
+      _unsupportedVariables.insert(vDecl);
+  }
+  std::set<VariableDeclaration *> _unsupportedVariables;
 
   
 };
