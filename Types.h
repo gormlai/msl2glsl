@@ -515,7 +515,12 @@ struct VariableList : public Node
   NodeType getNodeType() const override { return NodeType::VariableList; }
   
   std::vector<VariableDeclaration *> _variableDeclarations;
-  std::vector<Node*> getChildren() override { std::vector<Node*> nodes; for(auto v : _variableDeclarations) nodes.push_back(v); return nodes;  }  
+  std::vector<Node*> getChildren() override { std::vector<Node*> nodes; for(auto v : _variableDeclarations) nodes.push_back(v); return nodes;  }
+
+  // work data
+  std::vector<VariableDeclaration *> _unsupportedVariables;
+
+  
 };
 
 enum class SelectionStatementType
@@ -635,6 +640,7 @@ struct FunctionDeclaration : public Statement
   std::string _name;
   VariableList * _variables;
   Block * _block;
+
 
 };
 

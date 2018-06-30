@@ -1458,12 +1458,15 @@ std::string Transpiler::operateOn(struct VariableList * node)
   std::string result;
   const int count = (int)node->_variableDeclarations.size();
   for (int i = 0; i < count; i++) {
-    std::string variableDecl = traverse(node->_variableDeclarations[i]);
+    VariableDeclaration * vDecl = node->_variableDeclarations[i];
+    std::string variableDecl = traverse(vDecl);
     if(isSupportedType(variableDecl)) {
       result += variableDecl;
       if (i != count - 1)
 	result = result + ", ";
     }
+    else
+      node->_unsupportedVariables.push_back(vDecl);
     
   }
   return result;
