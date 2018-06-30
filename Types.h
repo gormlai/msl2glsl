@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <set>
 
 class Visitor;
 
@@ -64,6 +65,16 @@ public:
   virtual NodeType getNodeType() const { return NodeType::Node; }
   Node * getParent() { return _parent; }
   virtual std::vector<Node*> getChildren() { return std::vector<Node*>(); }
+
+  Node * getParentOfType(NodeType parentType) {
+    if(_parent == nullptr)
+      return nullptr;
+
+    if(_parent->getNodeType() == parentType)
+      return _parent;
+
+    return _parent->getParentOfType(parentType);
+  }
 
 public:
 	Node * _parent;
