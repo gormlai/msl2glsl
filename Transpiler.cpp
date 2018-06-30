@@ -823,15 +823,24 @@ std::string Transpiler::operateOn(struct FunctionCall * node)
 std::string Transpiler::operateOn(struct FunctionCallArgumentList * node)
 {
   std::string result;
+
+  VariableList * vList = nullptr;
+  FunctionDeclaration * funcDecl = static_cast<FunctionDeclaration*>(node->getParentOfType(NodeType::FunctionDeclaration));
+  if(funcDecl != nullptr)
+    vList = funcDecl->_variables;
   
   const unsigned int size = (unsigned int)node->_expressions.size();
   for (unsigned int i = 0; i < size; i++) {
     
     Expression * e = node->_expressions[i];
-    result = result + traverse(e);
+    const std::string sE = traverse(e);
+    if(vList==nullptr || vList->isVariableSupported(sE)) {
+    result = sE + traverse(e);
 
     if (i != size - 1)
       result = result + ",";
+    }
+    
   }
 
   return result;

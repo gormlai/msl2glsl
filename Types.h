@@ -67,7 +67,7 @@ public:
   virtual std::vector<Node*> getChildren() { return std::vector<Node*>(); }
 
   Node * getParentOfType(NodeType parentType) {
-    if(_parent == nullptr)
+    if(this==nullptr || _parent == nullptr)
       return nullptr;
 
     if(_parent->getNodeType() == parentType)
@@ -87,6 +87,8 @@ struct VariableAttribute : public Node
     :_sAttribute(sAttribute)
     ,_eAttribute(eAttribute)
     {
+      if(_eAttribute!=nullptr)
+	_eAttribute->_parent = this;
     }
 
   virtual ~VariableAttribute() {}
@@ -484,6 +486,24 @@ struct Qualifier : public DeclarationSpecifier
   QualifierType _type;
 };
 
+struct VariableNameDeclaration : public Node
+{
+  VariableNameDeclaration(const std::string & variableName, Expression * expressionInBrackets)
+    :_variableName(variableName)
+    ,_expressionInBrackets(expressionInBrackets) {
+    
+    if(_expressionInBrackets != nullptr)
+      _expressionInBrackets->_parent = this;
+  }
+
+  void visit(Visitor * v) override;
+  NodeType getNodeType() const override { return NodeType::VariableNameDeclaration; }
+    
+  std::string _variableName;
+  Expression * _expressionInBrackets;
+};
+
+
 struct VariableDeclaration : public Statement
 {
  public:
@@ -511,6 +531,14 @@ struct VariableDeclaration : public Statement
   void visit(Visitor * v) override;
   NodeType getNodeType() const override { return NodeType::VariableDeclaration; }
 
+  bool hasVariableNameDeclaration(const std::string & vName) {
+    for(VariableNameDeclaration * vNameDecl : _variableNames) {
+      if(vNameDecl->_variableName == vName)
+	return true;
+    }
+    return false;
+  }
+
   DeclarationSpecifierList * _declarationSpecifiers;
   std::vector<VariableNameDeclaration*> _variableNames;
   VariableAttribute * _attribute;
@@ -535,6 +563,13 @@ struct VariableList : public Node
   }
   std::set<VariableDeclaration *> _unsupportedVariables;
 
+  bool isVariableSupported(const std::string & vName) {
+    for(VariableDeclaration * vDecl : _unsupportedVariables) {
+      if(vDecl->hasVariableNameDeclaration(vName))
+	return false;
+    }
+    return true;    
+  }
   
 };
 
@@ -786,22 +821,6 @@ struct SelectExpression : public Expression
   Node * _right;
 };
 
-struct VariableNameDeclaration : public Node
-{
-  VariableNameDeclaration(const std::string & variableName, Expression * expressionInBrackets)
-    :_variableName(variableName)
-    ,_expressionInBrackets(expressionInBrackets) {
-    
-    if(_expressionInBrackets != nullptr)
-      _expressionInBrackets->_parent = this;
-  }
-
-  void visit(Visitor * v) override;
-  NodeType getNodeType() const override { return NodeType::VariableNameDeclaration; }
-    
-  std::string _variableName;
-  Expression * _expressionInBrackets;
-};
 
 
 
