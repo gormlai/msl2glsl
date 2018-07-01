@@ -67,7 +67,7 @@ public:
   virtual std::vector<Node*> getChildren() { return std::vector<Node*>(); }
 
   Node * getParentOfType(NodeType parentType) {
-    if(this==nullptr || _parent == nullptr)
+    if(_parent == nullptr)
       return nullptr;
 
     if(_parent->getNodeType() == parentType)
@@ -83,7 +83,7 @@ public:
 struct VariableAttribute : public Node
 {
  public:
-  VariableAttribute(const std::string & sAttribute, struct Expression * eAttribute = nullptr )
+  VariableAttribute(const std::string & sAttribute, struct Node * eAttribute = nullptr )
     :_sAttribute(sAttribute)
     ,_eAttribute(eAttribute)
     {
@@ -97,7 +97,7 @@ struct VariableAttribute : public Node
   NodeType getNodeType() const override { return NodeType::VariableAttribute; }
 
   std::string _sAttribute;
-  Expression * _eAttribute;
+  Node * _eAttribute;
 };
 
 struct DeclarationSpecifier : public Node
@@ -177,7 +177,7 @@ struct Program : public Block
 {
  public:
   Program(Block * src = nullptr) {
-    if(src!=nullptr)
+    if(src!=nullptr) 
       _nodes = src->_nodes;
   }
   
@@ -223,6 +223,7 @@ struct Struct : public Statement
   Struct(const std::string & name)
     :_name(name)
   {
+    _block._parent = this;
   }
 
   virtual ~Struct() {}
@@ -526,6 +527,10 @@ struct VariableDeclaration : public Statement
 
 	 if (declarationSpecifiers != nullptr)
 	   declarationSpecifiers->_parent = this;
+
+	 for(VariableNameDeclaration * vNameDecl : variableNames)
+	   vNameDecl->_parent = this;
+
   }
   
   void visit(Visitor * v) override;
@@ -618,6 +623,11 @@ struct LabeledStatement : public Statement
     ,_label(label)
     ,_statement(statement)
   {
+    if(_label!=nullptr)
+      _label->_parent = this;
+
+    if(_statement!=nullptr)
+      _statement->_parent = this;
   }
 
   virtual ~LabeledStatement() {}
@@ -820,9 +830,6 @@ struct SelectExpression : public Expression
   Node * _middle;
   Node * _right;
 };
-
-
-
 
 extern Program * _root;
 

@@ -890,7 +890,7 @@ std::string  Transpiler::extractAttributeIndex(VariableDeclaration * vDecl)
   std::string result;
   if(vDecl!=nullptr && vDecl->_attribute!=nullptr) {
     VariableAttribute * attribute = vDecl->_attribute;
-    Expression * e = attribute->_eAttribute;
+    Expression * e = static_cast<Expression*>(attribute->_eAttribute);
     if(e!=nullptr) {
       result = traverse(e);
     }
