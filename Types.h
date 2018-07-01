@@ -310,10 +310,10 @@ public:
 		_double = value;
 	}
 
-	ConstantExpression(ConstantType type, const std::string & value)
+	ConstantExpression(ConstantType type, const std::string value)
 		:_type(type)
+		,_identifier(value)
 	{
-		_identifier = value;
 	}
 
 	ConstantExpression() {}
