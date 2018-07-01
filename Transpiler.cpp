@@ -824,6 +824,10 @@ std::string Transpiler::operateOn(struct FunctionCallArgumentList * node)
 {
   std::string result;
 
+  if(node == nullptr)
+    return result;
+
+  std::cout << "FunctionCallArgumentList!!" << std::endl;
   VariableList * vList = nullptr;
   FunctionDeclaration * funcDecl = static_cast<FunctionDeclaration*>(node->getParentOfType(NodeType::FunctionDeclaration));
   if(funcDecl != nullptr)

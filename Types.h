@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 #include <set>
+#include <iostream>
 
 class Visitor;
 
@@ -67,6 +68,9 @@ public:
   virtual std::vector<Node*> getChildren() { return std::vector<Node*>(); }
 
   Node * getParentOfType(NodeType parentType) {
+    printf("this=%p, _parent=%p\n,", this, _parent);
+    std::cout << "getParentOfType this=" << std::to_string(int(getNodeType())) << ", searching for " << std::to_string(int(parentType)) << std::endl;
+    
     if(_parent == nullptr)
       return nullptr;
 
@@ -762,8 +766,11 @@ struct Assignment : public Expression
     ,_right(right)
     ,_isInitializer(isInitializer)
   {
-	 left->_parent = this;
-	 right->_parent = this;
+    if(left!=nullptr)
+      left->_parent = this;
+
+    if(right!=nullptr)
+      right->_parent = this;
   }
 
   virtual ~Assignment() {}

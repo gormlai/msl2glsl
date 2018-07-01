@@ -39,7 +39,7 @@ sources = [
   'Visitor.cpp',
   lfiles, pfiles]
 
-add_global_arguments(['-std=c++14','-g'], language : 'cpp')
+add_global_arguments(['-std=c++14','-g','-Wall','-Wextra'], language : 'cpp')
 e = executable('metalparser', sources, )
 
 test('parsertest', e)
