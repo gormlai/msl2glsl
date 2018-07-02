@@ -87,7 +87,7 @@ public:
 struct VariableAttribute : public Node
 {
  public:
-  VariableAttribute(const std::string & sAttribute, struct Node * eAttribute = nullptr )
+  VariableAttribute(const std::string sAttribute, struct Node * eAttribute = nullptr )
     :_sAttribute(sAttribute)
     ,_eAttribute(eAttribute)
     {
@@ -192,7 +192,7 @@ struct Program : public Block
 struct Preprocessor : public Statement
 {
  public:
-  Preprocessor(const std::string & definition)
+  Preprocessor(const std::string definition)
     :_definition(definition)
   {
   }
@@ -209,7 +209,7 @@ struct Preprocessor : public Statement
 struct UsingDeclaration : public Statement
 {
  public:
-  UsingDeclaration(const std::string & nmspace)
+  UsingDeclaration(const std::string nmspace)
     :_nmspace(nmspace)
   {
   }
@@ -224,7 +224,7 @@ struct UsingDeclaration : public Statement
 struct Struct : public Statement
 {
  public:
-  Struct(const std::string & name)
+  Struct(const std::string name)
     :_name(name)
   {
     _block._parent = this;
@@ -243,7 +243,7 @@ struct Struct : public Statement
 struct BufferDescriptor : public Node
 {
 public:
-  BufferDescriptor(const std::string & type, const std::string & accessor)
+  BufferDescriptor(const std::string type, const std::string & accessor)
     :_type(type)
     ,_accessor(accessor)
   {
@@ -449,7 +449,7 @@ enum class ReservedToken
 struct CastExpression : public Expression
 {
  public:
-  CastExpression(const std::string & castTo, Expression * right)
+  CastExpression(const std::string castTo, Expression * right)
     :_castTo(castTo)
     ,_right(right)
   {
@@ -493,7 +493,7 @@ struct Qualifier : public DeclarationSpecifier
 
 struct VariableNameDeclaration : public Node
 {
-  VariableNameDeclaration(const std::string & variableName, Expression * expressionInBrackets)
+  VariableNameDeclaration(const std::string variableName, Expression * expressionInBrackets)
     :_variableName(variableName)
     ,_expressionInBrackets(expressionInBrackets) {
     
@@ -540,7 +540,7 @@ struct VariableDeclaration : public Statement
   void visit(Visitor * v) override;
   NodeType getNodeType() const override { return NodeType::VariableDeclaration; }
 
-  bool hasVariableNameDeclaration(const std::string & vName) {
+  bool hasVariableNameDeclaration(const std::string vName) {
     for(VariableNameDeclaration * vNameDecl : _variableNames) {
       if(vNameDecl->_variableName == vName)
 	return true;
@@ -680,7 +680,7 @@ struct FunctionDeclaration : public Statement
  public:
  FunctionDeclaration(const FunctionType functionType,
 		     DeclarationSpecifierList * declarationSpecifiers,
-		      const std::string & name,
+		      const std::string name,
 		      VariableList * variables,
 		      Block * block)
    :_functionType(functionType)
@@ -726,7 +726,7 @@ public:
 
 struct FunctionCall : public Expression
 {
-	FunctionCall(const std::string & name, FunctionCallArgumentList * arguments)
+	FunctionCall(const std::string name, FunctionCallArgumentList * arguments)
 	  :_name(name)
     ,_arguments(arguments)
 	{

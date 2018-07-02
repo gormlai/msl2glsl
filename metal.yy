@@ -376,7 +376,7 @@ statement:
 	|	function_declaration { $$ = $1; }
 		;
 
-identifier: IDENTIFIER { $$ = new std::string(*$1); delete $1; }
+identifier: IDENTIFIER { $$ = new std::string(*$1); }
 		;
 
 function_argument_list:

@@ -838,8 +838,9 @@ std::string Transpiler::operateOn(struct FunctionCallArgumentList * node)
     
     Expression * e = node->_expressions[i];
     const std::string sE = traverse(e);
-    if(vList==nullptr || vList->isVariableSupported(sE)) {
-    result = sE + traverse(e);
+//    if(vList==nullptr || vList->isVariableSupported(sE)) 
+	{
+    result = result + sE;
 
     if (i != size - 1)
       result = result + ",";
