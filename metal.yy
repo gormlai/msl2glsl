@@ -213,12 +213,12 @@ class Scanner;
 %locations
 
 %%
-translation_unit: statement_list { _root = new Program($1); $$ = _root; delete $1; }
+translation_unit: statement_list { _root = new Program($1); $$ = _root; }
 		;
 
-struct: STRUCT identifier compound_statement { $$ = new Struct(*$2); $$->_block = *$3; delete $3; }
-	| TYPEDEF STRUCT compound_statement identifier { $$ = new Struct(*$4); $$->_block = *$3; delete $3; }
-	| TYPEDEF STRUCT identifier compound_statement identifier { $$ = new Struct(*$5); $$->_block = *$4; delete $4; }
+struct: STRUCT identifier compound_statement { $$ = new Struct(*$2); $3->_parent = $$; $$->_block = *$3; }
+	| TYPEDEF STRUCT compound_statement identifier { $$ = new Struct(*$4); $3->_parent = $$; $$->_block = *$3; }
+	| TYPEDEF STRUCT identifier compound_statement identifier { $$ = new Struct(*$5); $4->_parent = $$; $$->_block = *$4; }
 		;
 
 statement_list:	

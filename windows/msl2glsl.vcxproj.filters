@@ -94,11 +94,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\metal.ll">
-      <Filter>Flex Bison</Filter>
-    </None>
-    <None Include="..\metal.yy">
-      <Filter>Flex Bison</Filter>
-    </None>
+    <Bison Include="..\metal.yy" />
+  </ItemGroup>
+  <ItemGroup>
+    <Flex Include="..\metal.ll" />
   </ItemGroup>
 </Project>
