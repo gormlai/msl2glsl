@@ -353,12 +353,16 @@ std::string Transpiler::mapIdentifier(const std::string & src) const
 	{ "half4", "vec4" },
 	{ "matrix_float4x4", "mat4" },
 	{ "packed_float3", "vec3" },
+	{ "char2", "ivec2" },
+	{ "char3", "ivec3" },
+	{ "char4", "ivec4" },
 	{ "uchar2", "uvec2" },
 	{ "uchar3", "uvec3" },
 	{ "uchar4", "uvec4" },
 	{ "uint2", "uvec2" },
 	{ "uint3", "uvec3" },
 	{ "uint4", "uvec4" },
+	{ "char", "int" },
 	{ "short", "int" },
 	{ "fmod", "mod" },
 	};
@@ -553,7 +557,7 @@ std::string Transpiler::convert(struct Block * program, struct FunctionDeclarati
 	_topLevelStructs = ::gatherStructs(program);
 
 	_state = TranspilerState::Init;
-	shaderString = shaderString + "#version 430 core\n\n";
+	shaderString = shaderString + "#version 450 core\n\n";
 
 	// add version marker - needs more flexibility in future versions
 	_state = TranspilerState::OutputGlobals;
