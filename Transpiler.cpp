@@ -336,6 +336,15 @@ std::string Transpiler::mapToGLType(const TypeSpecifier * typeSpec, const Buffer
 
 }
 
+std::string Transpiler::mapExpression(const std::string & src) const {
+	std::string mappedIdentifier = mapIdentifier(src);
+	if (src == mappedIdentifier) {
+		mappedIdentifier = mapStructMember(src);
+	}
+	return mappedIdentifier;
+
+}
+
 
 std::string Transpiler::mapIdentifier(const std::string & src) const
 {
@@ -508,7 +517,8 @@ std::string Transpiler::traverse(struct Node * node)
 		break;
 	}
 
-	return result;
+	std::string mappedExpression = mapExpression(result);
+	return mappedExpression;
 }
 
 
@@ -554,7 +564,8 @@ std::string Transpiler::convert(struct Block * program, struct FunctionDeclarati
 	_uniformLocation = 0;
 	_indent = 0;
 	_shader = shader;
-	_inDecl = nullptr;
+	_inVariables.clear();
+	_uniformVariables.clear();
 	_topLevelStructs = ::gatherStructs(program);
 
 	_state = TranspilerState::Init;
@@ -645,10 +656,12 @@ std::string Transpiler::operateOn(struct BinaryExpression * desc)
 	case BinaryOperator::LeftShift:
 	case BinaryOperator::RightShift:
 	case BinaryOperator::XOr:
-	case BinaryOperator::Modulo:
-		result = result + traverse(desc->_left);
-		result = result + ops[(int)desc->_op];
-		result = result + traverse(desc->_right);
+	case BinaryOperator::Modulo: {
+		const std::string left = traverse(desc->_left);
+		const std::string right = traverse(desc->_right);
+		const std::string op = ops[(int)desc->_op];
+		result = result + left + op + right;
+	}
 		break;
 	case BinaryOperator::Cast:
 		result = result + "(";
@@ -656,11 +669,11 @@ std::string Transpiler::operateOn(struct BinaryExpression * desc)
 		result = result + ")";
 		result = result + traverse(desc->_right);
 		break;
-	case BinaryOperator::Index:
-		result = result + traverse(desc->_left);
-		result = result + "[";
-		result = result + traverse(desc->_right);
-		result = result + "]";
+	case BinaryOperator::Index: {
+		std::string left = traverse(desc->_left);
+		std::string right = traverse(desc->_right);
+		result = result + left + "[" + right + "]";
+	}
 		break;
 	case BinaryOperator::Dot:
 	case BinaryOperator::Pointer: {
@@ -742,8 +755,10 @@ std::string Transpiler::operateOn(struct CastExpression * desc)
 		const std::string mappedCastTo = mapIdentifier(desc->_castTo);
 		result += mappedCastTo + "(";
 
-		if (desc->_right != nullptr)
-			result += traverse(desc->_right);
+		if (desc->_right != nullptr) {
+			const std::string right = traverse(desc->_right);
+			result += right;
+		}
 
 		result += ")";
 	}
@@ -920,11 +935,34 @@ std::string Transpiler::operateOn(struct LabeledStatement * statement)
 
 void Transpiler::categoriseVariableDeclaration(VariableDeclaration * vDecl)
 {
+	DeclarationSpecifierList * declList = vDecl->_declarationSpecifiers;
+	if (declList != nullptr) {
+		for (DeclarationSpecifier * specifier : declList->_specifiers) {
+			switch (specifier->getNodeType()) {
+			case NodeType::Qualifier:
+			{
+				Qualifier * qual = static_cast<Qualifier*>(specifier);
+				switch (qual->_type) {
+				case QualifierType::Device:
+					_inVariables.push_back(vDecl);
+					break;
+				default:
+					break;
+				}
+			}
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+
 	VariableAttribute * vAttrib = vDecl->_attribute;
 	if (vAttrib != nullptr) {
 		const std::string & sAttrib = vAttrib->_sAttribute;
 		if (sAttrib == "stage_in") {
-			_inDecl = vDecl;
+			_inVariables.push_back(vDecl);
 		}
 		else
 			_uniformVariables.push_back(vDecl);
@@ -1011,10 +1049,21 @@ std::string Transpiler::outputIn()
 	std::string result;
 
 	// handle in
-	if (_inDecl != nullptr) {
-		const std::string mappedType = mapToGLType(_inDecl);
-		for (const VariableNameDeclaration * variableName : _inDecl->_variableNames) {
+	for(VariableDeclaration * inDecl : _inVariables) {
+		const std::string mappedType = mapToGLType(inDecl);
+
+		std::string addendum;
+		if (inDecl->_reservedToken == ReservedToken::Star) {
+			addendum = std::string("[vid]");
+		}
+
+		for (const VariableNameDeclaration * variableName : inDecl->_variableNames) {
 			const std::string mappedName = mapIdentifier(variableName->_variableName);
+			if (mappedName == "vertex_array") {
+				int k = 0;
+				k = 1;
+			}
+
 			if (isSimpleGLType(mappedType))
 				result += addLocation(_outLocation) + " in " + mappedType + " " + mappedName + ";\n";
 			else { // else search for struct
@@ -1023,15 +1072,17 @@ std::string Transpiler::outputIn()
 					Struct * strct = it->second;
 					std::vector<VariableDeclaration*> variables = strct->getVariables();
 					for (VariableDeclaration * variable : variables) {
+
 						const std::string mappedMemberType = mapToGLType(variable);
 						for (const VariableNameDeclaration * mappedVariableName : variable->_variableNames) {
 							const std::string mappedMemberName = mapIdentifier(mappedVariableName->_variableName);
-							const std::string srcMappedStructVariableName = mappedName + "." + mappedMemberName;
+							const std::string srcMappedStructVariableName = mappedName + addendum + "." + mappedMemberName;
 							const std::string dstMappedStructVariableName = mappedName + "_" + mappedMemberName;
 							_structMemberMap[srcMappedStructVariableName] = dstMappedStructVariableName;
 
 							result += addLocation(_outLocation) + " in " + mappedMemberType + " " + dstMappedStructVariableName + ";\n";
 						}
+
 					}
 
 				}

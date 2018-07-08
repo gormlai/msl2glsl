@@ -58,7 +58,7 @@ private:
 	
 	int _indent;
 	FunctionDeclaration * _shader;
-	VariableDeclaration * _inDecl; // what are the in variables?
+	std::vector<VariableDeclaration*> _inVariables; 
 	std::map<std::string,Struct*> _topLevelStructs; // for mapping in, out and uniform variables
 	std::map<std::string, std::string> _structMemberMap;
 	std::vector<VariableDeclaration* > _uniformVariables;
@@ -68,6 +68,7 @@ private:
 
 	
 	std::string indent();
+	std::string mapExpression(const std::string & src) const;
 	std::string mapIdentifier(const std::string & src) const;
 	std::string mapToGLType(const struct VariableDeclaration * vDecl) const;
 	std::string mapToGLType(const struct DeclarationSpecifierList * declSpecList, const BufferDescriptor * bufDesc) const;
