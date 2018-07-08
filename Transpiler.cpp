@@ -148,20 +148,19 @@ namespace
 	leftSide = leftSide.substr(0, identifierIndex);
 
 	// work on the right hand side.
-	// find everything between the first ( and ,
+	// find the (
 	std::size_t leftMarker = rightSide.find("(");
-	std::size_t rightMarker = rightSide.find(",");
-	if(leftMarker==std::string::npos || rightMarker==std::string::npos) {
+	if(leftMarker==std::string::npos) {
 	  it++;
 	  continue; // shouldn't happen with syntaxically correct code
 	}
 
 	// take out the sampler name - it will be replaced with the texture name
 	const std::string right0 = rightSide.substr(0,leftMarker+1);
-	const std::string right1 = rightSide.substr(rightMarker);
+	const std::string right1 = rightSide.substr(leftMarker+1);
 
 	// build the new string
-	const std::string substitute = leftSide + it->second + right0 + textureName + right1;
+	const std::string substitute = leftSide + it->second + right0 + textureName + ", " + right1;
 	workString = substitute;
       }
       else
@@ -845,12 +844,12 @@ std::string Transpiler::operateOn(struct FunctionCallArgumentList * node)
     
     Expression * e = node->_expressions[i];
     const std::string sE = traverse(e);
-//    if(vList==nullptr || vList->isVariableSupported(sE)) 
+    if(vList==nullptr || vList->isVariableSupported(sE)) 
 	{
-    result = result + sE;
+	    result = result + sE;
 
-    if (i != size - 1)
-      result = result + ",";
+	    if (i != size - 1)
+		  result = result + ",";
     }
     
   }
