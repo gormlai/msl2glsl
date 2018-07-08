@@ -362,6 +362,7 @@ std::string Transpiler::mapIdentifier(const std::string & src) const
 	{ "uint2", "uvec2" },
 	{ "uint3", "uvec3" },
 	{ "uint4", "uvec4" },
+	{ "half", "float" },
 	{ "char", "int" },
 	{ "short", "int" },
 	{ "fmod", "mod" },
@@ -738,7 +739,8 @@ std::string Transpiler::operateOn(struct CastExpression * desc)
 	std::string result;
 
 	if (desc != nullptr) {
-		result += desc->_castTo + "(";
+		const std::string mappedCastTo = mapIdentifier(desc->_castTo);
+		result += mappedCastTo + "(";
 
 		if (desc->_right != nullptr)
 			result += traverse(desc->_right);
@@ -843,7 +845,12 @@ std::string Transpiler::operateOn(struct ForLoop * node)
 std::string Transpiler::operateOn(struct FunctionCall * node)
 {
 	std::string result;
-	result = result + mapIdentifier(node->_name);
+	const std::string functionName = mapIdentifier(node->_name);
+	if (functionName == "half3") {
+		int i = 0;
+		i = 1;
+	}
+	result = result + functionName;
 	result = result + "(";
 
 	if (node->_arguments != nullptr)
