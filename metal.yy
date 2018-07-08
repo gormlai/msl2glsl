@@ -425,11 +425,6 @@ compare_expression:
 	|	compare_expression NOT_EQUAL_TO expression1 { $$ = new CompareExpression($1, CompareOperator::NotEqualTo, $3); }
 	;
 
-cast_expression:
-		compare_expression { $$ = $1; }
-	| 	BEGIN_BRACKET identifier END_BRACKET compare_expression { $$ = new CastExpression(*$2, $4); }		
-	;
-
 binary_operator:
 		PIPE { $$ = BinaryOperator::BinaryOr; }
 	|	DOUBLE_PIPE { $$ = BinaryOperator::LogicalOr; }
@@ -449,13 +444,18 @@ binary_operator:
 	;
 
 binary_expression:
-		cast_expression { $$ = $1; }
+		compare_expression { $$ = $1; }
 	|	binary_expression binary_operator cast_expression {  $$ = new BinaryExpression($1, $2, $3); }
 		;
 
-conditional_expression:
+cast_expression:
 		binary_expression { $$ = $1; }
-	|	binary_expression QUESTION_MARK expression COLON conditional_expression { $$ = new SelectExpression($1, $3, $5); }
+	| 	BEGIN_BRACKET identifier END_BRACKET cast_expression { $$ = new CastExpression(*$2, $4); }		
+	;
+
+conditional_expression:
+		cast_expression { $$ = $1; }
+	|	cast_expression QUESTION_MARK expression COLON conditional_expression { $$ = new SelectExpression($1, $3, $5); }
 	;
 
 assignment_expression:
