@@ -9,13 +9,6 @@
 
 namespace
 {
-	bool checkHeap() {
-		if (_heapchk() != _HEAPOK)
-			return false;
-
-		return true;
-	}
-
 	std::vector<std::string> tokenize(const std::string & str, const std::string & token)
 	{
 		std::vector<std::string> tokens;
@@ -1184,8 +1177,6 @@ std::string Transpiler::outputMain()
 
 std::string Transpiler::operateOn(struct FunctionDeclaration * node)
 {
-	checkHeap();
-
 	std::string result;
 
 	// we are only interested in one type of function - 
@@ -1212,8 +1203,6 @@ std::string Transpiler::operateOn(struct FunctionDeclaration * node)
 		result = result + "\n\n";
 
 	}
-
-	checkHeap();
 
 	return result;
 }

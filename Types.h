@@ -71,12 +71,6 @@ public:
 //    printf("this=%p, _parent=%p\n,", this, _parent);
 //    std::cout << "getParentOfType this=" << std::to_string(int(getNodeType())) << ", searching for " << std::to_string(int(parentType)) << std::endl;
     
-	if (_heapchk() != _HEAPOK) {
-		int k = 0;
-		k = 1;
-	}
-
-
     if(_parent == nullptr)
       return nullptr;
 
