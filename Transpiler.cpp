@@ -548,6 +548,26 @@ std::string Transpiler::outputToolbox()
 		"}\n";
 }
 
+// TODO - I should be able to get rid of this call, if I manage to fix the grammar
+std::string Transpiler::convertStructCalls(const std::string & orgCode)
+{
+  std::string result = orgCode;
+  for(const auto & keyPair : _structMemberMap) {
+    std::size_t pos = result.find(keyPair.first);
+    //    std::cout << std::string("searching for: ") << keyPair.first << std::endl;
+    while(pos != std::string::npos) {
+      const std::string left = result.substr(0, pos);
+      const std::string right = result.substr(pos + keyPair.first.length());
+      result = left + keyPair.second + right;
+      pos = result.find(keyPair.first);
+      //std::cout << std::string("replacing: ") << keyPair.first << " with: " << keyPair.second << std::endl;
+    }
+  }
+
+  return result;
+  
+}
+
 std::string Transpiler::convert(struct Block * program, struct FunctionDeclaration * shader)
 {
 	std::string shaderString = std::string("");
@@ -569,7 +589,8 @@ std::string Transpiler::convert(struct Block * program, struct FunctionDeclarati
 	const std::string inOutUniforms = outputInOutUniforms();
 
 	_state = TranspilerState::OutputMain;
-	const std::string mainString = outputMain();
+	const std::string orgMainCode = outputMain();
+	const std::string mainString = convertStructCalls(orgMainCode);
 
 	_state = TranspilerState::OutputRestOfProgram;
 	const std::string mainProgram = traverse(program);
@@ -1161,7 +1182,6 @@ std::string Transpiler::outputMain()
 {
 	std::string mainCode;
 
-
 	// convert shader
 	mainCode = mainCode + "void main()\n";
 
@@ -1169,8 +1189,6 @@ std::string Transpiler::outputMain()
 	mainCode += traverse(_shader->_block);
 
 	mainCode = mainCode + "\n\n";
-
-	// analyze arguments to set in and out variables correctly
 
 	return mainCode;
 }

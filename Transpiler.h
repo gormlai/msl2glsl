@@ -90,7 +90,7 @@ private:
 	std::string baseOutVariableName() const;
 	std::string toCommaSeparatedList(const std::vector<VariableNameDeclaration *> & input, bool mapInput);
 	std::string addLocation(unsigned int & location);
-
+	std::string convertStructCalls(const std::string & orgCode);
 };
 
 #endif
