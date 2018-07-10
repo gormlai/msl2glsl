@@ -307,22 +307,26 @@ std::string Transpiler::mapToGLType(const TypeSpecifier * typeSpec, const Buffer
 	}
 
 	if (bufDesc != nullptr) {
-		if (result == "texture2d" && bufDesc->_accessor == "sample") {
-			if (bufDesc->_type == "float")
-				result = "sampler2D";
-		}
-		else if (result == "texture3d" && bufDesc->_accessor == "sample") {
-			if (bufDesc->_type == "float")
-				result = "sampler3D";
-		}
-		else if (result == "texture2d" && bufDesc->_accessor == "read") {
-			if (bufDesc->_type == "float")
-				result = "image2D";
-		}
-		else if (result == "texture3d" && bufDesc->_accessor == "read") {
-			if (bufDesc->_type == "float")
-				result = "image3D";
-		}
+	  if (result == "texture2d" && (bufDesc->_accessor.empty() || bufDesc->_accessor == "sample")) {
+			if (bufDesc->_type == "float" || bufDesc->_type== "half")
+			  result = "sampler2D";
+			else if (bufDesc->_type == "int")
+			  result = "isampler2D";
+	  }
+	  else if (result == "texture3d" && (bufDesc->_accessor.empty() || bufDesc->_accessor == "sample")) {
+			if (bufDesc->_type == "float" || bufDesc->_type== "half")
+			  result = "sampler3D";
+			else if (bufDesc->_type == "int")
+			  result = "isampler3D";
+	  }
+	  else if (result == "texture2d" && bufDesc->_accessor == "read") {
+	    if (bufDesc->_type == "float")
+	      result = "image2D";
+	  }
+	  else if (result == "texture3d" && bufDesc->_accessor == "read") {
+	    if (bufDesc->_type == "float")
+	      result = "image3D";
+	  }
 	}
 
 	return mapIdentifier(result);
@@ -1040,6 +1044,7 @@ std::string Transpiler::outputUniforms()
 				}
 			}
 			else {
+			  std::cout << "Skipped glType for uniforms: " << glType << std::endl;
 			}
 		}
 	}
