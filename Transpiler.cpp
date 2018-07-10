@@ -1044,7 +1044,11 @@ std::string Transpiler::outputUniforms()
 				}
 			}
 			else {
-			  std::cout << "Skipped glType for uniforms: " << glType << std::endl;
+			  std::string variableDecl = traverse(decl);
+			  if (isSupportedType(variableDecl)) {
+			    hasInside = true;
+			    insideBlock = insideBlock + "  " + glType + " " + variableName->_variableName + ";\n";
+			  }
 			}
 		}
 	}
