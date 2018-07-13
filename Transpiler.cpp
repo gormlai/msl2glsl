@@ -371,6 +371,8 @@ std::string Transpiler::mapIdentifier(const std::string & src) const
 	{ "half", "float" },
 	{ "char", "int" },
 	{ "short", "int" },
+	{ "uchar", "uint" },
+	{ "ushort", "uint" },
 	{ "fmod", "mod" },
 	};
 
