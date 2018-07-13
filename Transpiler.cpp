@@ -424,6 +424,8 @@ std::string Transpiler::indent()
 std::string Transpiler::traverse(struct Node * node)
 {
 	std::string result;
+	if(node == nullptr)
+	  return result;
 
 	switch (node->getNodeType())
 	{
@@ -1356,7 +1358,7 @@ std::string Transpiler::operateOn(struct JumpStatement * statement)
 {
 	std::string result;
 
-	std::string rightSide = traverse(statement->_expression);
+	std::string rightSide = (statement->_expression != nullptr) ? traverse(statement->_expression) : "";
 
 	//  std::cout << "State = " << std::to_string((int)_state) << std::endl;
 	if (_state == TranspilerState::OutputRestOfProgram) {
