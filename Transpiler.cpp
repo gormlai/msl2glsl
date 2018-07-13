@@ -93,6 +93,12 @@ namespace
 
 	bool isSupportedType(const std::string & variableDeclaration) {
 		std::vector<std::string> tokens = tokenize(variableDeclaration, " ");
+
+		std::cout << "tokens in VariableDeclaration: " << std::endl;
+		for(auto str : tokens)
+		  std::cout << "\t" << str << ":" << std::to_string(str.length()) <<  std::endl;
+		  
+		
 		std::string matchingElement = findMatchingElement(tokens, g_metalTypesToRemove);
 		return matchingElement.empty();
 	}
@@ -768,13 +774,17 @@ std::string Transpiler::operateOn(struct Block * block)
 		result = result + ";\n";
 	}
 
+
+	
 	_indent--;
 
 	result = result + indent();
 	result = result + "}";
 
-
-	return result;
+	// convert function code
+	const std::string blockCode = rearrangeSampleCalls(result);
+	return blockCode;
+	//return result
 }
 
 std::string Transpiler::operateOn(struct BufferDescriptor * desc)
@@ -1044,7 +1054,7 @@ std::string Transpiler::outputUniforms()
 	std::string outsideBlock;
 	bool hasInside = false;
 
-	insideBlock = insideBlock + std::string("layout(std140) uniform ShaderBlock\n{\n");
+	insideBlock = insideBlock + std::string("\nlayout(std140) uniform ShaderBlock\n{\n");
 
 	for (VariableDeclaration * decl : _uniformVariables) {
 		const std::string attributeIndex = extractAttributeIndex(decl);
@@ -1241,8 +1251,7 @@ std::string Transpiler::operateOn(struct FunctionDeclaration * node)
 
 		if (node->_block != nullptr) {
 			std::string blockCode = traverse(node->_block);
-			// convert function code
-			result += rearrangeSampleCalls(blockCode);
+			result += blockCode;
 		}
 
 		result = result + "\n\n";
