@@ -635,7 +635,23 @@ std::string Transpiler::operateOn(struct Assignment * desc)
 	}
 
 	result = result + left;
-	result = result + " = ";
+
+
+	const char * ops[] = {
+	  " = ",
+	  " += ",
+	  " -= ",
+	  " /= ",
+	  " *= ",
+	  " &= ",
+	  " ^= ",
+	  " |= ",
+	  " %= ",
+	};
+
+	const int index = (int)desc->_op;
+	const char * op = ops[index];	
+	result = result + op;
 	result = result + right;
 	return result;
 }
