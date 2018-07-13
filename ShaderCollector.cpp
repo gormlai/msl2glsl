@@ -10,6 +10,7 @@ std::vector<struct FunctionDeclaration *> ShaderCollector::collect(Block * root)
       switch(function->_functionType) {
       case FunctionType::Vertex:
       case FunctionType::Fragment:
+      case FunctionType::Kernel:
 	shaders.push_back(function);
 	break;
       default:

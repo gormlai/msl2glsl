@@ -60,6 +60,9 @@ void Ast2GL::convert(Block * block)
       case FunctionType::Fragment:
 	extension = "frag";
 	break;
+      case FunctionType::Kernel:
+	extension = "comp";
+	break;
       default:
 	extension = "unknown";
 	break;	
