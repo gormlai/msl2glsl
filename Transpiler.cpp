@@ -93,12 +93,7 @@ namespace
 
 	bool isSupportedType(const std::string & variableDeclaration) {
 		std::vector<std::string> tokens = tokenize(variableDeclaration, " ");
-
-		std::cout << "tokens in VariableDeclaration: " << std::endl;
-		for(auto str : tokens)
-		  std::cout << "\t" << str << ":" << std::to_string(str.length()) <<  std::endl;
-		  
-		
+  		
 		std::string matchingElement = findMatchingElement(tokens, g_metalTypesToRemove);
 		return matchingElement.empty();
 	}
@@ -1224,6 +1219,9 @@ std::string Transpiler::outputMain()
 	// convert shader
 	mainCode = mainCode + "void main()\n";
 
+	// use side effect of categorising variables for function decl
+	traverse(_shader);
+
 	//  if (_shader->_block != nullptr)
 	mainCode += traverse(_shader->_block);
 
@@ -1239,7 +1237,7 @@ std::string Transpiler::operateOn(struct FunctionDeclaration * node)
 	// we are only interested in one type of function - 
 	// utility functions.
 	// all other functions should be ignored
-	if (node->_functionType == FunctionType::Utility)
+	if (_state == TranspilerState::OutputRestOfProgram && node->_functionType == FunctionType::Utility)
 	{
 		if (node->_declarationSpecifiers != nullptr)
 			result = result + mapToGLType(node->_declarationSpecifiers, nullptr) + " ";
@@ -1258,6 +1256,11 @@ std::string Transpiler::operateOn(struct FunctionDeclaration * node)
 
 		result = result + "\n\n";
 
+	}
+	else if(_state == TranspilerState::OutputMain)  // just use the code to categorise variables
+	{
+		if (node->_variables != nullptr)
+			traverse(node->_variables);
 	}
 
 	return result;
