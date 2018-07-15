@@ -375,6 +375,8 @@ std::string Transpiler::mapIdentifier(const std::string & src) const
 	{ "uchar", "uint" },
 	{ "ushort", "uint" },
 	{ "fmod", "mod" },
+	{ "dfdx", "dFdx" },
+	{ "dfdy", "dFdy" },
 	};
 
 	std::string output = src;
@@ -1051,7 +1053,7 @@ std::string Transpiler::outputUniforms()
 	std::string outsideBlock;
 	bool hasInside = false;
 
-	insideBlock = insideBlock + std::string("\nlayout(std140) uniform ShaderBlock\n{\n");
+	insideBlock = insideBlock + std::string("\nlayout(std140) uniform ") + _shader->typeAsString() + std::string("ShaderBlock\n{\n");
 
 	for (VariableDeclaration * decl : _uniformVariables) {
 		const std::string attributeIndex = extractAttributeIndex(decl);

@@ -705,6 +705,22 @@ struct FunctionDeclaration : public Statement
   void visit(Visitor * v) override;
   NodeType getNodeType() const override { return NodeType::FunctionDeclaration; }
   std::vector<Node*> getChildren() override { std::vector<Node*> nodes; nodes.push_back(_block); return nodes; }  
+  std::string typeAsString() const {
+	  switch (_functionType) {
+	  case FunctionType::Compute:
+		  return "Compute";
+	  case FunctionType::Fragment:
+		  return "Fragment";
+	  case FunctionType::Kernel:
+		  return "Kernel";
+	  case FunctionType::Utility:
+		  return "Utility";
+	  case FunctionType::Vertex:
+		  return "Vertex";
+	  }
+  }
+
+
 
   FunctionType _functionType;
   DeclarationSpecifierList * _declarationSpecifiers;
