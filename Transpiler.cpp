@@ -593,7 +593,7 @@ std::string Transpiler::convert(struct Block * program, struct FunctionDeclarati
 	_topLevelStructs = ::gatherStructs(program);
 
 	_state = TranspilerState::Init;
-	shaderString = shaderString + "#version 450 core\n\n";
+	shaderString = shaderString + "#version 430 core\n#extension GL_EXT_shader_image_load_formatted : require\n\n";
 
 	// add version marker - needs more flexibility in future versions
 	_state = TranspilerState::OutputGlobals;
@@ -1051,9 +1051,14 @@ std::string Transpiler::outputUniforms()
 {
 	std::string insideBlock;
 	std::string outsideBlock;
-	bool hasInside = false;
 
-	insideBlock = insideBlock + std::string("\nlayout(std140) uniform ") + _shader->typeAsString() + std::string("ShaderBlock\n{\n");
+	auto addUniformBlock = [](const std::string & glType, const std::string & variableName) {
+		std::string rVal;
+		rVal = rVal + std::string("\nlayout(std140) uniform UniformBlock_") + variableName + "\n{\n";
+		rVal = rVal + "  " + glType + " " + variableName + ";\n";
+		rVal = rVal + std::string("};\n");
+		return rVal;
+	};
 
 	for (VariableDeclaration * decl : _uniformVariables) {
 		const std::string attributeIndex = extractAttributeIndex(decl);
@@ -1066,24 +1071,19 @@ std::string Transpiler::outputUniforms()
 					outsideBlock = outsideBlock + "uniform " + glType + " " + variableName->_variableName + ";\n";
 				}
 				else {
-					hasInside = true;
-					insideBlock = insideBlock + "  " + glType + " " + variableName->_variableName + ";\n";
+					insideBlock = insideBlock + addUniformBlock(glType, variableName->_variableName);
 				}
 			}
 			else {
 			  std::string variableDecl = traverse(decl);
 			  if (isSupportedType(variableDecl)) {
-			    hasInside = true;
-			    insideBlock = insideBlock + "  " + glType + " " + variableName->_variableName + ";\n";
+				  insideBlock = insideBlock + addUniformBlock(glType, variableName->_variableName);
 			  }
 			}
 		}
 	}
-	insideBlock = insideBlock + std::string("};\n");
 
-	std::string result = outsideBlock;
-	if (hasInside)
-		result = result + insideBlock;
+	std::string result = outsideBlock + insideBlock;
 	return result;
 }
 
