@@ -740,6 +740,12 @@ std::string Transpiler::operateOn(struct BinaryExpression * desc)
 						std::string rightSide = intermediate.substr(commaPos);
 						result = "texture(" + mapIdentifier(leftExpression) + rightSide;
 					}
+					else { // single argument function call
+						std::string rightSide = intermediate.substr(1);
+						result = "texture(" + mapIdentifier(leftExpression) + "," + rightSide;
+
+					}
+
 				}
 			}
 			else {
