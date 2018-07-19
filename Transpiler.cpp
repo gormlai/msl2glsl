@@ -98,97 +98,97 @@ namespace
 		return matchingElement.empty();
 	}
 
-	std::string rearrangeSampleCalls(const std::string & orgCode) {
 
-		constexpr int lowestLegalCharacter = 48;
-		constexpr int highestLegalCharacter = 122;
+}
 
-		std::string workString = orgCode;
-		const std::map<std::string, std::string> wordMappings =
-		{
-			{ "sample", "texture" },
-			{ "read", "imageLoad" },
-		};
+std::string Transpiler::rearrangeSampleCalls(Node * block, const std::string & orgCode) {
 
-		auto it = wordMappings.begin();
+	constexpr int lowestLegalCharacter = 48;
+	constexpr int highestLegalCharacter = 122;
 
-		while (it != wordMappings.end()) {
+	std::string workString = orgCode;
+	const std::map<std::string, std::string> wordMappings =
+	{
+		{ "sample(", "texture" },
+	{ "read(", "imageLoad" },
+	};
 
-			std::size_t pos = workString.find(it->first);
-			if (pos != std::string::npos) {
-				std::string leftSide = workString.substr(0, pos);
-				std::size_t leftDot = leftSide.find_last_of(".");
-				if (leftDot == std::string::npos) {
-					it++;
-					continue;  // shouldn't happen with syntaxically correct code
-				}
+	auto it = wordMappings.begin();
 
-				leftSide = leftSide.substr(0, leftDot); // cut out the dot
+	while (it != wordMappings.end()) {
 
-				std::string rightSide = workString.substr(pos + it->first.length());
-
-				// leftSide - start at the 
-				int identifierIndex = int(leftSide.length()) - 1;
-				for (; identifierIndex >= 0; identifierIndex--) {
-					int asciiValue = leftSide[identifierIndex];
-					if (asciiValue < lowestLegalCharacter || asciiValue > highestLegalCharacter) {
-						identifierIndex++;
-						break;
-					}
-				}
-
-				const std::string textureName = leftSide.substr(identifierIndex);
-				// cut left side again
-				leftSide = leftSide.substr(0, identifierIndex);
-
-				// work on the right hand side.
-				// find the (
-				std::size_t leftMarker = rightSide.find("(");
-				if (leftMarker == std::string::npos) {
-					it++;
-					continue; // shouldn't happen with syntaxically correct code
-				}
-
-				// take out the sampler name - it will be replaced with the texture name
-				const std::string right0 = rightSide.substr(0, leftMarker + 1);
-				std::string right1 = rightSide.substr(leftMarker + 1);
-				if (it->second == "imageLoad") // make sure the second argument is an ivec, as it is most often an uvec2 on the other side 
-				{
-					int paranthesisBalance = 0;
-					std::string right2 = right1;
-					int index = 0;
-					while (paranthesisBalance >= 0 && index<=right2.length()) {
-						if (right1[index] == '(')
-							paranthesisBalance++;
-						if (right1[index] == ')')
-							paranthesisBalance--;
-						index++;
-					}
-
-					if (paranthesisBalance == -1) {
-						std::string right2 = right1.substr(0, index);
-						std::string right3 = right1.substr(index);
-						right1 = std::string("ivec2(") + right2 + ")" + right3;
-					}
-
-
-
-				}
-
-
-
-				// build the new string
-				const std::string substitute = leftSide + it->second + right0 + textureName + ", " + right1;
-				workString = substitute;
-			}
-			else
+		std::size_t pos = workString.find(it->first);
+		if (pos != std::string::npos) {
+			std::string leftSide = workString.substr(0, pos);
+			std::size_t leftDot = leftSide.find_last_of(".");
+			if (leftDot == std::string::npos) {
 				it++;
+				continue;  // shouldn't happen with syntaxically correct code
+			}
 
+			leftSide = leftSide.substr(0, leftDot); // cut out the dot
+
+			std::string rightSide = workString.substr(pos + it->first.length());
+
+			// leftSide - start at the 
+			int identifierIndex = int(leftSide.length()) - 1;
+			for (; identifierIndex >= 0; identifierIndex--) {
+				int asciiValue = leftSide[identifierIndex];
+				if (asciiValue < lowestLegalCharacter || asciiValue > highestLegalCharacter) {
+					identifierIndex++;
+					break;
+				}
+			}
+
+			const std::string textureName = leftSide.substr(identifierIndex);
+			if (textureName == "voxel") {
+				int k = 0;
+				k = 1;
+			}
+			// cut left side again
+			leftSide = leftSide.substr(0, identifierIndex);
+
+			// take out the sampler name - it will be replaced with the texture name
+			const std::string right0;
+			std::string right1 = rightSide;
+			if (it->second == "imageLoad") // make sure the second argument is an ivec, as it is most often an uvec2 on the other side 
+			{
+				int paranthesisBalance = 0;
+				std::string right2 = right1;
+				int index = 0;
+				while (paranthesisBalance >= 0 && index <= right2.length()) {
+					if (right1[index] == '(')
+						paranthesisBalance++;
+					if (right1[index] == ')')
+						paranthesisBalance--;
+					index++;
+				}
+
+				if (paranthesisBalance == -1) {
+					std::string right2 = right1.substr(0, index);
+					std::string right3 = right1.substr(index);
+					VariableDeclaration * vDecl = getVariableFromName(block, textureName);
+					std::string glType = mapToGLType(vDecl);
+					std::string vecType = (glType.find("2D") != std::string::npos) ? "ivec2" : "ivec3";
+					right1 = vecType + std::string("(") + right2 + ")" + right3;
+				}
+
+
+
+			}
+
+
+
+			// build the new string
+			const std::string substitute = leftSide + it->second + "(" + textureName + ", " + right1;
+			workString = substitute;
 		}
-
-		return workString;
+		else
+			it++;
 
 	}
+
+	return workString;
 
 }
 
@@ -200,9 +200,9 @@ std::string Transpiler::toCommaSeparatedList(const std::vector<VariableNameDecla
 	for (unsigned int i = 0; i < (unsigned int)input.size(); i++) {
 		VariableNameDeclaration * vDecl = input[i];
 		const std::string val = traverse(vDecl);
-		result = result + val;
-		if (i != input.size() - 1)
+		if (!result.empty() && !val.empty())
 			result = result + ", ";
+		result = result + val;
 	}
 	return result;
 }
@@ -319,14 +319,24 @@ std::string Transpiler::mapToGLType(const TypeSpecifier * typeSpec, const Buffer
 			  result = "sampler3D";
 			else if (bufDesc->_type == "int")
 			  result = "isampler3D";
+			else if (bufDesc->_type == "uint")
+				result = "usampler3D";
 	  }
 	  else if (result == "texture2d" && bufDesc->_accessor == "read") {
 	    if (bufDesc->_type == "float")
 	      result = "image2D";
+		else if (bufDesc->_type == "int")
+			result = "iimage2D";
+		else if (bufDesc->_type == "uint")
+			result = "uimage2D";
 	  }
 	  else if (result == "texture3d" && bufDesc->_accessor == "read") {
 	    if (bufDesc->_type == "float")
 	      result = "image3D";
+		else if (bufDesc->_type == "int")
+			result = "iimage3D";
+		else if (bufDesc->_type == "uint")
+			result = "uimage3D";
 	  }
 	}
 
@@ -369,6 +379,8 @@ std::string Transpiler::mapIdentifier(const std::string & src) const
 	{ "uint2", "uvec2" },
 	{ "uint3", "uvec3" },
 	{ "uint4", "uvec4" },
+	{ "int2", "ivec2" },
+	{ "int3", "ivec3" },
 	{ "half", "float" },
 	{ "char", "int" },
 	{ "short", "int" },
@@ -390,10 +402,14 @@ std::string Transpiler::mapIdentifier(const std::string & src) const
 
 // TODO: eventually this method should include scoped variables
 // for now it only supports inputs
-VariableDeclaration * Transpiler::getVariableFromName(const std::string & name)
+VariableDeclaration * Transpiler::getVariableFromName(Node * currentNode, const std::string & name)
 {
 	// categorise arguments to main
-	VariableList * vList = _shader->_variables;
+	FunctionDeclaration * shader = static_cast<FunctionDeclaration*>(currentNode->getParentOfType(NodeType::FunctionDeclaration));
+	if (shader == nullptr) 
+		shader = _shader; // fall back to main function
+
+	VariableList * vList = shader->_variables;
 	if (vList != nullptr) {
 		std::vector<VariableDeclaration *> & vDecls = vList->_variableDeclarations;
 		for (VariableDeclaration * vDecl : vDecls) {
@@ -723,7 +739,7 @@ std::string Transpiler::operateOn(struct BinaryExpression * desc)
 		const std::string dot = ops[(int)desc->_op];
 
 		const std::string leftExpression = traverse(desc->_left);
-		VariableDeclaration * vDecl = getVariableFromName(leftExpression);
+		VariableDeclaration * vDecl = getVariableFromName(desc->_left, leftExpression);
 		if (vDecl == nullptr) {
 			result = leftExpression + dot + rightExpression;
 		}
@@ -787,7 +803,7 @@ std::string Transpiler::operateOn(struct Block * block)
 	result = result + "}";
 
 	// convert function code
-	const std::string blockCode = rearrangeSampleCalls(result);
+	const std::string blockCode = rearrangeSampleCalls(block, result);
 	return blockCode;
 	//return result
 }
@@ -947,10 +963,10 @@ std::string Transpiler::operateOn(struct FunctionCallArgumentList * node)
 		const std::string sE = traverse(e);
 		if (vList == nullptr || vList->isVariableSupported(sE))
 		{
+			if (!result.empty() && !sE.empty())
+				result = result + ", ";
 			result = result + sE;
 
-			if (i != size - 1)
-				result = result + ",";
 		}
 
 	}
@@ -1337,9 +1353,9 @@ std::string Transpiler::operateOn(struct SelectionStatement * stmnt)
 
 	switch (stmnt->_ifType) {
 	case SelectionStatementType::If:
-		result = result + "if(";
+		result = result + "if(bool(";
 		result = result + traverse(stmnt->_conditional);
-		result = result + ")\n";
+		result = result + "))\n";
 		result = result + traverse(stmnt->_statement);
 		break;
 	case SelectionStatementType::Else:
@@ -1347,9 +1363,9 @@ std::string Transpiler::operateOn(struct SelectionStatement * stmnt)
 		result = result + traverse(stmnt->_statement);
 		break;
 	case SelectionStatementType::ElseIf:
-		result = result + "else if(";
+		result = result + "else if(bool(";
 		result = result + traverse(stmnt->_conditional);
-		result = result + ")\n";
+		result = result + "))\n";
 		result = result + traverse(stmnt->_statement);
 		break;
 	case SelectionStatementType::Switch:
@@ -1626,9 +1642,9 @@ std::string Transpiler::operateOn(struct VariableList * node)
 		VariableDeclaration * vDecl = node->_variableDeclarations[i];
 		std::string variableDecl = traverse(vDecl);
 		if (isSupportedType(variableDecl)) {
-			result += variableDecl;
-			if (i != count - 1)
+			if (!result.empty() && !variableDecl.empty())
 				result = result + ", ";
+			result += variableDecl;
 		}
 		else {
 			node->insertUnsupported(vDecl);

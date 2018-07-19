@@ -64,8 +64,8 @@ private:
 	std::vector<VariableDeclaration* > _uniformVariables;
 	TranspilerState _state;
 
-	VariableDeclaration * getVariableFromName(const std::string & name);
-
+	VariableDeclaration * getVariableFromName(Node * currentNode, const std::string & name);
+	std::string rearrangeSampleCalls(Node * block, const std::string & orgCode);
 	
 	std::string indent();
 	std::string mapExpression(const std::string & src) const;
