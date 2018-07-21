@@ -389,6 +389,7 @@ std::string Transpiler::mapIdentifier(const std::string & src) const
 	{ "fmod", "mod" },
 	{ "dfdx", "dFdx" },
 	{ "dfdy", "dFdy" },
+	{ "precision", "precision_" },
 	};
 
 	std::string output = src;
