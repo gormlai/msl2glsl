@@ -278,7 +278,7 @@ std::string Transpiler::mapToGLType(const Qualifier * qualifier, const BufferDes
 		return "";
 		break;
 	case QualifierType::Unsigned:
-		return "unsigned";
+		return "u";
 		break;
 	case QualifierType::Static:
 		return "";
