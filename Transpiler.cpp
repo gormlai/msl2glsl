@@ -9,6 +9,9 @@
 
 namespace
 {
+	const std::string g_vertexId = "vertex_id";
+	const std::string g_instanceId = "instance_id";
+
 	std::vector<std::string> tokenize(const std::string & str, const std::string & token)
 	{
 		std::vector<std::string> tokens;
@@ -217,7 +220,7 @@ std::string Transpiler::mapStructMember(const std::string & possibleStructMember
 	return it->second;
 }
 
-std::string Transpiler::mapToGLType(const VariableDeclaration * vDecl) const
+std::string Transpiler::mapToGLType(const VariableDeclaration * vDecl)
 {
 	DeclarationSpecifierList * declList = vDecl->_declarationSpecifiers;
 	std::string result;
@@ -225,10 +228,18 @@ std::string Transpiler::mapToGLType(const VariableDeclaration * vDecl) const
 	if (declList != nullptr)
 		result = result + mapToGLType(declList, vDecl->_bufferDescriptor);
 
+	if (vDecl->_attribute != nullptr)
+	{
+		std::string attribute = traverse(vDecl->_attribute);
+		if (!attribute.empty())
+			result = result + " " + attribute;
+
+	}
+
 	return result;
 }
 
-std::string Transpiler::mapToGLType(const DeclarationSpecifierList * declSpecList, const BufferDescriptor * bufDesc) const
+std::string Transpiler::mapToGLType(const DeclarationSpecifierList * declSpecList, const BufferDescriptor * bufDesc)
 {
 	std::string result;
 	if (declSpecList != nullptr) {
@@ -241,7 +252,7 @@ std::string Transpiler::mapToGLType(const DeclarationSpecifierList * declSpecLis
 	return result;
 }
 
-std::string Transpiler::mapToGLType(const DeclarationSpecifier * declSpec, const BufferDescriptor * bufDesc) const
+std::string Transpiler::mapToGLType(const DeclarationSpecifier * declSpec, const BufferDescriptor * bufDesc)
 {
 	std::string result = "Unknown DeclarationSpecifier";
 	switch (declSpec->getNodeType())
@@ -259,7 +270,7 @@ std::string Transpiler::mapToGLType(const DeclarationSpecifier * declSpec, const
 
 }
 
-std::string Transpiler::mapToGLType(const Qualifier * qualifier, const BufferDescriptor * bufDesc) const
+std::string Transpiler::mapToGLType(const Qualifier * qualifier, const BufferDescriptor * bufDesc)
 {
 	switch (qualifier->_type) {
 	case QualifierType::Constant:
@@ -289,7 +300,7 @@ std::string Transpiler::mapToGLType(const Qualifier * qualifier, const BufferDes
 }
 
 
-std::string Transpiler::mapToGLType(const TypeSpecifier * typeSpec, const BufferDescriptor * bufDesc) const
+std::string Transpiler::mapToGLType(const TypeSpecifier * typeSpec, const BufferDescriptor * bufDesc)
 {
 	std::string result = "unknown type";
 	if (typeSpec != nullptr) {
@@ -1032,7 +1043,7 @@ void Transpiler::categoriseVariableDeclaration(VariableDeclaration * vDecl)
 		if (sAttrib == "stage_in") {
 			_inVariables.push_back(vDecl);
 		}
-		else
+		else if(sAttrib!=g_vertexId && sAttrib!=g_instanceId)
 			_uniformVariables.push_back(vDecl);
 	}
 }
@@ -1051,20 +1062,20 @@ std::string  Transpiler::extractAttributeIndex(VariableDeclaration * vDecl)
 
 }
 
-bool Transpiler::isSamplerGLType(const std::string & glType) const
+bool Transpiler::isSamplerGLType(const std::string & glType)
 {
 	auto it = g_samplerGLTypes.find(glType);
 	return it != g_samplerGLTypes.end();
 }
 
-bool Transpiler::isSimpleGLType(VariableDeclaration * vDecl) const
+bool Transpiler::isSimpleGLType(VariableDeclaration * vDecl)
 {
 	const std::string mappedType = mapToGLType(vDecl);
 	return isSimpleGLType(mappedType);
 }
 
 
-bool Transpiler::isSimpleGLType(const std::string & glType) const
+bool Transpiler::isSimpleGLType(const std::string & glType)
 {
 	auto it = g_simpleGLTypes.find(glType);
 	return it != g_simpleGLTypes.end();
@@ -1087,6 +1098,7 @@ std::string Transpiler::outputUniforms()
 		const std::string attributeIndex = extractAttributeIndex(decl);
 		for (const VariableNameDeclaration * variableName : decl->_variableNames) {
 			std::string glType = mapToGLType(decl);
+
 			if (isSimpleGLType(glType)) {
 				if (isSamplerGLType(glType)) {
 					if (!attributeIndex.empty())
@@ -1132,10 +1144,6 @@ std::string Transpiler::outputIn()
 
 		for (const VariableNameDeclaration * variableName : inDecl->_variableNames) {
 			const std::string mappedName = mapIdentifier(variableName->_variableName);
-			if (mappedName == "vertex_array") {
-				int k = 0;
-				k = 1;
-			}
 
 			if (isSimpleGLType(mappedType))
 				result += addLocation(_outLocation) + " in " + mappedType + " " + mappedName + ";\n";
@@ -1620,8 +1628,15 @@ std::string Transpiler::operateOn(struct UsingDeclaration * usingDecl)
 
 std::string Transpiler::operateOn(struct VariableAttribute * node)
 {
-	// ignore for now. This needs special handling
 	std::string result;
+
+	if (node->_sAttribute == "vertex_id")
+		result = g_vertexId;  // used for identifying 
+
+	else if (node->_sAttribute == "instance_id")
+		result = g_instanceId;
+
+	// ignore for now. This needs special handling
 	return result;
 }
 
