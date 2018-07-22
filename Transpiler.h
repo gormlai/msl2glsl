@@ -66,7 +66,8 @@ private:
 
 	VariableDeclaration * getVariableFromName(Node * currentNode, const std::string & name);
 	std::string rearrangeSampleCalls(Node * block, const std::string & orgCode);
-	
+	std::string removeVertexAndInstanceIdCalls(Node * node, const std::string & orgCode);
+
 	std::string indent();
 	std::string mapExpression(const std::string & src) const;
 	std::string mapIdentifier(const std::string & src) const;

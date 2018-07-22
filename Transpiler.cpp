@@ -104,6 +104,61 @@ namespace
 
 }
 
+std::string Transpiler::removeVertexAndInstanceIdCalls(Node * node, const std::string & orgCode) {
+	std::string result = orgCode;
+
+	FunctionDeclaration * function = static_cast<FunctionDeclaration*>(node->getParentOfType(NodeType::FunctionDeclaration));
+	if (function == nullptr)
+		return result;
+
+	VariableList * vList = function->_variables;
+	if (vList == nullptr)
+		return result;
+
+	for (VariableDeclaration * vDecl : vList->_variableDeclarations) {
+		const std::string declType = traverse(vDecl);
+		if (!isSupportedType(declType))
+			continue;
+
+		const std::string glType = mapToGLType(vDecl);
+
+		if (glType.find(g_vertexId) == std::string::npos && glType.find(g_instanceId) == std::string::npos)
+			continue;
+
+		for (const VariableNameDeclaration * variableName : vDecl->_variableNames) {
+			if (glType.find(g_vertexId) != std::string::npos) {
+				const std::string vertexId = std::string("[") + variableName->_variableName + std::string("].");
+				std::size_t pos = result.find(vertexId);
+				while (pos != std::string::npos) {
+					const std::string left = result.substr(0, pos);
+					const std::string right = result.substr(pos + vertexId.length());
+					result = left + "_" + right;
+
+					pos = result.find(vertexId);
+				}
+			}
+
+			if (glType.find(g_instanceId) != std::string::npos) {
+				const std::string instanceId = std::string("[") + variableName->_variableName + std::string("].");
+				std::size_t pos = result.find(instanceId);
+				while (pos != std::string::npos) {
+					const std::string left = result.substr(0, pos);
+					const std::string right = result.substr(pos + instanceId.length());
+					result = left + "." + right;
+
+					pos = result.find(instanceId);
+				}
+			}
+
+		}
+
+
+	}
+
+	return result;
+}
+
+
 std::string Transpiler::rearrangeSampleCalls(Node * block, const std::string & orgCode) {
 
 	constexpr int lowestLegalCharacter = 48;
@@ -815,8 +870,9 @@ std::string Transpiler::operateOn(struct Block * block)
 	result = result + "}";
 
 	// convert function code
-	const std::string blockCode = rearrangeSampleCalls(block, result);
-	return blockCode;
+	const std::string blockCode0 = rearrangeSampleCalls(block, result);
+	const std::string blockCode1 = removeVertexAndInstanceIdCalls(block, blockCode0);
+	return blockCode1;
 	//return result
 }
 
@@ -1137,11 +1193,6 @@ std::string Transpiler::outputIn()
 	for(VariableDeclaration * inDecl : _inVariables) {
 		const std::string mappedType = mapToGLType(inDecl);
 
-		std::string addendum;
-		if (inDecl->_reservedToken == ReservedToken::Star) {
-			addendum = std::string("[vid]");
-		}
-
 		for (const VariableNameDeclaration * variableName : inDecl->_variableNames) {
 			const std::string mappedName = mapIdentifier(variableName->_variableName);
 
@@ -1157,7 +1208,7 @@ std::string Transpiler::outputIn()
 						const std::string mappedMemberType = mapToGLType(variable);
 						for (const VariableNameDeclaration * mappedVariableName : variable->_variableNames) {
 							const std::string mappedMemberName = mapIdentifier(mappedVariableName->_variableName);
-							const std::string srcMappedStructVariableName = mappedName + addendum + "." + mappedMemberName;
+							const std::string srcMappedStructVariableName = mappedName + "." + mappedMemberName;
 							const std::string dstMappedStructVariableName = mappedName + "_" + mappedMemberName;
 							_structMemberMap[srcMappedStructVariableName] = dstMappedStructVariableName;
 
@@ -1180,6 +1231,7 @@ std::string Transpiler::outputIn()
 
 	return result;
 }
+
 
 std::string Transpiler::outputOut()
 {
