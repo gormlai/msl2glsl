@@ -6,11 +6,17 @@ Gorm Lai <lai.gorm@gmail.com>
 
 *Dependencies*
 
+** Linux ** 
 To build the following programs are needed in your path:
 * Bison (v 3+)
 * Flex
-* Meson
+* Meson 
 * A C++14 capable compiler
+
+** Windows **
+
+* Visual Studio 2017 Community Edition (It may work with other compilers but this has been tested)
+* Clang (tested with Clang 6.0 for Windows (clang for Windows can be found here https://llvm.org/builds/, and a guide for setting it up visual studio can be found here https://github.com/boostorg/hana/wiki/Setting-up-Clang-on-Windows)
 
 *Building*
 
