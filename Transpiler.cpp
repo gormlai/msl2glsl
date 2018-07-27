@@ -662,6 +662,18 @@ std::string Transpiler::convertStructCalls(const std::string & orgCode)
   
 }
 
+std::string Transpiler::calcExtensionRequirements(const std::string & programCode)
+{
+	std::string result;
+
+	if (programCode.find("image3D") != std::string::npos || programCode.find("image2D") != std::string::npos) 
+		result += "#extension GL_EXT_shader_image_load_formatted : require\n";
+
+	result += "\n";
+	return result;
+}
+
+
 std::string Transpiler::convert(struct Block * program, struct FunctionDeclaration * shader)
 {
 	std::string shaderString = std::string("");
@@ -676,7 +688,7 @@ std::string Transpiler::convert(struct Block * program, struct FunctionDeclarati
 	_topLevelStructs = ::gatherStructs(program);
 
 	_state = TranspilerState::Init;
-	shaderString = shaderString + "#version 430 core\n#extension GL_EXT_shader_image_load_formatted : require\n\n";
+	shaderString = shaderString + "#version 430 core\n";
 
 	// add version marker - needs more flexibility in future versions
 	_state = TranspilerState::OutputGlobals;
@@ -691,10 +703,12 @@ std::string Transpiler::convert(struct Block * program, struct FunctionDeclarati
 
 	_state = TranspilerState::CleaningUp;
 
+
+	std::string convertedCode = mainProgram + inOutUniforms + "\n" + mainString + "\n";
+	std::string extensionsNeeded = calcExtensionRequirements(convertedCode);
+	shaderString += extensionsNeeded;
 	shaderString += outputToolbox();
-	shaderString += mainProgram;
-	shaderString += inOutUniforms + "\n";
-	shaderString += mainString + "\n";
+	shaderString += convertedCode;
 	return shaderString;
 }
 
