@@ -55,12 +55,12 @@ const std::string Metal::Scanner::getSeparator() const {
   return "/";
 }
 
-void Metal::Scanner::comment(int &lines) {
+int Metal::Scanner::comment(int lines) {
   while(true) {
     const char c0 = yyinput();
 
-    if(c0=='\n')
-      lines++;
+	if (c0 == '\n')
+		lines++;
     
     if(c0!='*' && c0!=0)
       continue;
@@ -71,5 +71,7 @@ void Metal::Scanner::comment(int &lines) {
     
     break;
   }
+
+  return lines;
   
 }

@@ -19,7 +19,68 @@ LETTER_OR_DIGIT_OR_FORWARDSLASH ({LETTER}|{DIGIT}|{FORWARDSLASH})
 #define YY_DECL int Metal::Scanner::yylex(Metal::Parser::semantic_type * const lval, Metal::Parser::location_type *loc)
 
 using token = Metal::Parser::token;
-int lines = 1;
+
+struct ScanDescriptor
+{
+	int lines;
+	std::string filename;
+};
+
+std::vector<ScanDescriptor> scanDescriptors = { {1, ""} };
+
+void startNewFile(const std::string & file) 
+{
+	ScanDescriptor desc;
+	desc.lines = 1;
+	desc.filename = file;
+	scanDescriptors.push_back(desc);
+}
+
+void fileEnded()
+{
+	scanDescriptors.pop_back();
+}
+
+void incrementLine()
+{
+	if(scanDescriptors.empty())
+		return;
+
+	const size_t lastIndex = scanDescriptors.size()-1;
+	ScanDescriptor & desc = scanDescriptors[lastIndex];
+	desc.lines++;
+}
+
+void setCurrentLine(int line) 
+{
+	if(scanDescriptors.empty())
+		return;
+
+	const size_t lastIndex = scanDescriptors.size()-1;
+	ScanDescriptor & desc = scanDescriptors[lastIndex];
+	desc.lines = line;
+}
+
+int currentLine() 
+{
+	if(scanDescriptors.empty())
+		return 0;
+
+	const size_t lastIndex = scanDescriptors.size()-1;
+	ScanDescriptor & desc = scanDescriptors[lastIndex];
+	return desc.lines;
+}
+
+std::string currentFile() 
+{
+	if(scanDescriptors.empty())
+		return std::string("");
+
+	const size_t lastIndex = scanDescriptors.size()-1;
+	ScanDescriptor & desc = scanDescriptors[lastIndex];
+	return desc.filename;
+}
+
 
 //#define yyterminate() printf("end!\n"); fflush(NULL); return(EOF )
 #define YY_NO_UNISTD_H
@@ -47,7 +108,7 @@ int lines = 1;
 "kernel"                                   { return token::KERNEL; }
 "vertex"                                   { return token::VERTEX; }
 "static"                                   { return token::STATIC; }
-"/*"                                       { Scanner::getInstance()->comment(lines); }
+"/*"                                       { setCurrentLine(Scanner::getInstance()->comment(currentLine())); }
 "struct"                                   { return token::STRUCT;}
 "constant"                                 { return token::CONSTANT;}
 "const"                                    { return token::CONST;}
@@ -117,25 +178,30 @@ int lines = 1;
 {DIGIT}+"u"                                { std::string t(yytext,yyleng); _yyval->intValue = atoi(t.c_str()); return token::INT_VALUE; /* TODO: does this need expansion with uints? */ }
 {LETTER}{LETTER_OR_DIGIT}*                 { _yyval->string = new std::string(yytext,yyleng) ; return token::IDENTIFIER; }
 {WHITESPACE}                               { /* skip */ }
-{NEWLINE}                                  { lines++; }
-"#define"[^\n]*{NEWLINE}                   { lines++; _yyval->string = new std::string(yytext,yyleng) ; return token::PREPROCESSOR; }
-"#if"[^\n]*{NEWLINE}                       { lines++; _yyval->string = new std::string(yytext,yyleng) ; return token::PREPROCESSOR; }
-"#ifdef"[^\n]*{NEWLINE}                    { lines++; _yyval->string = new std::string(yytext,yyleng) ; return token::PREPROCESSOR; }
-"#else"[^\n]*{NEWLINE}                     { lines++; _yyval->string = new std::string(yytext,yyleng) ; return token::PREPROCESSOR; }
-"#elif"[^\n]*{NEWLINE}                     { lines++; _yyval->string = new std::string(yytext,yyleng) ; return token::PREPROCESSOR; }
-"#endif"[^\n]*{NEWLINE}                    { lines++; _yyval->string = new std::string(yytext,yyleng) ; return token::PREPROCESSOR; }
+{NEWLINE}                                  { incrementLine(); }
+"#define"[^\n]*{NEWLINE}                   { incrementLine(); _yyval->string = new std::string(yytext,yyleng) ; return token::PREPROCESSOR; }
+"#if"[^\n]*{NEWLINE}                       { incrementLine(); _yyval->string = new std::string(yytext,yyleng) ; return token::PREPROCESSOR; }
+"#ifdef"[^\n]*{NEWLINE}                    { incrementLine(); _yyval->string = new std::string(yytext,yyleng) ; return token::PREPROCESSOR; }
+"#else"[^\n]*{NEWLINE}                     { incrementLine(); _yyval->string = new std::string(yytext,yyleng) ; return token::PREPROCESSOR; }
+"#elif"[^\n]*{NEWLINE}                     { incrementLine(); _yyval->string = new std::string(yytext,yyleng) ; return token::PREPROCESSOR; }
+"#endif"[^\n]*{NEWLINE}                    { incrementLine(); _yyval->string = new std::string(yytext,yyleng) ; return token::PREPROCESSOR; }
 "//"[^\n]*                                 {/* skip */ }
 "#include"                                 BEGIN(inclstate);
 <inclstate>{WHITESPACE}"<"[^\n]*">" { /* skip for now */;  BEGIN(0); }
-<inclstate>{WHITESPACE}"\""[^\n]*"\"" { std::string t(yytext) ; auto startPos = t.find("\""); auto endPos = t.find_last_of("\""); t = t.substr(startPos+1, endPos - startPos-1);  Scanner::getInstance()->pushFile(t);  ; BEGIN(0); }
+<inclstate>{WHITESPACE}"\""[^\n]*"\"" { std::string t(yytext) ; auto startPos = t.find("\""); auto endPos = t.find_last_of("\""); t = t.substr(startPos+1, endPos - startPos-1);  Scanner::getInstance()->pushFile(t);  ; BEGIN(0); startNewFile(t); }
 
 
-<<EOF>>                                    {  Scanner::getInstance()->popFile(); if(!YY_CURRENT_BUFFER) yyterminate(); }
+<<EOF>>                                    {  fileEnded(); Scanner::getInstance()->popFile(); if(!YY_CURRENT_BUFFER) yyterminate(); }
 
 %%
 
 
-void Metal::Parser::error(const location_type &line, const std::string &err)
+void Metal::Parser::error(const location_type &unused, const std::string &err)
 {
-    std::cerr << "Error at line: " << lines << ": " << err << std::endl; 
+	int line = currentLine();
+	std::string file = currentFile();
+	if(file.empty())
+	    std::cerr << "Error at line: " << line << ": " << err << std::endl; 
+	else
+	    std::cerr << "Error at line: " << line << " (" << file << "): " << err << std::endl; 
 }
