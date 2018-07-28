@@ -1491,8 +1491,16 @@ std::string Transpiler::operateOn(struct JumpStatement * statement)
 						const std::string rightHandSide = tempVariableName + "." + mappedMemberName;
 						std::string leftHandSide;
 
+						if (_shader->_name == "skybox_fragment") {
+							int k = 0;
+							k = 1;
+						}
+
 						if (_shader->_functionType == FunctionType::Vertex && variable->_attribute != nullptr && variable->_attribute->_sAttribute == "position") {
 							leftHandSide = "gl_Position";
+						}
+						else if (_shader->_functionType == FunctionType::Fragment && variable->_attribute != nullptr && variable->_attribute->_sAttribute.find("depth") != std::string::npos) {
+							leftHandSide = "gl_FragDepth";
 						}
 						else {
 							leftHandSide = baseOutVariableName() + "_" + mappedMemberName;
