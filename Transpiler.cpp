@@ -688,7 +688,7 @@ std::string Transpiler::convert(struct Block * program, struct FunctionDeclarati
 	_topLevelStructs = ::gatherStructs(program);
 
 	_state = TranspilerState::Init;
-	shaderString = shaderString + "#version 430 core\n";
+	shaderString = shaderString + "#version 420 core\n";
 
 	// add version marker - needs more flexibility in future versions
 	_state = TranspilerState::OutputGlobals;
