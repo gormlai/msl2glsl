@@ -39,6 +39,11 @@ To build the following programs are needed in your path:
 
 * Make fully compliant with Metal syntax (Metal is based on C++14, while this is more based on a C85 standard)
 * Argument parsing
+** Argument for not adding version tag
 * Make location keyword on in/out optional
 * Make uniform blocks optional
 * Fix how initializers are handled as they only work with certain constructs
+* Bug with insertion of empty statements (;) in if-else after statements blocks
+* Automatically calculate version tag
+* Add support for atan2
+
