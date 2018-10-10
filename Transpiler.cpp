@@ -640,7 +640,13 @@ std::string Transpiler::outputToolbox()
 		"  result.y = floatBitsToUint(v.y);\n"
 		"  result.z = floatBitsToUint(v.z);\n"
 		"  return result;\n"
-		"}\n";
+		"}\n"
+		"\n"
+		"float atan2(float x, float y)\n"
+		"{\n"
+		"  return atan(x, y);"
+		"}\n"
+		"\n";
 }
 
 // TODO - I should be able to get rid of this call, if I manage to fix the grammar
