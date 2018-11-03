@@ -457,6 +457,7 @@ std::string Transpiler::mapIdentifier(const std::string & src) const
 	{ "dfdx", "dFdx" },
 	{ "dfdy", "dFdy" },
 	{ "precision", "precision_" },
+	{ "as_type<uint>", "floatBitsToUint"},
 	};
 
 	std::string output = src;
