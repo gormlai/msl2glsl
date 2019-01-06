@@ -645,7 +645,7 @@ std::string Transpiler::outputToolbox()
 		"\n"
 		"float atan2(float x, float y)\n"
 		"{\n"
-		"  return atan(x, y);"
+		"  return atan(x, y);\n"
 		"}\n"
 		"\n";
 }
@@ -880,8 +880,10 @@ std::string Transpiler::operateOn(struct Block * block)
 		if (node == nullptr)
 			continue;
 
-		result = result + traverse(node);
-		result = result + ";\n";
+		const std::string traverseResult = traverse(node);
+		result = result + traverseResult;
+		if(!traverseResult.empty())
+			result = result + ";\n";
 	}
 
 
@@ -1385,7 +1387,15 @@ std::string Transpiler::operateOn(struct Program * program)
 	std::string result;
 
 	for (auto node : program->_nodes)
-		result = result + traverse(node);
+	{
+		std::string traverseResult = traverse(node);
+		result = result + traverseResult;
+		size_t pos = traverseResult.rfind("\n");
+		if (pos != std::string::npos)
+			traverseResult = traverseResult.substr(pos + 1);
+		if(!traverseResult.empty())
+			result = result + ";\n";
+	}
 
 	return result;
 }
@@ -1622,7 +1632,8 @@ std::string Transpiler::operateOn(struct Struct * strct)
 	result += declsWithoutAssignment;
 	result = result + indent() + "\n};\n\n";
 
-	result = result + createStructInitializer(strct, variables);
+	const std::string structInit = createStructInitializer(strct, variables);
+	result = result + structInit;
 
 	return result;
 }
