@@ -882,7 +882,7 @@ std::string Transpiler::operateOn(struct Block * block)
 
 		const std::string traverseResult = traverse(node);
 		result = result + traverseResult;
-		if(!traverseResult.empty())
+		if(!traverseResult.empty() && node->getNodeType()!=NodeType::Block)
 			result = result + ";\n";
 	}
 
