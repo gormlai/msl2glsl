@@ -17,7 +17,7 @@ To build the following programs are needed in your path:
 
 * Visual Studio 2017 Community Edition (It may work with other compilers but this has been tested)
 * Clang (tested with Clang 6.0 for Windows (clang for Windows can be found here https://llvm.org/builds/, and a guide for setting it up visual studio can be found here https://github.com/boostorg/hana/wiki/Setting-up-Clang-on-Windows)
-* WinFlexBison
+* WinFlexBison (check the readme for how to setup the custom build rules)
 
 *Building*
 
