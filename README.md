@@ -35,7 +35,7 @@ To build the following programs are needed in your path:
 
 *Background*
 
-
+Gorm wrote a little background about the msl shader compiler here.
 
 *Improvements*
 
