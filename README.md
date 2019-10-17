@@ -2,6 +2,7 @@
 Parses MSL and spits out GLSL
 
 *Contributors*
+
 Gorm Lai <lai.gorm@gmail.com>
 
 *Dependencies*
@@ -47,4 +48,5 @@ To build the following programs are needed in your path:
 * Bug with insertion of empty statements (;) in if-else after statements blocks
 * Automatically calculate version tag
 * Add support for atan2
-
+* Fix bug with ; created after statement blocks
+* Deal with incompatibilities such as being able to modify input on msl, but not on glsl
