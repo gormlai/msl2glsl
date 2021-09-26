@@ -437,6 +437,7 @@ std::string Transpiler::mapIdentifier(const std::string & src) const
 	{ "half4", "vec4" },
 	{ "matrix_float4x4", "mat4" },
 	{ "packed_float3", "vec3" },
+	{ "packed_float2", "vec2" },
 	{ "char2", "ivec2" },
 	{ "char3", "ivec3" },
 	{ "char4", "ivec4" },
