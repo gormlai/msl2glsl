@@ -168,6 +168,7 @@ std::string currentFile()
 "else if"                                  { return token::ELSEIF; }
 "else"                                     { return token::ELSE; }
 "for"                                      { return token::FOR; }
+"while"                                    { return token::WHILE; }
 {DIGIT}*"."{DIGIT}+"f"                     { std::string t(yytext,yyleng); _yyval->floatValue = atof(t.c_str()); return token::FLOAT_VALUE; }
 {DIGIT}*"."{DIGIT}+"h"                     { std::string t(yytext,yyleng); _yyval->halfValue = atof(t.c_str()); return token::HALF_VALUE; }
 {DIGIT}*"."{DIGIT}+                        { std::string t(yytext,yyleng); _yyval->doubleValue = (double)atof(t.c_str()); return token::DOUBLE_VALUE; }

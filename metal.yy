@@ -169,6 +169,7 @@ class Scanner;
 %token                ELSEIF
 %token                ELSE
 %token                FOR
+%token                WHILE
 
 %type	<block> compound_statement
 %type	<block> statement_list
@@ -344,7 +345,7 @@ init_statement:
 iteration_statement:
 		FOR BEGIN_BRACKET init_statement expression_statement END_BRACKET statement { $$ = new ForLoop($3, $4, nullptr, $6); }
  	|	FOR BEGIN_BRACKET init_statement expression_statement expression END_BRACKET statement { $$ = new ForLoop($3, $4, $5, $7); }
-		
+ 	|	WHILE BEGIN_BRACKET expression_statement END_BRACKET statement { $$ = new ForLoop(nullptr, $3, nullptr, $5); }		
 	;
 
 jump_statement:
