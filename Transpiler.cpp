@@ -882,9 +882,21 @@ std::string Transpiler::operateOn(struct Block * block)
 			continue;
 
 		const std::string traverseResult = traverse(node);
+		if (traverseResult.find("refl_color =") != std::string::npos) {
+			int k = 0;
+			k = 1;
+			const std::string traverseResult0 = traverse(node);
+		}
 		result = result + traverseResult;
-		if(!traverseResult.empty() && node->getNodeType()!=NodeType::Block)
-			result = result + ";\n";
+		if (!traverseResult.empty()) {
+			switch (node->getNodeType()) {
+			case NodeType::SelectionStatement:
+				break;
+			default:
+				result = result + ";\n";
+				break;
+			}
+		}
 	}
 
 
@@ -1485,7 +1497,17 @@ std::string Transpiler::operateOn(struct JumpStatement * statement)
 	if (_state == TranspilerState::OutputRestOfProgram) {
 		// keep code as is
 		result += indent();
-		result += "return ";
+		switch (statement->_type) {
+		case JumpStatementType::Break:
+			result += "break ";
+			break;
+		case JumpStatementType::Continue:
+			result += "continue ";
+			break;
+		case JumpStatementType::Return:
+			result += "return ";
+			break;
+		}
 		result += rightSide;
 	}
 	else if (_state == TranspilerState::OutputMain) {
